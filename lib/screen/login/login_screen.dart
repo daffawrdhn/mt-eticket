@@ -53,6 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState(){
     super.initState();
     Prefs.clear();
+    AppData().count = 1;
     loginBloc.resetBloc();
   }
 
@@ -150,8 +151,8 @@ class _LoginScreenState extends State<LoginScreen> {
           if (snapshot.data != null && snapshot.data.toString().length > 1) {
             appData.count = appData.count + 1;
             if(appData.count == 2){
-              WidgetsBinding.instance.addPostFrameCallback((_) => popupDialogAlert(snapshot.data));
               appData.count = 0;
+              WidgetsBinding.instance.addPostFrameCallback((_) => popupDialogAlert(snapshot.data));
             }
             return Container();
           } else {

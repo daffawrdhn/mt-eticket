@@ -31,6 +31,9 @@ class Data {
   String deviceId;
   String employeeName;
   String employeeEmail;
+  String employeeKtp;
+  String employeeBirth;
+  String apiToken;
   Role role;
   Organization organization;
   Regional regional;
@@ -41,6 +44,9 @@ class Data {
         this.deviceId,
         this.employeeName,
         this.employeeEmail,
+        this.employeeKtp,
+        this.employeeBirth,
+        this.apiToken,
         this.role,
         this.organization,
         this.regional});
@@ -51,6 +57,9 @@ class Data {
     deviceId = json['device_id'];
     employeeName = json['employee_name'];
     employeeEmail = json['employee_email'];
+    employeeKtp = json['employee_ktp'];
+    employeeBirth = json['employee_birth'];
+    apiToken = json['api_token'];
     role = json['role'] != null ? new Role.fromJson(json['role']) : null;
     organization = json['organization'] != null
         ? new Organization.fromJson(json['organization'])
@@ -67,6 +76,9 @@ class Data {
     data['device_id'] = this.deviceId;
     data['employee_name'] = this.employeeName;
     data['employee_email'] = this.employeeEmail;
+    data['employee_ktp'] = this.employeeKtp;
+    data['employee_birth'] = this.employeeBirth;
+    data['api_token'] = this.apiToken;
     if (this.role != null) {
       data['role'] = this.role.toJson();
     }

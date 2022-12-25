@@ -20,7 +20,7 @@ class CheckForgotProvider {
       Response response = await _dio.post(urlAPI.check, data: form);
       return CheckForgotResponse.fromJson(response.data);
     } on DioError catch(e) {
-      print(e);
+      // print(e);
       return CheckForgotResponse.withError(ErrHandler.getErrMessage(e));
       // return LoginResponse.withError('Check Connection / User credentials');
     }

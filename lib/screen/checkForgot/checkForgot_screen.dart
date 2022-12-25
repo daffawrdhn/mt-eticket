@@ -52,7 +52,7 @@ class _CheckForgotScreenState extends State<CheckForgotScreen> {
       icon: Icons.info_outline,
       type: 'failed',
       onOk: (){
-        Navigator.pop(context);
+        Navigator.of(context).pop();
         errorBloc.resetBloc();
       },
     );
@@ -62,6 +62,7 @@ class _CheckForgotScreenState extends State<CheckForgotScreen> {
     super.initState();
     Prefs.clear();
     // loginBloc.resetBloc();
+    AppData().count = 1;
     checkForgotBloc.resetBloc();
   }
 
@@ -161,10 +162,12 @@ class _CheckForgotScreenState extends State<CheckForgotScreen> {
         builder: (context, snapshot) {
           if (snapshot.data != null && snapshot.data.toString().length > 1) {
             appData.count = appData.count + 1;
+
             if(appData.count == 2){
               WidgetsBinding.instance.addPostFrameCallback((_) => popupDialogAlert(snapshot.data));
-              appData.count = 0;
             }
+            appData.count = 0;
+
             return Container();
           } else {
             return Container();
@@ -288,7 +291,9 @@ class _CheckForgotScreenState extends State<CheckForgotScreen> {
                               readOnly: true,
                               decoration: Decorations.textInputDecorationDate(StringConst.hintBirth, snapshot.error, Colors.white),
                               maxLines: 1,
-                              onTap: () async {  // add the onTap function from the original code
+                              onTap: () async {
+
+                                String formattedDate;// add the onTap function from the original code
                                 DateTime pickedDate = await DatePicker.showDatePicker(
                                   context,
                                   currentTime: DateTime.now(),
@@ -298,7 +303,7 @@ class _CheckForgotScreenState extends State<CheckForgotScreen> {
                                 );
 
                                 if (pickedDate != null) {
-                                  String formattedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
+                                  formattedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
                                   setState(() {
                                     dateInput.text = formattedDate;  // update the TextField value with the selected date
                                   });

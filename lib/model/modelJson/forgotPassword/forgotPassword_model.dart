@@ -1,6 +1,6 @@
 class forgotPassword {
   bool success;
-  Null token;
+  String token;
   int data;
   String message;
 

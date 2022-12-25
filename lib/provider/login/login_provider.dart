@@ -19,7 +19,7 @@ class LoginProvider {
       Response response = await _dio.post(urlAPI.auth, data: form);
       return LoginResponse.fromJson(response.data);
     } on DioError catch(e) {
-      print(e);
+      // print(e);
       return LoginResponse.withError(ErrHandler.getErrMessage(e));
       // return LoginResponse.withError('Check Connection / User credentials');
     }

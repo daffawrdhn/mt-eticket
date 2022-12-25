@@ -69,6 +69,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       onOk: () {
         // Close the dialog
         Navigator.of(context).pop();
+        errorBloc.resetBloc();
         // Navigate to the '/login' route and perform an action after the route has been replaced
         Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
       },
@@ -78,6 +79,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   void initState(){
     super.initState();
     Prefs.clear();
+    AppData().count = 1;
     forgotPasswordBloc.resetBloc();
   }
 
@@ -176,8 +178,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             appData.count = appData.count + 1;
             if(appData.count == 2){
               WidgetsBinding.instance.addPostFrameCallback((_) => popupDialogAlert(snapshot.data));
-              appData.count = 0;
             }
+            appData.count = 0;
             return Container();
           } else {
             return Container();

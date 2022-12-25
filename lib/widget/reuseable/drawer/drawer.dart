@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mt/bloc/home/logout_bloc.dart';
 import 'package:mt/resource/values/values.dart';
+import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
+import 'package:mt/widget/reuseable/dialog/dialog_profile.dart';
 class DrawerWidget extends StatelessWidget {
   final user;
 
@@ -12,7 +14,7 @@ class DrawerWidget extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          _drawerHeader(user),
+          _drawerHeader(context, user),
           Padding(
             padding: const EdgeInsets.only(left: 20.0, top: 10, bottom: 10),
             child: Text("Menu",
@@ -56,16 +58,35 @@ class DrawerWidget extends StatelessWidget {
 
 }
 
-Widget _drawerHeader(user) {
+Widget _drawerHeader(context, user) {
   return UserAccountsDrawerHeader(
     currentAccountPicture: ClipOval(
       child: Image(
           image: AssetImage(ImagePath.profile), fit: BoxFit.cover),
     ),
-    accountName: Text(user.employeeName + ' - ' +user.organization.orgainzationName),
+    accountName: Text(user.employeeName),
     accountEmail: Text(user.employeeEmail),
+    onDetailsPressed: () {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _popupDialogAlert(context, user));
+    },
   );
 }
+
+_popupDialogAlert(BuildContext context, user){
+  showProfileDialog(
+    context: context,
+    name: user == 'null' ? "" : user.employeeName,
+    email: user == 'null' ? "" : user.employeeEmail,
+    organization: user == 'null' ? "" : user.organization.orgainzationName,
+    regional: user == 'null' ? "" : user.regional.regionalName,
+    icon: Icons.account_circle,
+    type: 'success',
+    onOk: (){
+      Navigator.of(context).pop();
+    },
+  );
+}
+
 Widget _drawerItem({IconData icon, String text, GestureTapCallback onTap}) {
   return ListTile(
     title: Row(
