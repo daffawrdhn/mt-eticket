@@ -1,12 +1,12 @@
-class forgotPassword {
+class changePassword {
   bool success;
   String token;
   int data;
   String message;
 
-  forgotPassword({this.success, this.token, this.data, this.message});
+  changePassword({this.success, this.token, this.data, this.message});
 
-  forgotPassword.fromJson(Map<String, dynamic> json) {
+  changePassword.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     token = json['token'];
     data = json['data'];

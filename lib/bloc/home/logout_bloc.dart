@@ -9,6 +9,7 @@ class LogoutBloc {
 
   Future logout() async {
       Prefs.setIsLogin(false);
+      AppData().token = "";
       Prefs.clear();
   }
 

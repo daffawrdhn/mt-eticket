@@ -85,6 +85,7 @@ class LoginBloc extends Object with Validators {
     if(response.results.success == true){
       Prefs.setAuthToken(response.results.token);
       Prefs.setIsLogin(true);
+      AppData().token = response.results.token;
       _subject.sink.add(response);
     }else{
       _subject.sink.add(response);

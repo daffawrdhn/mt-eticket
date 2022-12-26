@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mt/bloc/error/error_bloc.dart';
+import 'package:mt/bloc/home/logout_bloc.dart';
 import 'package:mt/bloc/loading/loading_bloc.dart';
 import 'package:mt/data/local/app_data.dart';
 import 'package:mt/data/sharedpref/preferences.dart';
 import 'package:mt/helper/widget/widget_helper.dart';
-import 'package:mt/model/response/forgotPassword/forgotPassword_response.dart';
+import 'package:mt/model/response/changePassword/changePassword_response.dart';
 import 'package:mt/model/response/login/login_response.dart';
 import 'package:mt/resource/values/values.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
 
 // import 'package:mt/bloc/login/login_bloc.dart';
-import 'package:mt/bloc/forgotPassword/forgotPassword_bloc.dart';
+import 'package:mt/bloc/changePassword/changePassword_bloc.dart';
 
-class ForgotPasswordScreen extends StatefulWidget {
+class ChangePasswordScreen extends StatefulWidget {
 
   @override
-  _ForgotPasswordScreenState createState() => _ForgotPasswordScreenState();
+  _ChangePasswordScreenState createState() => _ChangePasswordScreenState();
 }
 
-class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   String androidId = '';
   bool isLogin = false;
@@ -43,8 +44,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   void doLogin() async {
     FocusScope.of(context).requestFocus(FocusNode());
-    forgotPasswordBloc.resetResponse();
-    forgotPasswordBloc.change();
+    changePasswordBloc.resetResponse();
+    changePasswordBloc.change();
   }
 
   void popupDialogAlert(String message){
@@ -60,7 +61,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 
-  void popupDialogAlertForgot(String message) {
+  void popupDialogAlertChange(String message) {
     showAlertDialog(
       context: context,
       message: message == 'null' ? "" : message,
@@ -70,6 +71,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         // Close the dialog
         Navigator.of(context).pop();
         errorBloc.resetBloc();
+        logoutBloc.logout();
         // Navigate to the '/login' route and perform an action after the route has been replaced
         Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
       },
@@ -80,7 +82,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.initState();
     Prefs.clear();
     AppData().count = 1;
-    forgotPasswordBloc.resetBloc();
+    changePasswordBloc.resetBloc();
   }
 
   @override
@@ -94,7 +96,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     Widget submitButton() {
       return StreamBuilder(
-          stream: forgotPasswordBloc.submitValid,
+          stream: changePasswordBloc.submitValid,
           builder: (context, snapshot) {
             return SizedBox(
                 width: MediaQuery.of(context).size.width,
@@ -139,12 +141,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       );
     }
 
-    Widget _forgotPassword() {
+    Widget _changePassword() {
       return GestureDetector(
         onTap: () {
           Future.microtask(() => Navigator.pushReplacementNamed(context, '/checkdata'));
         },
-        child: Text('Forgot Password',
+        child: Text('Change Password',
           style: TextStyle(
               decoration: TextDecoration.underline,
               fontWeight: FontWeight.bold,
@@ -189,14 +191,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     }
 
     Widget responseWidget(){
-      return StreamBuilder<ForgotPasswordResponse>(
-        stream: forgotPasswordBloc.subject.stream,
-        builder: (context, AsyncSnapshot<ForgotPasswordResponse> snapshot) {
+      return StreamBuilder<ChangePasswordResponse>(
+        stream: changePasswordBloc.subject.stream,
+        builder: (context, AsyncSnapshot<ChangePasswordResponse> snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data.error != null && snapshot.data.error.length > 0) {
               return Container();
             }else{
-              WidgetsBinding.instance.addPostFrameCallback((_) => popupDialogAlertForgot(snapshot.data.results.message));
+              WidgetsBinding.instance.addPostFrameCallback((_) => popupDialogAlertChange(snapshot.data.results.message));
               // Future.microtask(() => Navigator.pushReplacementNamed(context, '/login'));
               return _buildErrorWidget("");
             }
@@ -262,11 +264,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       child: Container(
                           decoration: Decorations.containerBoxDecoration(),
                           child: StreamBuilder(
-                              stream: forgotPasswordBloc.password,
+                              stream: changePasswordBloc.password,
                               builder: (context, snapshot) {
                                 return TextField(
                                   maxLength: 12,
-                                  onChanged: forgotPasswordBloc.changePassword,
+                                  onChanged: changePasswordBloc.changePassword,
                                   obscureText: _obscureText,
                                   style: Styles.customTextStyle(Colors.black, 'bold', 15.0),
                                   inputFormatters: <TextInputFormatter>[
@@ -303,11 +305,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       child: Container(
                           decoration: Decorations.containerBoxDecoration(),
                           child: StreamBuilder(
-                              stream: forgotPasswordBloc.passwordConfirm,
+                              stream: changePasswordBloc.passwordConfirm,
                               builder: (context, snapshot) {
                                 return TextField(
                                   maxLength: 12,
-                                  onChanged: forgotPasswordBloc.changePasswordConfirm,
+                                  onChanged: changePasswordBloc.changePasswordConfirm,
                                   obscureText: _obscureText2,
                                   style: Styles.customTextStyle(Colors.black, 'bold', 15.0),
                                   inputFormatters: <TextInputFormatter>[

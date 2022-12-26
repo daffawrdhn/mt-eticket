@@ -38,6 +38,15 @@ class DrawerWidget extends StatelessWidget {
                 )),
           ),
           _drawerItem(
+              icon: Icons.lock,
+              text: 'Change Password',
+              // onTap: () async {
+              //   await logoutBloc.logout();
+              //   Future.microtask(() => Navigator.pushReplacementNamed(context, '/login'));
+              // }
+              onTap: () => doChange(context)
+          ),
+          _drawerItem(
               icon: Icons.logout,
               text: 'Logout',
               // onTap: () async {
@@ -51,11 +60,14 @@ class DrawerWidget extends StatelessWidget {
     );
   }
 
-  void doLogout(context) async {
+  void doLogout(BuildContext context) async {
     await logoutBloc.logout();
     Future.microtask(() => Navigator.pushReplacementNamed(context, '/login'));
   }
 
+  void doChange(BuildContext context) {
+    Future.microtask(() => Navigator.pushNamed(context, '/change'));
+  }
 }
 
 Widget _drawerHeader(context, user) {

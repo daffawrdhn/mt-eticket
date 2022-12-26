@@ -5,14 +5,14 @@ import '../../data/local/app_data.dart';
 import '../../data/sharedpref/preferences.dart';
 import 'package:rxdart/rxdart.dart';
 
-import 'package:mt/model/response/forgotPassword/forgotPassword_response.dart';
-import 'package:mt/provider/forgotPassword/forgotPassword_provider.dart';
-import '../../bloc/forgotPassword/validators.dart';
+import 'package:mt/model/response/changePassword/changePassword_response.dart';
+import 'package:mt/provider/changePassword/changePassword_provider.dart';
+import '../../bloc/changePassword/validators.dart';
 
-class ForgotPasswordBloc extends Object with Validators {
-  final ForgotPasswordProvider _forgotPasswordProvider = ForgotPasswordProvider();
-  final BehaviorSubject<ForgotPasswordResponse> _subject =
-      BehaviorSubject<ForgotPasswordResponse>();
+class ChangePasswordBloc extends Object with Validators {
+  final ChangePasswordProvider _changePasswordProvider = ChangePasswordProvider();
+  final BehaviorSubject<ChangePasswordResponse> _subject =
+      BehaviorSubject<ChangePasswordResponse>();
 
   final _password = BehaviorSubject<String>();
   final _passwordConfirm = BehaviorSubject<String>();
@@ -49,7 +49,7 @@ class ForgotPasswordBloc extends Object with Validators {
     print(_password.value);
     print(_passwordConfirm.value);
 
-    ForgotPasswordResponse response = await _forgotPasswordProvider.change(formData);
+    ChangePasswordResponse response = await _changePasswordProvider.change(formData);
 
     if (response.results.success == true) {
       Prefs.clear();
@@ -73,7 +73,7 @@ class ForgotPasswordBloc extends Object with Validators {
     _subject.close();
   }
 
-  BehaviorSubject<ForgotPasswordResponse> get subject => _subject;
+  BehaviorSubject<ChangePasswordResponse> get subject => _subject;
 }
 
-final forgotPasswordBloc = ForgotPasswordBloc();
+final changePasswordBloc = ChangePasswordBloc();
