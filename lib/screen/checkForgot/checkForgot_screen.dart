@@ -160,11 +160,11 @@ class _CheckForgotScreenState extends State<CheckForgotScreen> {
         stream: errorBloc.errMsg,
         builder: (context, snapshot) {
           if (snapshot.data != null && snapshot.data.toString().length > 1) {
-            // appData.count = appData.count + 1;
-            // if(appData.count == 2){
-              // appData.count = 0;
+            appData.count = appData.count + 1;
+            if(appData.count == 2){
+              appData.count = 0;
               WidgetsBinding.instance.addPostFrameCallback((_) => popupDialogAlert(snapshot.data));
-            // }
+            }
             return Container();
           } else {
             return Container();
