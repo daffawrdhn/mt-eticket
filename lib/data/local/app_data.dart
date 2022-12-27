@@ -11,7 +11,7 @@ class AppData {
   String errMsg = "";
   String token = "";
 
-  int count;
+  int count = 1;
 
   Login user;
 

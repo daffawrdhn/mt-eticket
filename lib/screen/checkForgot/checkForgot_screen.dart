@@ -155,19 +155,16 @@ class _CheckForgotScreenState extends State<CheckForgotScreen> {
     }
 
     Widget errResponse(){
-      int count = 0;
       return StreamBuilder(
         initialData: null,
         stream: errorBloc.errMsg,
         builder: (context, snapshot) {
           if (snapshot.data != null && snapshot.data.toString().length > 1) {
-            appData.count = appData.count + 1;
-
-            if(appData.count == 2){
+            // appData.count = appData.count + 1;
+            // if(appData.count == 2){
+              // appData.count = 0;
               WidgetsBinding.instance.addPostFrameCallback((_) => popupDialogAlert(snapshot.data));
-            }
-            appData.count = 0;
-
+            // }
             return Container();
           } else {
             return Container();
@@ -198,6 +195,9 @@ class _CheckForgotScreenState extends State<CheckForgotScreen> {
 
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          title: Text('Change Password'),
+        ),
       backgroundColor: Colors.white,
       bottomNavigationBar: BottomAppBar(
         color: Colors.transparent,
@@ -318,7 +318,7 @@ class _CheckForgotScreenState extends State<CheckForgotScreen> {
                   SizedBox(height: 20.0),
                   _buildLoadingWidget(),
                   SizedBox(height: 20.0),
-                  _backToLogin(),
+                  // _backToLogin(),
                   responseWidget(),
                   SizedBox(height: 15.0),
                   SizedBox(height: 20.0),

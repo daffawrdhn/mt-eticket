@@ -143,7 +143,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     Widget errResponse(){
-      int count = 0;
       return StreamBuilder(
         initialData: null,
         stream: errorBloc.errMsg,

@@ -171,7 +171,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     }
 
     Widget errResponse(){
-      int count = 0;
       return StreamBuilder(
         initialData: null,
         stream: errorBloc.errMsg,
@@ -179,9 +178,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           if (snapshot.data != null && snapshot.data.toString().length > 1) {
             appData.count = appData.count + 1;
             if(appData.count == 2){
+              appData.count = 0;
               WidgetsBinding.instance.addPostFrameCallback((_) => popupDialogAlert(snapshot.data));
             }
-            appData.count = 0;
             return Container();
           } else {
             return Container();
@@ -230,129 +229,186 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.white,
-        bottomNavigationBar: BottomAppBar(
-          color: Colors.transparent,
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Text('1.0.0', style: Styles.customTextStyle(Colors.black, 'bold', 15.0),textAlign: TextAlign.center,),
+          appBar: AppBar(
+            title: Text('Change Password'),
           ),
-          elevation: 0,
-        ),
-        body: GestureDetector(
-          onTap: () {
-            FocusScope.of(context).requestFocus(new FocusNode());
-          },
-          child: SingleChildScrollView(
+          backgroundColor: Colors.white,
+          bottomNavigationBar: BottomAppBar(
+            color: Colors.transparent,
             child: Padding(
-                padding: EdgeInsets.fromLTRB(20.0,0,20.0,0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 60.0),
-                    Image(
-                      image: AssetImage(ImagePath.logo_h),
-                      height: 150,
-                    ),
-                    SizedBox(height: 20.0),
-                    Text("FORGOT PASSWORD",
-                      style: Styles.customTextStyle(AppColors.loginSubmit, 'bold', 25.0)
-                    ),
-                    SizedBox(height: 20.0),
-                    Card(
-                      elevation: 0.0,
-                      child: Container(
-                          decoration: Decorations.containerBoxDecoration(),
-                          child: StreamBuilder(
-                              stream: changePasswordBloc.password,
-                              builder: (context, snapshot) {
-                                return TextField(
-                                  maxLength: 12,
-                                  onChanged: changePasswordBloc.changePassword,
-                                  obscureText: _obscureText,
-                                  style: Styles.customTextStyle(Colors.black, 'bold', 15.0),
-                                  inputFormatters: <TextInputFormatter>[
-                                    // for below version 2 use this
-                                    FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9"|/?~`!@#$%^&*().,;:<>_+={}-]')),
-                                  ],
-                                  decoration: InputDecoration(
-                                    counterText: '',
-                                    contentPadding: EdgeInsets.all(10.0),
-                                    border: WidgetHelper().outlineInputBorderTextFieldRounded(),
-                                    enabledBorder:  WidgetHelper().outlineInputBorderTextFieldRoundedEnabled(),
-                                    errorText: snapshot.error,
-                                    hintText: StringConst.hintPassword,
-                                    hintStyle: Styles.customTextStyle(Colors.grey, 'bold', 15.0),
-                                    suffixIcon: GestureDetector(
-                                      onTap: () {
-                                        _toggle();
-                                      },
-                                      child: Icon(
-                                          _obscureText ? Icons.visibility_off : Icons.visibility,
-                                          color: _obscureText ? Colors.grey : Colors.blueGrey
-                                      ),
-                                    ),
-                                  ),
-                                  maxLines: 1,
-                                );
-                              }
-                          )
-                      ),
-                    ),
-                    SizedBox(height: 20.0),
-                    Card(
-                      elevation: 0.0,
-                      child: Container(
-                          decoration: Decorations.containerBoxDecoration(),
-                          child: StreamBuilder(
-                              stream: changePasswordBloc.passwordConfirm,
-                              builder: (context, snapshot) {
-                                return TextField(
-                                  maxLength: 12,
-                                  onChanged: changePasswordBloc.changePasswordConfirm,
-                                  obscureText: _obscureText2,
-                                  style: Styles.customTextStyle(Colors.black, 'bold', 15.0),
-                                  inputFormatters: <TextInputFormatter>[
-                                    // for below version 2 use this
-                                    FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9"|/?~`!@#$%^&*().,;:<>_+={}-]')),
-                                  ],
-                                  decoration: InputDecoration(
-                                    counterText: '',
-                                    contentPadding: EdgeInsets.all(10.0),
-                                    border: WidgetHelper().outlineInputBorderTextFieldRounded(),
-                                    enabledBorder:  WidgetHelper().outlineInputBorderTextFieldRoundedEnabled(),
-                                    errorText: snapshot.error,
-                                    hintText: StringConst.hintPasswordConfirm,
-                                    hintStyle: Styles.customTextStyle(Colors.grey, 'bold', 15.0),
-                                    suffixIcon: GestureDetector(
-                                      onTap: () {
-                                        _toggle2();
-                                      },
-                                      child: Icon(
-                                          _obscureText2 ? Icons.visibility_off : Icons.visibility,
-                                          color: _obscureText2 ? Colors.grey : Colors.blueGrey
-                                      ),
-                                    ),
-                                  ),
-                                  maxLines: 1,
-                                );
-                              }
-                          )
-                      ),
-                    ),
-                    SizedBox(height: 20.0),
-                    _buildLoadingWidget(),
-                    SizedBox(height: 20.0),
-                    _backToLogin(),
-                    responseWidget(),
-                    SizedBox(height: 15.0),
-                    SizedBox(height: 20.0),
-                    errResponse(),
-                  ],
-                )
+              padding: const EdgeInsets.all(10.0),
+              child: Text('1.0.0', style: Styles.customTextStyle(Colors.black, 'bold', 15.0),textAlign: TextAlign.center,),
             ),
+            elevation: 0,
           ),
-        ),
+          body: Container(
+            alignment: Alignment.center,
+            child: SingleChildScrollView(
+              child: Padding(
+                  padding: EdgeInsets.fromLTRB(20.0,0,20.0,0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 45.0),
+                      // Image(
+                      //   image: AssetImage(ImagePath.logo_h),
+                      //   height: 150,
+                      // ),
+                      // SizedBox(height: 20.0),
+                      // Text("Change Password",
+                      //   style: Styles.customTextStyle(AppColors.loginSubmit, 'bold', 25.0)
+                      // ),
+                      SizedBox(height: 15.0),
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: RichText(
+                          text: TextSpan(
+                            style: DefaultTextStyle.of(context).style,
+                            children: <TextSpan>[
+                              TextSpan(text: 'New Password', style: TextStyle(fontFamily: 'Mitr',fontSize: 12, color: Colors.black)),
+                              TextSpan(text: '*', style: TextStyle(fontFamily: 'Mitr',fontSize: 12, color: Colors.red)),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Card(
+                        elevation: 0.0,
+                        child: Container(
+                            decoration: Decorations.containerBoxDecoration(),
+                            child: StreamBuilder(
+                                stream: changePasswordBloc.password,
+                                builder: (context, snapshot) {
+                                  return TextField(
+                                    maxLength: 12,
+                                    onChanged: changePasswordBloc.changePassword,
+                                    obscureText: _obscureText,
+                                    style: Styles.customTextStyle(Colors.black, 'bold', 15.0),
+                                    inputFormatters: <TextInputFormatter>[
+                                      // for below version 2 use this
+                                      FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9"|/?~`!@#$%^&*().,;:<>_+={}-]')),
+                                    ],
+                                    decoration: InputDecoration(
+                                      counterText: '',
+                                      contentPadding: EdgeInsets.all(10.0),
+                                      border: WidgetHelper().outlineInputBorderTextFieldRounded(),
+                                      enabledBorder:  WidgetHelper().outlineInputBorderTextFieldRoundedEnabled(),
+                                      errorText: snapshot.error,
+                                      hintText: StringConst.hintPassword,
+                                      hintStyle: Styles.customTextStyle(Colors.grey, 'bold', 15.0),
+                                      suffixIcon: GestureDetector(
+                                        onTap: () {
+                                          _toggle();
+                                        },
+                                        child: Icon(
+                                            _obscureText ? Icons.visibility_off : Icons.visibility,
+                                            color: _obscureText ? Colors.grey : Colors.blueGrey
+                                        ),
+                                      ),
+                                    ),
+                                    maxLines: 1,
+                                  );
+                                }
+                            )
+                        ),
+                      ),
+                      SizedBox(height: 20.0),
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: RichText(
+                          text: TextSpan(
+                            style: DefaultTextStyle.of(context).style,
+                            children: <TextSpan>[
+                              TextSpan(text: 'New Password Confirm', style: TextStyle(fontFamily: 'Mitr',fontSize: 12, color: Colors.black)),
+                              TextSpan(text: '*', style: TextStyle(fontFamily: 'Mitr',fontSize: 12, color: Colors.red)),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 5.0),
+                      Card(
+                        elevation: 0.0,
+                        child: Container(
+                            decoration: Decorations.containerBoxDecoration(),
+                            child: StreamBuilder(
+                                stream: changePasswordBloc.passwordConfirm,
+                                builder: (context, snapshot) {
+                                  return TextField(
+                                    maxLength: 12,
+                                    onChanged: changePasswordBloc.changePasswordConfirm,
+                                    obscureText: _obscureText2,
+                                    style: Styles.customTextStyle(Colors.black, 'bold', 15.0),
+                                    inputFormatters: <TextInputFormatter>[
+                                      // for below version 2 use this
+                                      FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9"|/?~`!@#$%^&*().,;:<>_+={}\\-]')),
+                                    ],
+                                    decoration: InputDecoration(
+                                      counterText: '',
+                                      contentPadding: EdgeInsets.all(10.0),
+                                      border: WidgetHelper().outlineInputBorderTextFieldRounded(),
+                                      enabledBorder:  WidgetHelper().outlineInputBorderTextFieldRoundedEnabled(),
+                                      errorText: snapshot.error,
+                                      hintText: StringConst.hintPassword,
+                                      hintStyle: Styles.customTextStyle(Colors.grey, 'bold', 15.0),
+                                      suffixIcon: GestureDetector(
+                                        onTap: () {
+                                          _toggle2();
+                                        },
+                                        child: Icon(
+                                            _obscureText2 ? Icons.visibility_off : Icons.visibility,
+                                            color: _obscureText2 ? Colors.grey : Colors.blueGrey
+                                        ),
+                                      ),
+                                    ),
+                                    maxLines: 1,
+                                  );
+                                }
+                            )
+                        ),
+                      ),
+                      SizedBox(height: 10.0),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Password must meet the following requirements:", style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.red,
+                          ),),
+                          Text("- Password length must be 8-12 Character", style: TextStyle(
+                            fontSize: 13,
+                            color: AppColors.red,
+                          ),),
+                          Text("- At least one Lower Case", style: TextStyle(
+                            fontSize: 13,
+                            color: AppColors.red,
+                          ),),
+                          Text("- At least one Upper Case:", style: TextStyle(
+                            fontSize: 13,
+                            color: AppColors.red,
+                          ),),
+                          Text("- At least contain One number", style: TextStyle(
+                            fontSize: 13,
+                            color: AppColors.red,
+                          ),),
+                          Text("- At least contain one Special Character (Exclude: , \\ [ ] ' )", style: TextStyle(
+                            fontSize: 13,
+                            color: AppColors.red,
+                          ),),
+                        ],
+                      ),
+                      SizedBox(height: 20.0),
+                      _buildLoadingWidget(),
+                      SizedBox(height: 20.0),
+                      // _backToLogin(),
+                      responseWidget(),
+                      SizedBox(height: 15.0),
+                      SizedBox(height: 20.0),
+                      errResponse(),
+                    ],
+                  )
+              ),
+            ),
+          )
       ),
     );
   }
