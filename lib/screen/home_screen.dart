@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mt/bloc/home/logout_bloc.dart';
 import 'package:mt/data/local/app_data.dart';
 import 'package:mt/model/modelJson/login/login_model.dart';
-
+import 'package:mt/resource/values/values.dart';
 import 'package:mt/widget/reuseable/drawer/drawer.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -14,12 +14,21 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
 
   Login _user;
+  int _selectedIndex = 0;
+  String _appBarTitle = 'Home';  // Add this line
+
+  static List<Widget> _widgetOptions = <Widget>[
+    Text('Index 0: Home'),
+    Text('Index 1: Tickets'),
+    Text('Index 2: Approval'),
+    Text('Index 3: Profile'),
+  ];
 
   @override
   void initState() {
     super.initState();
-        _user = appData.user;
-        // postBloc.get();
+    _user = appData.user;
+    // postBloc.get();
   }
 
   @override
@@ -27,23 +36,60 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    switch (index) {
+      case 0:
+        _appBarTitle = 'Home';
+        break;
+      case 1:
+        _appBarTitle = 'Tickets';
+        break;
+      case 2:
+        _appBarTitle = 'Approval';
+        break;
+      case 3:
+        _appBarTitle = 'Profile';
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-
     return WillPopScope(
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Home'),
+          title: Text(_appBarTitle),
         ),
-        drawer: DrawerWidget(user: _user.data,),
-
-        body: Stack(
-          children: <Widget>[
-            Center(
-              child: Text('Hallo, '+_user.data.employeeName),
+        // drawer: DrawerWidget(user: _user.data,),
+        body: Center(
+          child: _widgetOptions.elementAt(_selectedIndex),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              title: Text('Home'),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.note),
+              title: Text('Tickets'),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.check),
+              title: Text('Approval'),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              title: Text('Profile'),
             ),
           ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: AppColors.loginSubmit,
+          onTap: _onItemTapped,
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {},
@@ -72,9 +118,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
-  }
-
-  Widget _postData() {
   }
 
   void doLogout() async {
