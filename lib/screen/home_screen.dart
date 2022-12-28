@@ -3,6 +3,7 @@ import 'package:mt/bloc/home/logout_bloc.dart';
 import 'package:mt/data/local/app_data.dart';
 import 'package:mt/model/modelJson/login/login_model.dart';
 import 'package:mt/resource/values/values.dart';
+import 'package:mt/screen/navigation/home_navigation.dart';
 import 'package:mt/widget/reuseable/drawer/drawer.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -15,14 +16,28 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Login _user;
   int _selectedIndex = 0;
+
   String _appBarTitle = 'Home';  // Add this line
 
-  static List<Widget> _widgetOptions = <Widget>[
-    Text('Index 0: Home'),
-    Text('Index 1: Tickets'),
-    Text('Index 2: Approval'),
-    Text('Index 3: Profile'),
-  ];
+  void _changeIndex(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    switch (index) {
+      case 0:
+        _appBarTitle = 'Home';
+        break;
+      case 1:
+        _appBarTitle = 'Tickets';
+        break;
+      case 2:
+        _appBarTitle = 'Approval';
+        break;
+      case 3:
+        _appBarTitle = 'Profile';
+        break;
+    }
+  }
 
   @override
   void initState() {
@@ -58,6 +73,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    List<Widget> _widgetOptions = <Widget>[
+      HomeNav(onChangeIndex: _changeIndex),
+      Text('Index 1: Tickets'),
+      Text('Index 2: Approval'),
+      Text('Index 3: Profile'),
+    ];
+
     return WillPopScope(
       child: Scaffold(
         appBar: AppBar(
@@ -89,10 +112,29 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
           currentIndex: _selectedIndex,
           selectedItemColor: AppColors.loginSubmit,
-          onTap: _onItemTapped,
-        ),
+          onTap: (int index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+            switch (index) {
+              case 0:
+                _appBarTitle = 'Home';
+                break;
+              case 1:
+                _appBarTitle = 'Tickets';
+                break;
+              case 2:
+                _appBarTitle = 'Approval';
+                break;
+              case 3:
+                _appBarTitle = 'Profile';
+                break;
+            }
+          }),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            Future.microtask(() => Navigator.pushNamed(context, '/add'));
+          },
           tooltip: 'Add Post',
           child: Icon(Icons.add),
         ),
@@ -125,3 +167,4 @@ class _HomeScreenState extends State<HomeScreen> {
     Future.microtask(() => Navigator.pushReplacementNamed(context, '/login'));
   }
 }
+
