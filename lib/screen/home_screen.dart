@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mt/bloc/home/logout_bloc.dart';
-import 'package:mt/bloc/post/post_bloc.dart';
-import 'package:mt/data/sharedpref/preferences.dart';
 import 'package:mt/data/local/app_data.dart';
 import 'package:mt/model/modelJson/login/login_model.dart';
-import 'package:mt/model/modelJson/post/post_model.dart';
-import 'package:mt/model/response/post/post_response.dart';
-import 'package:mt/provider/post/post_provider.dart';
-import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
+
 import 'package:mt/widget/reuseable/drawer/drawer.dart';
 
 class HomeScreen extends StatefulWidget {
