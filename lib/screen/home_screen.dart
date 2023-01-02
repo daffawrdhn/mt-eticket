@@ -4,6 +4,7 @@ import 'package:mt/data/local/app_data.dart';
 import 'package:mt/model/modelJson/login/login_model.dart';
 import 'package:mt/resource/values/values.dart';
 import 'package:mt/screen/navigation/home_navigation.dart';
+import 'package:mt/screen/navigation/profile_navigation.dart';
 import 'package:mt/widget/reuseable/drawer/drawer.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -78,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
       HomeNav(onChangeIndex: _changeIndex),
       Text('Index 1: Tickets'),
       Text('Index 2: Approval'),
-      Text('Index 3: Profile'),
+      ProfileNav(user: _user),
     ];
 
     return WillPopScope(
@@ -133,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
           }),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Future.microtask(() => Navigator.pushNamed(context, '/add'));
+            Navigator.pushNamed(context, '/add');
           },
           tooltip: 'Add Post',
           child: Icon(Icons.add),

@@ -18,6 +18,7 @@ class CustomCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 3.0,
       color: Theme.of(context).appBarTheme.color,
       child: Column(
         mainAxisSize: MainAxisSize.min,

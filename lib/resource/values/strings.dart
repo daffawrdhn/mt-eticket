@@ -28,6 +28,10 @@ class StringConst {
   static const String loginLabel = "LOGIN";
 
 
+  //Ticket
+  static const String hintTitle = "Enter ticket title";
+  static const String hintDescription = "Enter ticket description";
+
   static const String out = "Keluar";
   static const String update = "Update";
   static const String back = "Kembali";

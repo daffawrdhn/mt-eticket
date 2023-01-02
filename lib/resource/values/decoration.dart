@@ -56,6 +56,25 @@ class Decorations {
     );
   }
 
+  static textInputDDecoration(String hint, String error, Color color) {
+    return InputDecoration(
+      counterText: '',
+      border: WidgetHelper().outlineInputBorderTextFieldRounded(),
+      errorText: error,
+      fillColor: color,
+      filled: true,
+      hintText: hint,
+      enabledBorder: WidgetHelper().outlineInputBorderTextFieldRoundedEnabled(),
+      disabledBorder: WidgetHelper().outlineInputBorderTextFieldRoundedEnabled(),
+      contentPadding: EdgeInsets.symmetric(vertical: 40.0),
+      hintStyle: TextStyle(
+        fontSize: 15.0,
+        color: Colors.grey,
+        fontFamily: 'Mitr',
+      ),
+    );
+  }
+
   static textInputDecorationDate(String hint, String error, Color color) {
     return InputDecoration(
       counterText: '',
