@@ -3,8 +3,10 @@ import 'package:mt/bloc/home/logout_bloc.dart';
 import 'package:mt/data/local/app_data.dart';
 import 'package:mt/model/modelJson/login/login_model.dart';
 import 'package:mt/resource/values/values.dart';
+import 'package:mt/screen/navigation/approval_navigation.dart';
 import 'package:mt/screen/navigation/home_navigation.dart';
 import 'package:mt/screen/navigation/profile_navigation.dart';
+import 'package:mt/screen/navigation/tickets_navigation.dart';
 import 'package:mt/widget/reuseable/drawer/drawer.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -77,8 +79,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     List<Widget> _widgetOptions = <Widget>[
       HomeNav(onChangeIndex: _changeIndex),
-      Text('Index 1: Tickets'),
-      Text('Index 2: Approval'),
+      TicketsNav(),
+      ApprovalNav(),
       ProfileNav(user: _user),
     ];
 

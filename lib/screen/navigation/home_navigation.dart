@@ -19,11 +19,12 @@ class HomeNav extends StatelessWidget {
             title: 'Tickets',
             subtitle: 'Check your ticket status here.',
             actions: <Widget>[
-              FlatButton(
+              OutlineButton(
                 child: Text('CHECK'),
                 onPressed: () {
                   onChangeIndex(1);
                 },
+                borderSide: BorderSide(color: Colors.blue),
               ),
             ],
           ),
@@ -33,11 +34,12 @@ class HomeNav extends StatelessWidget {
             title: 'Approval',
             subtitle: 'Ticket dont aproved by itself, check here.',
             actions: <Widget>[
-              FlatButton(
+              OutlineButton(
                 child: Text('APPROVE'),
                 onPressed: () {
                   onChangeIndex(2);
                 },
+                borderSide: BorderSide(color: Colors.blue),
               ),
             ],
           ),

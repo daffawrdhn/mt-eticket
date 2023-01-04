@@ -10,6 +10,8 @@ class urlAPI {
   static const String change = "/forgot-password";
   static const String featuresub = "/get-features";
   static const String addticket = "/add-ticket";
+  static const String gettickets = "/get-ticket";
+  static const String getapproval = "/get-approval";
 
 
   static const String posts = "/blogs";

@@ -60,8 +60,10 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
 
     setState(() {
       image = img;
-      picture = File(image.path);
-      ticketAddBloc.changePhoto(picture);
+      if(image != null){
+        picture = File(image.path);
+        ticketAddBloc.changePhoto(picture);
+      } else {}
     });
   }
 
@@ -368,6 +370,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                             return Column(
                               children: [
                                 Card(
+                                  elevation: 3.0,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10.0),
                                   ),
