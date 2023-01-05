@@ -412,18 +412,21 @@ class SubFeature {
 class TicketStatus {
   int ticketStatusId;
   String ticketStatusName;
+  String ticketStatusNext;
   String createdAt;
   String updatedAt;
 
   TicketStatus(
       {this.ticketStatusId,
         this.ticketStatusName,
+        this.ticketStatusNext,
         this.createdAt,
         this.updatedAt});
 
   TicketStatus.fromJson(Map<String, dynamic> json) {
     ticketStatusId = json['ticket_status_id'];
     ticketStatusName = json['ticket_status_name'];
+    ticketStatusNext = json['ticket_status_next'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
   }
@@ -432,6 +435,7 @@ class TicketStatus {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['ticket_status_id'] = this.ticketStatusId;
     data['ticket_status_name'] = this.ticketStatusName;
+    data['ticket_status_next'] = this.ticketStatusNext;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     return data;

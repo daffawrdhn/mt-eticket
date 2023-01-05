@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:mt/data/local/app_data.dart';
 import 'package:mt/data/sharedpref/preferences.dart';
 import 'package:mt/model/response/ticket/ticketAdd_response.dart';
+import 'package:mt/model/response/ticket/ticketUpdate_response.dart';
 import 'package:mt/model/response/ticket/tickets_response.dart';
 import 'package:mt/provider/dio/dio_config.dart';
 import 'package:mt/provider/dio/error/err_handler.dart';
@@ -40,6 +41,36 @@ class TicketsProvider {
     } on DioError catch(e) {
       // print(e);
       return TicketsResponse.withError(ErrHandler.getErrMessage(e));
+      // return LoginResponse.withError('Check Connection / User credentials');
+    }
+  }
+
+  Future<TicketUpdateResponse> updateTicket(int approval, int id) async {
+    try {
+      print(Prefs.authToken.toString());
+      _dio.options.headers["Authorization"] = "Bearer ${AppData().token}";
+      switch (approval) {
+        case 1: //approve 1
+          Response response = await _dio.patch(urlAPI.updateticketstatus+id.toString()+'?ticket_status_id=2');
+          return TicketUpdateResponse.fromJson(response.data);
+        case 2: //approve 2
+          Response response = await _dio.patch(urlAPI.updateticketstatus+id.toString()+'?ticket_status_id=3');
+          return TicketUpdateResponse.fromJson(response.data);
+        case 3: //approve 3
+          Response response = await _dio.patch(urlAPI.updateticketstatus+id.toString()+'?ticket_status_id=4');
+          return TicketUpdateResponse.fromJson(response.data);
+        case 4: //completed
+          Response response = await _dio.patch(urlAPI.updateticketstatus + id.toString() + '?ticket_status_id=5');
+          return TicketUpdateResponse.fromJson(response.data);
+        case 5: //cancelled
+          Response response = await _dio.patch(urlAPI.updateticketstatus + id.toString() + '?ticket_status_id=6');
+          return TicketUpdateResponse.fromJson(response.data);
+        default:
+          return TicketUpdateResponse.withError('Invalid approval value');
+      }
+    } on DioError catch(e) {
+      // print(e);
+      return TicketUpdateResponse.withError(ErrHandler.getErrMessage(e));
       // return LoginResponse.withError('Check Connection / User credentials');
     }
   }
