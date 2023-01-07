@@ -9,9 +9,9 @@ class StringConst {
   static const String err_token = "Your session is expired, please login again.";
   static const String err_auth = "Invalid email or password";
   static const String err_noConnectionError = "Connection to server failed due to internet connection";
-  static const String err_unexpected = "Unexpected error / Server error";
+  static const String err_unexpected = "Server not reached";
   static const String err_faceDetected = "Wajah tidak terdeteksi";
-  static const String errConnection = 'Kendala koneksi \n pastikan internet anda terkoneksi';
+  static const String errConnection = 'Connection Problem';
   static const String notFound = 'Data not available';
 
   //Login

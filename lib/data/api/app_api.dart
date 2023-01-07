@@ -5,8 +5,8 @@ class urlAPI {
   const urlAPI();
 
   //server url
-  // static String baseUrl = appData.baseUrlLocal;  //local
-  static String baseUrl = appData.baseUrlLocal; //server
+  static String baseUrl = appData.baseUrlServer;  //server
+  // static String baseUrl = appData.baseUrlLocal; //local
 
   //auth
   static const String auth = "/login";

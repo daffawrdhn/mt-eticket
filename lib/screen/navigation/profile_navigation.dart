@@ -13,45 +13,43 @@ class ProfileNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       children: <Widget>[
-        SizedBox(height: 10.0),
-        Center(
-        child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-            child : Card(
-              elevation: 3.0,
-              child: Column(
-                children: [
-                  Center(
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.only(left: 20, right: 0, top: 0, bottom: 0),
-                          width: 100,
-                          height: 100,
-                          child: Center(
-                            child: CircleAvatar(
-                              radius: 100,
-                              backgroundImage: AssetImage(ImagePath.profile),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Name:               '+ user.data.employeeName),
-                            Text('Employee ID:    '+ user.data.employeeId),
-                            Text('Email:                '+ user.data.employeeEmail),
-                            Text('Division:            '+ user.data.organization.orgainzationName),
-                          ],
-                        ),
-                      ],
+
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Card(
+
+            elevation: 3.0,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+            child: Column(
+              children: <Widget>[
+
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Container(
+                    height: 100.0,
+                    width: 100.0,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          fit: BoxFit.fill,
+                          image: AssetImage(ImagePath.profile),
+                        )
                     ),
                   ),
-                ],
-              ),
+                ),
+
+                Text(user.data.employeeId, style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
+                SizedBox(height: 5.0),
+                Text(user.data.employeeName, style: TextStyle(fontSize: 16.0)),
+                SizedBox(height: 5.0),
+                Text(user.data.employeeEmail, style: TextStyle(fontSize: 16.0)),
+                SizedBox(height: 5.0),
+                Text(user.data.organization.organizationName, style: TextStyle(fontSize: 16.0)),
+                SizedBox(height: 10.0),
+
+              ],
             ),
-        ),
+          ),
         ),
 
         Padding(

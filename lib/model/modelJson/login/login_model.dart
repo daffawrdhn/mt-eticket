@@ -113,19 +113,19 @@ class Role {
 
 class Organization {
   int organizationId;
-  String orgainzationName;
+  String organizationName;
 
-  Organization({this.organizationId, this.orgainzationName});
+  Organization({this.organizationId, this.organizationName});
 
   Organization.fromJson(Map<String, dynamic> json) {
     organizationId = json['organization_id'];
-    orgainzationName = json['orgainzation_name'];
+    organizationName = json['organization_name'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['organization_id'] = this.organizationId;
-    data['orgainzation_name'] = this.orgainzationName;
+    data['organization_name'] = this.organizationName;
     return data;
   }
 }

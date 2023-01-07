@@ -31,9 +31,13 @@ class ValidatorsAdd {
   final validateTitle = StreamTransformer<String, String>.fromHandlers(
       handleData: (title, sink) {
         if(title != null){
+          if (title.length > 100) {
+            sink.addError('Title must be 100 characters or less');
+          } else if (title.contains(RegExp(r'^(?=.{1,100}$)'))) {
             sink.add(title);
-        } else {
-          sink.addError('Title Can not be Empty');
+          } else {
+            sink.addError('Please input Ticket Title');
+          }
         }
       }
   );
@@ -41,9 +45,11 @@ class ValidatorsAdd {
   final validateDescription = StreamTransformer<String, String>.fromHandlers(
       handleData: (description, sink) {
         if(description != null){
-          sink.add(description);
-        } else {
-          sink.addError('Description Can not be Empty');
+          if (description.contains(RegExp(r'^(?=.{1,}$)'))) {
+            sink.add(description);
+          } else {
+            sink.addError('Please input Ticket Description');
+          }
         }
       }
   );

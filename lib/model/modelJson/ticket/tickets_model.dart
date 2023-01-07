@@ -200,19 +200,19 @@ class Employee {
 
 class Organization {
   int organizationId;
-  String orgainzationName;
+  String organizationName;
   String createdAt;
   String updatedAt;
 
   Organization(
       {this.organizationId,
-        this.orgainzationName,
+        this.organizationName,
         this.createdAt,
         this.updatedAt});
 
   Organization.fromJson(Map<String, dynamic> json) {
     organizationId = json['organization_id'];
-    orgainzationName = json['orgainzation_name'];
+    organizationName = json['organization_name'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
   }
@@ -220,7 +220,7 @@ class Organization {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['organization_id'] = this.organizationId;
-    data['orgainzation_name'] = this.orgainzationName;
+    data['organization_name'] = this.organizationName;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     return data;

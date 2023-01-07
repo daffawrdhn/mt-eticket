@@ -1,27 +1,19 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mt/bloc/ticket/ticketAdd_bloc.dart';
 import 'package:mt/model/modelJson/ticket/featureSub_model.dart';
-import 'package:mt/model/modelJson/ticket/ticketAdd_model.dart';
 import 'package:mt/model/response/ticket/featureSub_response.dart';
 import 'package:mt/model/response/ticket/ticketAdd_response.dart';
 import 'package:mt/provider/ticket/featureSub_provider.dart';
-import 'package:rxdart/rxdart.dart';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mt/bloc/error/error_bloc.dart';
 import 'package:mt/bloc/loading/loading_bloc.dart';
-import 'package:mt/bloc/login/login_bloc.dart';
 import 'package:mt/data/local/app_data.dart';
 import 'package:mt/data/sharedpref/preferences.dart';
-import 'package:mt/helper/widget/widget_helper.dart';
-import 'package:mt/model/response/login/login_response.dart';
 import 'package:mt/resource/values/values.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
-import 'package:package_info/package_info.dart';
 
 class AddTicketScreen extends StatefulWidget {
   @override
@@ -60,7 +52,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
 
     setState(() {
       image = img;
-      if(image != null){
+      if (image != null) {
         picture = File(image.path);
         ticketAddBloc.changePhoto(picture);
       } else {}
@@ -153,17 +145,17 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
     Prefs.clear();
     AppData().count = 1;
 
-    _fetchFeatureSubData().then((_) {
-      setState(() {
-        // Set the initial value for _selectedSubFeatureId
-        _selectedSubFeatureId = _subFeatures[0].subFeatureId;
-        // Set the initial value for _selectedFeatureId
-        _selectedFeatureId = _features[0].featureId;
-        // Update the value in ticketAddBloc
-        ticketAddBloc.changeSubfeature(_selectedSubFeatureId);
-        ticketAddBloc.changeFeature(_selectedFeatureId);
-      });
-    });
+    // _fetchFeatureSubData().then((_) {
+    //   setState(() {
+    //     // Set the initial value for _selectedSubFeatureId
+    //     _selectedSubFeatureId = _subFeatures[0].subFeatureId;
+    //     // Set the initial value for _selectedFeatureId
+    //     _selectedFeatureId = _features[0].featureId;
+    //     // Update the value in ticketAddBloc
+    //     ticketAddBloc.changeSubfeature(_selectedSubFeatureId);
+    //     ticketAddBloc.changeFeature(_selectedFeatureId);
+    //   });
+    // });
     ticketAddBloc.resetBloc();
   }
 
@@ -182,12 +174,17 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
       // Make the HTTP request to get the featureSub data
       FeatureSubResponse response = await _featureSubProvider.get();
 
+      // Filter out the features that don't have any sub-features
+      final filteredFeatures = response.results.data.feature
+          .where((feature) => feature.subFeature.isNotEmpty)
+          .toList();
+
       // Set the _features and _subFeatures variables with the fetched data
       setState(() {
-        _features = response.results.data.feature;
-        _selectedFeatureId = _features[0].featureId;
-        _subFeatures = _features[0].subFeature;
-        _selectedSubFeatureId = _subFeatures[0].subFeatureId;
+        _features = filteredFeatures;
+        _selectedFeatureId = 0;
+        _subFeatures = [];
+        _selectedSubFeatureId = 0;
       });
     } catch (error) {
       // Handle the error
@@ -240,21 +237,6 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
               return submitButton();
             }
           });
-    }
-
-    Widget _forgotPassword() {
-      return GestureDetector(
-        onTap: () {
-          Future.microtask(() => Navigator.pushNamed(context, '/checkdata'));
-        },
-        child: Text(
-          'Forgot Password',
-          style: TextStyle(
-              decoration: TextDecoration.underline,
-              fontWeight: FontWeight.bold,
-              color: AppColors.loginSubmit),
-        ),
-      );
     }
 
     Widget _buildErrorWidget(String error) {
@@ -349,6 +331,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                               stream: ticketAddBloc.title,
                               builder: (context, snapshot) {
                                 return TextField(
+                                  maxLength: 100,
                                   onChanged: ticketAddBloc.changeTitle,
                                   keyboardType: TextInputType.text,
                                   textInputAction: TextInputAction.next,
@@ -363,58 +346,120 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                               })),
                     ),
                     SizedBox(height: 20.0),
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        'Type and Sub-Feature',
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
                     FutureBuilder(
-                        future: _features == null ? _fetchFeatureSubData() : null,
+                        future:
+                            _features == null ? _fetchFeatureSubData() : null,
                         builder: (context, snapshot) {
                           if (snapshot.hasData || _features != null) {
                             return Column(
                               children: [
                                 Card(
-                                  elevation: 3.0,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
+                                  elevation: 0.0,
                                   child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Row(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                    child: Flex(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        direction: Axis.horizontal,
                                       children: [
-                                        Expanded(
+                                        Expanded(flex: 1,
                                           child: DropdownButton<int>(
                                             value: _selectedFeatureId,
                                             onChanged: (int newValue) {
-                                              ticketAddBloc.changeFeature(newValue);
-                                              // Set the selectedFeatureId and fetch the sub-features for the selected feature
-                                              setState(() {
-                                                _selectedFeatureId = newValue;
-                                                _subFeatures = _features.firstWhere((feature) => feature.featureId == _selectedFeatureId).subFeature;
-                                                _selectedSubFeatureId = _subFeatures[0].subFeatureId;
-                                              });
+                                              if (newValue != 0) {
+                                                ticketAddBloc
+                                                    .changeFeature(newValue);
+                                                // Set the selectedFeatureId and fetch the sub-features for the selected feature
+                                                setState(() {
+                                                  _selectedFeatureId = newValue;
+                                                  _subFeatures = _features
+                                                      .firstWhere((feature) =>
+                                                          feature.featureId ==
+                                                          _selectedFeatureId)
+                                                      .subFeature;
+                                                  _selectedSubFeatureId =
+                                                      _subFeatures[0]
+                                                          .subFeatureId;
+                                                });
+                                              }
                                             },
-                                            items: _features.map((feature) {
-                                              return DropdownMenuItem<int>(
-                                                value: feature.featureId,
-                                                child: Text(feature.featureName),
-                                              );
-                                            }).toList(),
+                                            items: _selectedFeatureId == 0
+                                                ? [
+                                                    DropdownMenuItem<int>(
+                                                      value: 0,
+                                                      child: Text(
+                                                          "Select a Feature"),
+                                                    ),
+                                                    ..._features.map((feature) {
+                                                      return DropdownMenuItem<
+                                                          int>(
+                                                        value:
+                                                            feature.featureId,
+                                                        child: Text(feature
+                                                            .featureName),
+                                                      );
+                                                    }).toList(),
+                                                  ]
+                                                : _features.map((feature) {
+                                                    return DropdownMenuItem<
+                                                        int>(
+                                                      value: feature.featureId,
+                                                      child: Text(
+                                                          feature.featureName),
+                                                    );
+                                                  }).toList(),
                                           ),
                                         ),
-                                        SizedBox(width: 8.0),
-                                        Expanded(
+                                        SizedBox(width: 2.0),
+                                        Expanded(flex: 1,
                                           child: DropdownButton<int>(
                                             value: _selectedSubFeatureId,
                                             onChanged: (int newValue) {
-                                              ticketAddBloc.changeSubfeature(newValue);
-                                              // Set the selectedSubFeatureId
-                                              setState(() {
-                                                _selectedSubFeatureId = newValue;
-                                              });
+                                              if (newValue != 0) {
+                                                // Set the selectedSubFeatureId
+                                                ticketAddBloc
+                                                    .changeSubfeature(newValue);
+                                                // Set the selectedSubFeatureId
+                                                setState(() {
+                                                  _selectedSubFeatureId =
+                                                      newValue;
+                                                });
+                                              }
                                             },
-                                            items: _subFeatures.map((subFeature) {
-                                              return DropdownMenuItem<int>(
-                                                value: subFeature.subFeatureId,
-                                                child: Text(subFeature.subFeatureName),
-                                              );
-                                            }).toList(),
+                                            items: _selectedSubFeatureId == 0
+                                                ? [
+                                                    DropdownMenuItem<int>(
+                                                      value: 0,
+                                                      child: Text(
+                                                          "Select a Sub-Feature"),
+                                                    ),
+                                                    ..._subFeatures
+                                                        .map((subFeature) {
+                                                      return DropdownMenuItem<
+                                                          int>(
+                                                        value: subFeature
+                                                            .subFeatureId,
+                                                        child: Text(subFeature
+                                                            .subFeatureName),
+                                                      );
+                                                    }).toList(),
+                                                  ]
+                                                : _subFeatures
+                                                    .map((subFeature) {
+                                                    return DropdownMenuItem<
+                                                        int>(
+                                                      value: subFeature
+                                                          .subFeatureId,
+                                                      child: Text(subFeature
+                                                          .subFeatureName),
+                                                    );
+                                                  }).toList(),
                                           ),
                                         ),
                                       ],
@@ -464,29 +509,22 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
                           children: [
-                            image == null ? ElevatedButton(
-                              onPressed: () {
-                                SelectImg();
-                              },
-                              child: Text('Upload Photo'),
-                            ) : Container(),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            //if image not null show the image
-                            //if image null show text
                             image != null
                                 ? Column(
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
                                   child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
+                                    borderRadius:
+                                    BorderRadius.circular(8),
                                     child: Image.file(
                                       //to show image, you type like this.
                                       File(image.path),
                                       fit: BoxFit.cover,
-                                      width: MediaQuery.of(context).size.width,
+                                      width: MediaQuery.of(context)
+                                          .size
+                                          .width,
                                       height: 300,
                                     ),
                                   ),
@@ -513,6 +551,19 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                               "No Image",
                               style: TextStyle(fontSize: 20),
                             ),
+                            image == null
+                                ? ElevatedButton(
+                                    onPressed: () {
+                                      SelectImg();
+                                    },
+                                    child: Text('Upload Photo'),
+                                  )
+                                : Container(),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            //if image not null show the image
+                            //if image null show text
                           ],
                         ),
                       ),

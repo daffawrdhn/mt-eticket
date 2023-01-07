@@ -18,6 +18,9 @@ class Ticket extends StatefulWidget {
 }
 
 class _TicketState extends State<Ticket> {
+
+  bool _isLoading = true;
+
   void doUpdate(int approval, int id) async {
     FocusScope.of(context).requestFocus(FocusNode());
     // loginBloc.resetResponse();
@@ -57,7 +60,7 @@ class _TicketState extends State<Ticket> {
                     : 'No description provided'),
                 subtitle: Text('by ' +
                     ticket.history[index].supervisor.employeeName +
-                    'at  ' +
+                    ' at ' +
                     DateFormat.yMd().format(
                         DateTime.parse(ticket.history[index].createdAt)) +
                     ' ' +
@@ -113,7 +116,7 @@ class _TicketState extends State<Ticket> {
                     ),
                   ),
                   Visibility(
-                    visible: status == 3,
+                    visible: status == 3 || status == 2,
                     child: FlatButton(
                       color: Colors.blue,
                       onPressed: () async {
@@ -246,7 +249,7 @@ class _TicketState extends State<Ticket> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                'APPLICANT',
+                                'EMPLOYEE',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
@@ -257,7 +260,7 @@ class _TicketState extends State<Ticket> {
                               Text(
                                   'Employee Name: ${widget.ticket.employee.employeeName}'),
                               Text(
-                                  'Organization: ${widget.ticket.employee.organization.orgainzationName}'),
+                                  'Organization: ${widget.ticket.employee.organization.organizationName}'),
                               Text(
                                   'Regional: ${widget.ticket.employee.regional.regionalName}'),
                             ],
@@ -313,30 +316,50 @@ class _TicketState extends State<Ticket> {
                                 height: 8.0,
                               ),
                               Text('Title: ${widget.ticket.ticketTitle}'),
+                              SizedBox(
+                                height: 8.0,
+                              ),
                               Text('${widget.ticket.ticketDescription}'),
+                              SizedBox(
+                                height: 8.0,
+                              ),
                               GestureDetector(
-                                onTap: () {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return SingleChildScrollView(
-                                        physics: ClampingScrollPhysics(),
-                                        child: Container(
-                                          height: 300,
-                                          child: Image.network(
-                                            'http://10.0.2.1/storage/${widget.ticket.photo}',
-                                            fit: BoxFit.contain,
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          content: InteractiveViewer(
+                                            maxScale: 1.5,
+                                            minScale: 0.5,
+                                            child: Image.network(
+                                              'http://203.175.11.220/storage/${widget.ticket.photo}',
+                                              fit: BoxFit.contain,
+                                            ),
                                           ),
-                                        ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Image.network(
+                                    'http://203.175.11.220/storage/${widget.ticket.photo}',
+                                    height: 300,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      // Return a Container widget with no child to hide the image
+                                      return Container(
+                                        child: Text('- No Photo Uploaded'),
                                       );
                                     },
-                                  );
-                                },
-                                child: Image.network(
-                                  'http://10.0.2.1/storage/${widget.ticket.photo}',
-                                  height: 300,
-                                ),
-                              )
+                                    // Call a callback function once the image finishes loading
+                                    // and set _isLoading to false
+                                    loadingBuilder: (BuildContext context,
+                                        Widget child,
+                                        ImageChunkEvent loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      _isLoading = false;
+                                      return child;
+                                    },
+                                  )),
                             ],
                           ),
                         ),
@@ -366,7 +389,7 @@ class _TicketState extends State<Ticket> {
                               Text(
                                   'Supervisor Name: ${widget.ticket.supervisor.employeeName}'),
                               Text(
-                                  'Organization: ${widget.ticket.supervisor.organization.orgainzationName}'),
+                                  'Organization: ${widget.ticket.supervisor.organization.organizationName}'),
                             ],
                           ),
                         ),
