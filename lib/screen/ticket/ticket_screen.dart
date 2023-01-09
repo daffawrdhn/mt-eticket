@@ -1,3 +1,5 @@
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mt/bloc/error/error_bloc.dart';
@@ -5,6 +7,7 @@ import 'package:mt/bloc/ticket/ticketUpdate_bloc.dart';
 import 'package:mt/data/local/app_data.dart';
 import 'package:mt/model/modelJson/ticket/tickets_model.dart';
 import 'package:mt/model/response/ticket/ticketUpdate_response.dart';
+import 'package:mt/provider/ticket/tickets_provider.dart';
 import 'package:mt/resource/values/values.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
 
@@ -19,7 +22,6 @@ class Ticket extends StatefulWidget {
 
 class _TicketState extends State<Ticket> {
 
-  bool _isLoading = true;
 
   void doUpdate(int approval, int id) async {
     FocusScope.of(context).requestFocus(FocusNode());
@@ -91,13 +93,13 @@ class _TicketState extends State<Ticket> {
                     onPressed: () async {
                       Navigator.pop(context);
                       if (status == 1) {
-                        await doUpdate(1, ticketId);
+                        doUpdate(1, ticketId);
                       } else if (status == 2) {
-                        await doUpdate(2, ticketId);
+                        doUpdate(2, ticketId);
                       } else if (status == 3) {
-                        await doUpdate(3, ticketId);
+                        doUpdate(3, ticketId);
                       } else if (status == 4) {
-                        await doUpdate(4, ticketId);
+                        doUpdate(4, ticketId);
                       }
                     },
                     child: Row(
@@ -120,7 +122,7 @@ class _TicketState extends State<Ticket> {
                     child: FlatButton(
                       color: Colors.blue,
                       onPressed: () async {
-                        await doUpdate(4, ticketId);
+                        doUpdate(4, ticketId);
                       },
                       child: Row(
                         children: [
@@ -139,7 +141,7 @@ class _TicketState extends State<Ticket> {
                   FlatButton(
                     color: Colors.red,
                     onPressed: () async {
-                      await doUpdate(3, ticketId);
+                      doUpdate(3, ticketId);
                     },
                     child: Row(
                       children: [
@@ -220,6 +222,7 @@ class _TicketState extends State<Ticket> {
   }
 
   Widget build(BuildContext context) {
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -323,43 +326,46 @@ class _TicketState extends State<Ticket> {
                               SizedBox(
                                 height: 8.0,
                               ),
-                              GestureDetector(
-                                  onTap: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          content: InteractiveViewer(
-                                            maxScale: 1.5,
-                                            minScale: 0.5,
-                                            child: Image.network(
-                                              'http://203.175.11.220/storage/${widget.ticket.photo}',
-                                              fit: BoxFit.contain,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                  child: Image.network(
-                                    'http://203.175.11.220/storage/${widget.ticket.photo}',
-                                    height: 300,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      // Return a Container widget with no child to hide the image
-                                      return Container(
-                                        child: Text('- No Photo Uploaded'),
+
+                              FutureBuilder(
+                                future: TicketsProvider().getPhoto(widget.ticket.ticketId),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.done) {
+                                    if (snapshot.hasData && snapshot.data != null) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                content: InteractiveViewer(
+                                                  maxScale: 2.5,
+                                                  minScale: 0.5,
+                                                  child: Image.memory(
+                                                    snapshot.data,
+                                                    fit: BoxFit.contain,
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        },
+                                        child: Image.memory(
+                                          snapshot.data,
+                                          height: 300,
+                                        ),
                                       );
-                                    },
-                                    // Call a callback function once the image finishes loading
-                                    // and set _isLoading to false
-                                    loadingBuilder: (BuildContext context,
-                                        Widget child,
-                                        ImageChunkEvent loadingProgress) {
-                                      if (loadingProgress == null) return child;
-                                      _isLoading = false;
-                                      return child;
-                                    },
-                                  )),
+                                    } else {
+                                      return Text('No Picture Uploaded');
+                                    }
+                                  } else {
+                                    return Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                },
+                              )
+
                             ],
                           ),
                         ),

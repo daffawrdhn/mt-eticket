@@ -1,7 +1,11 @@
+import 'dart:typed_data';
+import 'dart:ui';
+
 import 'package:dio/dio.dart';
 import 'package:mt/data/local/app_data.dart';
 import 'package:mt/data/sharedpref/preferences.dart';
 import 'package:mt/model/response/ticket/ticketAdd_response.dart';
+import 'package:mt/model/response/ticket/ticketPhoto_response.dart';
 import 'package:mt/model/response/ticket/ticketUpdate_response.dart';
 import 'package:mt/model/response/ticket/tickets_response.dart';
 import 'package:mt/provider/dio/dio_config.dart';
@@ -17,6 +21,23 @@ class TicketsProvider {
   TicketsProvider() {
     _dio = DioConfig().ApiServiceTime();
     _dio.interceptors.add(LoggingInterceptor());
+  }
+
+  Future<Uint8List> getPhoto(int ticketId) async {
+    try {
+      Response response = await _dio.get(urlAPI.getphoto + ticketId.toString(),
+        options: Options(
+          responseType: ResponseType.bytes,
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Authorization': 'Bearer ${AppData().token}',
+          },
+        ),
+      );
+      return response.data;
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   Future<TicketsResponse> getTickets() async {

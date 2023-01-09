@@ -373,19 +373,14 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                             value: _selectedFeatureId,
                                             onChanged: (int newValue) {
                                               if (newValue != 0) {
-                                                ticketAddBloc
-                                                    .changeFeature(newValue);
+                                                ticketAddBloc.changeFeature(newValue);
                                                 // Set the selectedFeatureId and fetch the sub-features for the selected feature
                                                 setState(() {
                                                   _selectedFeatureId = newValue;
-                                                  _subFeatures = _features
-                                                      .firstWhere((feature) =>
-                                                          feature.featureId ==
-                                                          _selectedFeatureId)
-                                                      .subFeature;
-                                                  _selectedSubFeatureId =
-                                                      _subFeatures[0]
-                                                          .subFeatureId;
+                                                  _subFeatures = _features.firstWhere((feature) => feature.featureId == _selectedFeatureId).subFeature;
+                                                  // _selectedSubFeatureId = _subFeatures[0].subFeatureId;
+                                                  ticketAddBloc.changeSubfeature(_subFeatures[0].subFeatureId);
+
                                                 });
                                               }
                                             },
@@ -423,12 +418,10 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                             onChanged: (int newValue) {
                                               if (newValue != 0) {
                                                 // Set the selectedSubFeatureId
-                                                ticketAddBloc
-                                                    .changeSubfeature(newValue);
+                                                ticketAddBloc.changeSubfeature(newValue);
                                                 // Set the selectedSubFeatureId
                                                 setState(() {
-                                                  _selectedSubFeatureId =
-                                                      newValue;
+                                                  _selectedSubFeatureId = newValue;
                                                 });
                                               }
                                             },

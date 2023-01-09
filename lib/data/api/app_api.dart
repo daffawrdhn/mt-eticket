@@ -21,6 +21,7 @@ class urlAPI {
   static const String gettickets = "/get-ticket";
   static const String getapproval = "/get-approval";
   static const String updateticketstatus = "/update-ticket/status/";
+  static const String getphoto = "/get-photo/";
 
 
   static const String posts = "/blogs";

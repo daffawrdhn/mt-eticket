@@ -18,6 +18,7 @@ class _TicketsNavState extends State<TicketsNav> {
   void initState() {
     super.initState();
     TicketsProvider ticketsProvider = TicketsProvider();
+
     Future<TicketsResponse> ticketsResponse = ticketsProvider.getTickets();
     ticketsResponse.then((response) {
       setState(() {

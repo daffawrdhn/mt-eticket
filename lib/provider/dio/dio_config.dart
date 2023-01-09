@@ -41,7 +41,7 @@ class DioConfig {
 
   Options dioOptionsWithTokenBytes(){
     Options options = Options(
-      responseType: ResponseType.bytes,
+        responseType: ResponseType.bytes,
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
         'authorize_app_platform': 'mobile',
