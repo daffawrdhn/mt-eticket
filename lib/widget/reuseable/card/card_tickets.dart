@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mt/model/modelJson/login/login_model.dart' as usernow;
 import 'package:mt/model/modelJson/ticket/tickets_model.dart';
 import 'package:mt/screen/ticket/ticket_screen.dart';
 class TicketsCardList extends StatelessWidget {
   final List<Data> tickets;
   final String type;
+  final usernow.Login user;
 
-  TicketsCardList({this.tickets, this.type});
+  TicketsCardList({this.tickets, this.type, this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -47,9 +49,9 @@ class TicketsCardList extends StatelessWidget {
                         child: type == 'ticket' ? Text('VIEW') : Text('APPROVE'),
                         onPressed: () {
                           if (type == 'ticket') {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => Ticket(ticket: tickets[index], type: 'ticket')));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => Ticket(ticket: tickets[index], type: 'ticket', user: user)));
                           } else if (type == 'approval') {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => Ticket(ticket: tickets[index], type: 'approval')));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => Ticket(ticket: tickets[index], type: 'approval', user: user)));
                           }
                         },
                         borderSide: BorderSide(color: Colors.blue),

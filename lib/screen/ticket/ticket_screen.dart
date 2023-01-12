@@ -1,11 +1,16 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mt/bloc/error/error_bloc.dart';
 import 'package:mt/bloc/ticket/ticketUpdate_bloc.dart';
+import 'package:mt/bloc/ticket/ticket_bloc.dart';
 import 'package:mt/data/local/app_data.dart';
+import 'package:mt/model/modelJson/login/login_model.dart' as usernow;
+import 'package:mt/model/modelJson/ticket/helpdesk_model.dart' as helpdesk;
+import 'package:mt/model/modelJson/ticket/pic_model.dart' as pic;
 import 'package:mt/model/modelJson/ticket/tickets_model.dart';
+import 'package:mt/model/response/ticket/helpdesk_response.dart';
+import 'package:mt/model/response/ticket/pic_response.dart';
 import 'package:mt/model/response/ticket/ticketUpdate_response.dart';
 import 'package:mt/provider/ticket/tickets_provider.dart';
 import 'package:mt/resource/values/values.dart';
@@ -14,21 +19,74 @@ import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
 class Ticket extends StatefulWidget {
   final Data ticket;
   final String type;
+  final usernow.Login user;
 
-  Ticket({this.ticket, this.type});
+  Ticket({this.ticket, this.type, this.user});
   @override
   _TicketState createState() => _TicketState();
 }
 
 class _TicketState extends State<Ticket> {
 
+  //HCIS Dept Head
+  String _hcisdh = '000000000';
 
-  void doUpdate(int approval, int id) async {
+  // Declare a variable to store the selected feature ID
+  String _selectedPics;
+  String _selectedHelpdesks;
+
+  // Declare a list of Feature objects to store the fetched data
+  List<pic.PIC> _pics;
+  List<helpdesk.HELPDESK> _helpdesks;
+
+  TicketsProvider _tickets = TicketsProvider();
+
+  _fetchFeaturePics(int regionalId) async {
+    try {
+      PicResponse response = await _tickets.getPics(regionalId);
+      // Ensure that employeeIds are unique
+      Set<String> uniqueIds = Set();
+      _pics = response.results.data.pIC.where((pic) {
+        if (uniqueIds.contains(pic.employeeId)) {
+          return false;
+        }
+        uniqueIds.add(pic.employeeId);
+        return true;
+      }).toList();
+      setState(() {
+        _selectedPics = '0';
+      });
+    } catch (error) {
+      // Handle the error
+      print(error);
+    }
+  }
+
+  _fetchFeatureHelpdesks() async {
+    try {
+      HelpdeskResponse response = await _tickets.getHelpdesks();
+      // Ensure that employeeIds are unique
+      Set<String> uniqueIds = Set();
+      _helpdesks = response.results.data.hELPDESK.where((helpdesk) {
+        if (uniqueIds.contains(helpdesk.employeeId)) {
+          return false;
+        }
+        uniqueIds.add(helpdesk.employeeId);
+        return true;
+      }).toList();
+      setState(() {
+        _selectedHelpdesks = '0';
+      });
+    } catch (error) {
+      // Handle the error
+      print(error);
+    }
+  }
+
+  void doUpdate(int approval, int id, String EmployeeId) async {
     FocusScope.of(context).requestFocus(FocusNode());
-    // loginBloc.resetResponse();
     ticketUpdateBloc.resetBloc();
-    // loginBloc.login();
-    ticketUpdateBloc.update(approval, id);
+    ticketUpdateBloc.update(approval, id, EmployeeId);
   }
 
   void popupDialogAlertChange(String message) {
@@ -76,72 +134,322 @@ class _TicketState extends State<Ticket> {
     );
   }
 
-  void _update(BuildContext context, String title, int ticketId, int status) {
+  void _update(BuildContext context, String title, int ticketId, int status,
+      String employeeId) {
     showDialog(
         context: context,
+        useSafeArea: true,
         builder: (BuildContext context) {
           return AlertDialog(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             title: Text(title),
             content: Container(
-              height: 200,
               child: Column(
                 children: [
-                  ElevatedButton(
-                    //if user click this button, user can upload image from gallery
-                    onPressed: () async {
-                      Navigator.pop(context);
-                      if (status == 1) {
-                        doUpdate(1, ticketId);
-                      } else if (status == 2) {
-                        doUpdate(2, ticketId);
-                      } else if (status == 3) {
-                        doUpdate(3, ticketId);
-                      } else if (status == 4) {
-                        doUpdate(4, ticketId);
-                      }
-                    },
-                    child: Row(
+
+                  //PIC REGIONAL
+                  Visibility(
+                    visible: status == 1,
+                    child: Column(
                       children: [
-                        Icon(Icons.done),
-                        Text(status == 1
-                            ? '  Approve AP1'
-                            : status == 2
-                                ? '  Approve AP2'
-                                : status == 3
-                                    ? '  Approve AP3 (Dept Head HCIS)'
-                                    : status == 4
-                                        ? '  Complete'
-                                        : ''),
+                        FutureBuilder(
+                          future: _fetchFeaturePics(
+                              widget.ticket.employee.regional.regionalId),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData || _pics != null) {
+                              return StatefulBuilder(
+                                builder: (BuildContext context, setState) {
+                                  return Column(
+                                    children: [
+                                      Text('Ticket Status: ' +
+                                          status.toString()),
+                                      Card(
+                                        elevation: 0.0,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0),
+                                          child: Flex(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              direction: Axis.horizontal,
+                                              children: [
+                                                Expanded(
+                                                  flex: 1,
+                                                  child: DropdownButton<String>(
+                                                    value: _selectedPics,
+                                                    onChanged:
+                                                        (String newValue) {
+                                                      setState(() {
+                                                        _selectedPics =
+                                                            newValue;
+                                                      });
+                                                      if (_selectedPics !=
+                                                          '0') {
+                                                        ticketBloc.changePic(
+                                                            newValue);
+                                                      } else {
+                                                        ticketBloc.resetBloc();
+                                                      }
+                                                    },
+                                                    items: [
+                                                      DropdownMenuItem<String>(
+                                                        value: '0',
+                                                        child:
+                                                            Text('Select PIC'),
+                                                      ),
+                                                      ..._pics.map((pic) {
+                                                        return DropdownMenuItem<
+                                                            String>(
+                                                          value: pic.employeeId,
+                                                          child: Text(pic
+                                                                  .employeeName +
+                                                              ' - ' +
+                                                              pic.employeeId),
+                                                        );
+                                                      }).toList()
+                                                    ],
+                                                  ),
+                                                ),
+                                                SizedBox(width: 2.0),
+                                              ]),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            } else {
+                              return CircularProgressIndicator();
+                            }
+                          },
+                        ),
+                        StreamBuilder(
+                          stream: ticketBloc.pic,
+                          builder: (context, snapshot) {
+                            return Visibility(
+                              visible: snapshot.hasData,
+                              child: FlatButton(
+                                color: Colors.blue,
+                                onPressed: snapshot.hasData
+                                    ? () async {
+                                        doUpdate(1, ticketId, _selectedPics);
+                                      }
+                                    : null,
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.done,
+                                      color: Colors.white,
+                                    ),
+                                    Text(
+                                      '  Sent to PIC  ',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              replacement: FlatButton(
+                                color: Colors.grey,
+                                onPressed: () {},
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.done,
+                                      color: Colors.white,
+                                    ),
+                                    Text(
+                                      '  Sent to PIC  ',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ),
+
+                  //HELPDESK
                   Visibility(
-                    visible: status == 3 || status == 2,
-                    child: FlatButton(
-                      color: Colors.blue,
-                      onPressed: () async {
-                        doUpdate(4, ticketId);
-                      },
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.done,
-                            color: Colors.white,
-                          ),
-                          Text(
-                            '  Complete',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ],
-                      ),
+                    visible: status == 2,
+                    child: Column(
+                      children: [
+                        FutureBuilder(
+                          future: _fetchFeatureHelpdesks(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData || _helpdesks != null) {
+                              return StatefulBuilder(
+                                builder: (BuildContext context, setState) {
+                                  return Column(
+                                    children: [
+                                      Text('Ticket Status: ' +
+                                          status.toString()),
+                                      Card(
+                                        elevation: 0.0,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0),
+                                          child: Flex(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                              direction: Axis.horizontal,
+                                              children: [
+                                                Expanded(
+                                                  flex: 1,
+                                                  child: DropdownButton<String>(
+                                                    value: _selectedHelpdesks,
+                                                    onChanged:
+                                                        (String newValue) {
+                                                      setState(() {
+                                                        _selectedHelpdesks =
+                                                            newValue;
+                                                      });
+                                                      if (_selectedHelpdesks != '0') {
+                                                        ticketBloc.changeHelpdesk(newValue);
+                                                      } else {
+                                                        ticketBloc.resetBloc();
+                                                      }
+                                                    },
+                                                    items: [
+                                                      DropdownMenuItem<String>(
+                                                        value: '0',
+                                                        child:
+                                                        Text('Select Helpdesk'),
+                                                      ),
+                                                      ..._helpdesks.map((helpdesk) {
+                                                        return DropdownMenuItem<
+                                                            String>(
+                                                          value: helpdesk.employeeId,
+                                                          child: Text(helpdesk
+                                                              .employeeName +
+                                                              ' - ' +
+                                                              helpdesk.employeeId),
+                                                        );
+                                                      }).toList()
+                                                    ],
+                                                  ),
+                                                ),
+                                                SizedBox(width: 2.0),
+                                              ]),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            } else {
+                              return CircularProgressIndicator();
+                            }
+                          },
+                        ),
+                        StreamBuilder(
+                          stream: ticketBloc.helpdesk,
+                          builder: (context, snapshot) {
+                            return Visibility(
+                              visible: snapshot.hasData,
+                              child: FlatButton(
+                                color: Colors.blue,
+                                onPressed: snapshot.hasData
+                                    ? () async {
+                                  doUpdate(2, ticketId, _selectedHelpdesks);
+                                }
+                                    : null,
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.done,
+                                      color: Colors.white,
+                                    ),
+                                    Text(
+                                      '  Sent to Helpdesk  ',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              replacement: FlatButton(
+                                color: Colors.grey,
+                                onPressed: () {},
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.done,
+                                      color: Colors.white,
+                                    ),
+                                    Text(
+                                      '  Sent to Helpdesk  ',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
                   ),
+
+                  Visibility(visible: status == 3, child: FlatButton(
+                    color: Colors.green,
+                    onPressed: () async {
+                      doUpdate(3, ticketId, _hcisdh);
+                    },
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.done,
+                          color: Colors.white,
+                        ),
+                        Text(
+                          '  Sent to HCIS Dept Head  ',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ),
+
+                  SizedBox(height: 5),
+                  Divider(
+                    height: 1,
+                    thickness: 1,
+                  ),
+                  SizedBox(height: 5),
+
+                  // 1	"Open"
+                  // 2	"Approve 1"
+                  // 3	"Approve 2"
+                  // 4	"Approve 3"
+                  // 5	"Completed"
+                  // if doUpdate 4 third parameter is current employeeId
+
+                  FlatButton(
+                    color: Colors.green,
+                    onPressed: () async {
+                      doUpdate(4, ticketId, widget.user.data.employeeId);
+                    },
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.done,
+                          color: Colors.white,
+                        ),
+                        Text(
+                          '  Final Approve  ',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+
                   FlatButton(
                     color: Colors.red,
                     onPressed: () async {
-                      doUpdate(3, ticketId);
+                      doUpdate(5, ticketId, _selectedPics);
                     },
                     child: Row(
                       children: [
@@ -150,7 +458,7 @@ class _TicketState extends State<Ticket> {
                           color: Colors.white,
                         ),
                         Text(
-                          '  Cancel Ticket',
+                          '  Reject',
                           style: TextStyle(color: Colors.white),
                         ),
                       ],
@@ -160,7 +468,11 @@ class _TicketState extends State<Ticket> {
               ),
             ),
           );
-        });
+        }).then((val) {
+      // This code will be executed when the dialog is closed
+      // You can do some post-processing of the data here, or perform some other action
+      ticketBloc.resetBloc();
+    });
   }
 
   @override
@@ -168,6 +480,7 @@ class _TicketState extends State<Ticket> {
     super.initState();
     AppData().count = 1;
     ticketUpdateBloc.resetBloc();
+    ticketBloc.resetBloc();
   }
 
   @override
@@ -222,7 +535,6 @@ class _TicketState extends State<Ticket> {
   }
 
   Widget build(BuildContext context) {
-
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -326,12 +638,13 @@ class _TicketState extends State<Ticket> {
                               SizedBox(
                                 height: 8.0,
                               ),
-
                               FutureBuilder(
-                                future: TicketsProvider().getPhoto(widget.ticket.ticketId),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState == ConnectionState.done) {
-                                    if (snapshot.hasData && snapshot.data != null) {
+                                future: TicketsProvider()
+                                    .getPhoto(widget.ticket.ticketId),
+                                builder: (context, image) {
+                                  if (image.connectionState ==
+                                      ConnectionState.done) {
+                                    if (image.hasData && image.data != null) {
                                       return GestureDetector(
                                         onTap: () {
                                           showDialog(
@@ -342,7 +655,7 @@ class _TicketState extends State<Ticket> {
                                                   maxScale: 2.5,
                                                   minScale: 0.5,
                                                   child: Image.memory(
-                                                    snapshot.data,
+                                                    image.data,
                                                     fit: BoxFit.contain,
                                                   ),
                                                 ),
@@ -351,7 +664,7 @@ class _TicketState extends State<Ticket> {
                                           );
                                         },
                                         child: Image.memory(
-                                          snapshot.data,
+                                          image.data,
                                           height: 300,
                                         ),
                                       );
@@ -365,7 +678,6 @@ class _TicketState extends State<Ticket> {
                                   }
                                 },
                               )
-
                             ],
                           ),
                         ),
@@ -414,8 +726,8 @@ class _TicketState extends State<Ticket> {
           child: FloatingActionButton.extended(
             label: Text('Action'),
             onPressed: () {
-              _update(context, 'Action', widget.ticket.ticketId,
-                  widget.ticket.ticketStatusId);
+              _update(context, 'Select Approval', widget.ticket.ticketId,
+                  widget.ticket.ticketStatusId, widget.ticket.employeeId);
             },
             icon: Icon(Icons.add),
           ),

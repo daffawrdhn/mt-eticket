@@ -379,7 +379,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                                   _selectedFeatureId = newValue;
                                                   _subFeatures = _features.firstWhere((feature) => feature.featureId == _selectedFeatureId).subFeature;
                                                   // _selectedSubFeatureId = _subFeatures[0].subFeatureId;
-                                                  ticketAddBloc.changeSubfeature(_subFeatures[0].subFeatureId);
+                                                  // ticketAddBloc.changeSubfeature(_subFeatures[0].subFeatureId);
 
                                                 });
                                               }

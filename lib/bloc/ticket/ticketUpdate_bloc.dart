@@ -32,11 +32,11 @@ class TicketUpdateBloc extends Object {
     _subject.sink.add(null);
   }
 
-  Future update(int approval, int id) async {
+  Future update(int approval, int id, String employeeId) async {
     loadingBloc.updateLoading(true);
     appData.setErrMsg("");
 
-    TicketUpdateResponse response = await _ticket.updateTicket(approval, id);
+    TicketUpdateResponse response = await _ticket.updateTicket(approval, id, employeeId);
 
     if (response.results.success == true) {
       _subject.sink.add(response);

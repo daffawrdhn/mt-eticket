@@ -5,8 +5,8 @@ class urlAPI {
   const urlAPI();
 
   //server url
-  static String baseUrl = appData.baseUrlServer;  //server
-  // static String baseUrl = appData.baseUrlLocal; //local
+  // static String baseUrl = appData.baseUrlServer;  //server
+  static String baseUrl = appData.baseUrlLocal; //local
 
   //auth
   static const String auth = "/login";
@@ -22,6 +22,8 @@ class urlAPI {
   static const String getapproval = "/get-approval";
   static const String updateticketstatus = "/update-ticket/status/";
   static const String getphoto = "/get-photo/";
+  static const String getpics = "/get-pics/";
+  static const String gethelpdesk = "/get-helpdesks/";
 
 
   static const String posts = "/blogs";
