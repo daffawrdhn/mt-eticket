@@ -62,9 +62,9 @@ class _TicketState extends State<Ticket> {
     }
   }
 
-  _fetchFeatureHelpdesks() async {
+  _fetchFeatureHelpdesks(int regionalId) async {
     try {
-      HelpdeskResponse response = await _tickets.getHelpdesks();
+      HelpdeskResponse response = await _tickets.getHelpdesks(regionalId);
       // Ensure that employeeIds are unique
       Set<String> uniqueIds = Set();
       _helpdesks = response.results.data.hELPDESK.where((helpdesk) {
@@ -278,7 +278,7 @@ class _TicketState extends State<Ticket> {
                     child: Column(
                       children: [
                         FutureBuilder(
-                          future: _fetchFeatureHelpdesks(),
+                          future: _fetchFeatureHelpdesks(widget.ticket.employee.regional.regionalId),
                           builder: (context, snapshot) {
                             if (snapshot.hasData || _helpdesks != null) {
                               return StatefulBuilder(
@@ -449,7 +449,7 @@ class _TicketState extends State<Ticket> {
                   FlatButton(
                     color: Colors.red,
                     onPressed: () async {
-                      doUpdate(5, ticketId, _selectedPics);
+                      doUpdate(5, ticketId, widget.user.data.employeeId);
                     },
                     child: Row(
                       children: [
@@ -464,6 +464,7 @@ class _TicketState extends State<Ticket> {
                       ],
                     ),
                   ),
+
                 ],
               ),
             ),

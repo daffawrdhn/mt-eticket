@@ -36,11 +36,11 @@ class TicketsProvider {
     }
   }
 
-  Future<HelpdeskResponse> getHelpdesks() async {
+  Future<HelpdeskResponse> getHelpdesks(regionalId) async {
     try {
       print(Prefs.authToken.toString());
       _dio.options.headers["Authorization"] = "Bearer ${AppData().token}";
-      Response response = await _dio.get(urlAPI.gethelpdesk);
+      Response response = await _dio.get(urlAPI.gethelpdesk+regionalId.toString());
       return HelpdeskResponse.fromJson(response.data);
     } on DioError catch(e) {
       return HelpdeskResponse.withError(ErrHandler.getErrMessage(e));
