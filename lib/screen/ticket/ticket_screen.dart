@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -39,6 +41,8 @@ class _TicketState extends State<Ticket> {
   List<pic.PIC> _pics;
   List<helpdesk.HELPDESK> _helpdesks;
 
+  Future<Uint8List> _imageFuture;
+
   TicketsProvider _tickets = TicketsProvider();
 
   _fetchFeaturePics(int regionalId) async {
@@ -58,7 +62,7 @@ class _TicketState extends State<Ticket> {
       });
     } catch (error) {
       // Handle the error
-      print(error);
+      errorBloc.updateErrMsg('Failed Get PICs data');
     }
   }
 
@@ -79,7 +83,7 @@ class _TicketState extends State<Ticket> {
       });
     } catch (error) {
       // Handle the error
-      print(error);
+      errorBloc.updateErrMsg('Failed Get PICs data');
     }
   }
 
@@ -476,9 +480,23 @@ class _TicketState extends State<Ticket> {
     });
   }
 
+  void popupDialogAlert(String message){
+    showAlertDialog(
+      context: context,
+      message: message == 'null' ? "" : message,
+      icon: Icons.info_outline,
+      type: 'failed',
+      onOk: (){
+        Navigator.pop(context);
+        errorBloc.resetBloc();
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
+    _imageFuture = TicketsProvider().getPhoto(widget.ticket.ticketId);
     AppData().count = 1;
     ticketUpdateBloc.resetBloc();
     ticketBloc.resetBloc();
@@ -493,6 +511,25 @@ class _TicketState extends State<Ticket> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+  }
+
+  Widget errResponse(){
+    return StreamBuilder(
+      initialData: null,
+      stream: errorBloc.errMsg,
+      builder: (context, snapshot) {
+        if (snapshot.data != null && snapshot.data.toString().length > 1) {
+          appData.count = appData.count + 1;
+          if(appData.count == 2){
+            appData.count = 0;
+            WidgetsBinding.instance.addPostFrameCallback((_) => popupDialogAlert(snapshot.data));
+          }
+          return Container();
+        } else {
+          return Container();
+        }
+      },
+    );
   }
 
   Widget responseWidget() {
@@ -639,46 +676,45 @@ class _TicketState extends State<Ticket> {
                               SizedBox(
                                 height: 8.0,
                               ),
-                              FutureBuilder(
-                                future: TicketsProvider()
-                                    .getPhoto(widget.ticket.ticketId),
-                                builder: (context, image) {
-                                  if (image.connectionState ==
-                                      ConnectionState.done) {
-                                    if (image.hasData && image.data != null) {
-                                      return GestureDetector(
-                                        onTap: () {
-                                          showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return AlertDialog(
-                                                content: InteractiveViewer(
-                                                  maxScale: 2.5,
-                                                  minScale: 0.5,
-                                                  child: Image.memory(
-                                                    image.data,
-                                                    fit: BoxFit.contain,
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          );
-                                        },
-                                        child: Image.memory(
-                                          image.data,
-                                          height: 300,
-                                        ),
-                                      );
-                                    } else {
-                                      return Text('No Picture Uploaded');
-                                    }
-                                  } else {
-                                    return Center(
-                                      child: CircularProgressIndicator(),
+                        FutureBuilder(
+                          future: _imageFuture,
+                          builder: (context, image) {
+                            if (image.connectionState == ConnectionState.done) {
+                              if (image.hasData && image.data != null) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          content: InteractiveViewer(
+                                            maxScale: 2.5,
+                                            minScale: 0.5,
+                                            child: Image.memory(
+                                              image.data,
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
+                                        );
+                                      },
                                     );
-                                  }
-                                },
-                              )
+                                  },
+                                  child: Image.memory(
+                                    image.data,
+                                    height: 300,
+                                  ),
+                                );
+                              } else {
+                                return Text('No Picture Uploaded');
+                              }
+                            } else {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                          },
+                        ),
+
                             ],
                           ),
                         ),
@@ -718,6 +754,7 @@ class _TicketState extends State<Ticket> {
                       height: 8.0,
                     ),
                     responseWidget(),
+                    errResponse(),
                   ],
                 )),
           ),
