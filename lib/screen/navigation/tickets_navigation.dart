@@ -17,10 +17,12 @@ class _TicketsNavState extends State<TicketsNav> {
   final TextEditingController _searchController = TextEditingController();
 
   String _searchText = "";
+  List<Data> _tickets;
 
   @override
   void initState() {
     super.initState();
+    ticketBloc.resetResponse();
     AppData().count = 1;
   }
 
@@ -46,8 +48,7 @@ class _TicketsNavState extends State<TicketsNav> {
           appData.count = appData.count + 1;
           if (appData.count == 2) {
             appData.count = 0;
-            WidgetsBinding.instance
-                .addPostFrameCallback((_) => popupDialogAlert(snapshot.data));
+            WidgetsBinding.instance.addPostFrameCallback((_) => popupDialogAlert(snapshot.data));
           }
           return Container();
         } else {
@@ -59,66 +60,50 @@ class _TicketsNavState extends State<TicketsNav> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<TicketsResponse>(
-      future: ticketBloc.get(),
-      builder: (BuildContext context, AsyncSnapshot<TicketsResponse> snapshot) {
-        if (snapshot.hasData) {
-          return Column(
-            children: <Widget>[
-              TextField(
-                controller: _searchController,
-              onChanged: (text) {
-                  ticketBloc.changeSearchText(text);
-                },
-                decoration: InputDecoration(
-                  hintText: "Search tickets",
-                  prefixIcon: Icon(Icons.search),
-                ),
-              ),
-              Expanded(
-                child: StreamBuilder(
-                  stream: ticketBloc.searchText,
-                  builder: (context, searchSnapshot) {
-                    if (!searchSnapshot.hasData) {
-                      return Center(child: CircularProgressIndicator());
-                    }
-                    _searchText = searchSnapshot.data;
-                    return FutureBuilder<TicketsResponse>(
-                      future: ticketBloc.get(),
-                      builder: (BuildContext context, AsyncSnapshot<TicketsResponse> snapshot) {
-                        if (snapshot.hasData) {
-                          final filteredTickets = snapshot.data.results.data
-                              .where((ticket) =>
-                          ticket.ticketTitle
-                              .toLowerCase()
-                              .contains(_searchText.toLowerCase()) ||
-                              ticket.ticketId
-                                  .toString()
-                                  .contains(_searchText))
-                              .toList();
-                          return filteredTickets.isEmpty
-                              ? Center(child: Text("No tickets found"))
-                              : TicketsCardList(
-                              tickets: filteredTickets,
-                              type: 'ticket');
-                        } else if (snapshot.hasError) {
-                          return errResponse();
-                        } else {
-                          return Center(child: CircularProgressIndicator());
-                        }
-                      },
-                    );
-                  },
-                ),
-              )
-            ],
-          );
-        } else if (snapshot.hasError) {
-          return errResponse();
-        } else {
-          return Center(child: CircularProgressIndicator());
-        }
-      },
+    return Column(
+      children: <Widget>[
+        TextField(
+          controller: _searchController,
+          onChanged: ticketBloc.changeSearchText,
+          decoration: InputDecoration(
+            hintText: "Search tickets",
+            prefixIcon: Icon(Icons.search),
+          ),
+        ),
+        Expanded(
+          child: FutureBuilder<TicketsResponse>(
+            future: ticketBloc.get(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                _tickets = snapshot.data.results.data;
+                return _tickets.isEmpty
+                    ? Center(child: Text("No tickets found"))
+                    : StreamBuilder(
+                    stream: ticketBloc.searchText,
+                    initialData: "",
+                    builder: (context, searchData ) {
+                      return TicketsCardList(
+                        tickets: _tickets
+                            .where((ticket) =>
+                        ticket.ticketTitle
+                            .toLowerCase()
+                            .contains(searchData.data.toLowerCase()) ||
+                            ticket.ticketId
+                                .toString()
+                                .contains(searchData.data))
+                            .toList(),
+                        type: 'ticket',
+                      );
+                    });
+              } else if (snapshot.hasError) {
+                return Center(child: Text(snapshot.error));
+              }
+              return Center(child: CircularProgressIndicator());
+            },
+          ),
+        ),
+        errResponse(),
+      ],
     );
   }
 }

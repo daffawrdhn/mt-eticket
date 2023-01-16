@@ -424,13 +424,6 @@ class _TicketState extends State<Ticket> {
                   ),
                   SizedBox(height: 5),
 
-                  // 1	"Open"
-                  // 2	"Approve 1"
-                  // 3	"Approve 2"
-                  // 4	"Approve 3"
-                  // 5	"Completed"
-                  // if doUpdate 4 third parameter is current employeeId
-
                   FlatButton(
                     color: Colors.green,
                     onPressed: () async {
