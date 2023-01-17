@@ -14,9 +14,7 @@ class TicketsNav extends StatefulWidget {
 }
 
 class _TicketsNavState extends State<TicketsNav> {
-  final TextEditingController _searchController = TextEditingController();
 
-  String _searchText = "";
   List<Data> _tickets;
 
   @override
@@ -63,7 +61,6 @@ class _TicketsNavState extends State<TicketsNav> {
     return Column(
       children: <Widget>[
         TextField(
-          controller: _searchController,
           onChanged: ticketBloc.changeSearchText,
           decoration: InputDecoration(
             hintText: "Search tickets",

@@ -658,6 +658,8 @@ class _TicketState extends State<Ticket> {
                                   'Sub feature: ${widget.ticket.subFeature.subFeatureName}'),
                               Text(
                                   "Created at: ${DateFormat.yMd().format(DateTime.parse(widget.ticket.createdAt))} ${DateFormat.jm().format(DateTime.parse(widget.ticket.createdAt))}"),
+                              Text(
+                                  "Last Update: ${DateFormat.yMd().format(DateTime.parse(widget.ticket.history.last.createdAt))} ${DateFormat.jm().format(DateTime.parse(widget.ticket.history.last.createdAt))}"),
                               SizedBox(
                                 height: 8.0,
                               ),

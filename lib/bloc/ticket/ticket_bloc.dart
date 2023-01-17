@@ -70,6 +70,7 @@ class TicketBloc extends Object {
   resetResponse() {
     appData.setErrMsg('');
     _subject.sink.add(null);
+    _searchText.add('');
   }
 
   dispose() {

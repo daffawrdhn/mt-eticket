@@ -15,8 +15,7 @@ class ApprovalNav extends StatefulWidget {
 }
 
 class _ApprovalNavState extends State<ApprovalNav> {
-  final TextEditingController _searchController = TextEditingController();
-  String _searchText = "";
+
   List<Data> _tickets;
   user.Login _user;
 
@@ -64,7 +63,6 @@ class _ApprovalNavState extends State<ApprovalNav> {
     return Column(
       children: <Widget>[
         TextField(
-          controller: _searchController,
           onChanged: ticketBloc.changeSearchText,
           decoration: InputDecoration(
             hintText: "Search tickets",
