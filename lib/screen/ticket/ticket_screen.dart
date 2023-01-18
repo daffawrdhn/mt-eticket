@@ -16,6 +16,8 @@ import 'package:mt/model/response/ticket/pic_response.dart';
 import 'package:mt/model/response/ticket/ticketUpdate_response.dart';
 import 'package:mt/provider/ticket/tickets_provider.dart';
 import 'package:mt/resource/values/values.dart';
+import 'package:mt/widget/reuseable/button/button_approval.dart';
+import 'package:mt/widget/reuseable/button/button_approval2.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
 
 class Ticket extends StatefulWidget {
@@ -138,8 +140,7 @@ class _TicketState extends State<Ticket> {
     );
   }
 
-  void _update(BuildContext context, String title, int ticketId, int status,
-      String employeeId) {
+  Widget _update(BuildContext context) {
     showDialog(
         context: context,
         useSafeArea: true,
@@ -147,14 +148,14 @@ class _TicketState extends State<Ticket> {
           return AlertDialog(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            title: Text(title),
+            title: Text('Menu'),
             content: Container(
               child: Column(
                 children: [
 
                   //PIC REGIONAL
                   Visibility(
-                    visible: status == 1,
+                    visible: widget.ticket.ticketStatusId == 1,
                     child: Column(
                       children: [
                         FutureBuilder(
@@ -167,7 +168,7 @@ class _TicketState extends State<Ticket> {
                                   return Column(
                                     children: [
                                       Text('Ticket Status: ' +
-                                          status.toString()),
+                                          widget.ticket.ticketStatusId.toString()),
                                       Card(
                                         elevation: 0.0,
                                         child: Padding(
@@ -185,9 +186,9 @@ class _TicketState extends State<Ticket> {
                                                     onChanged:
                                                         (String newValue) {
                                                       setState(() {
-                                                        _selectedPics =
-                                                            newValue;
+                                                        _selectedPics = newValue;
                                                       });
+                                                      print('dari ticket: '+_selectedPics);
                                                       if (_selectedPics !=
                                                           '0') {
                                                         ticketBloc.changePic(
@@ -228,57 +229,23 @@ class _TicketState extends State<Ticket> {
                             }
                           },
                         ),
-                        StreamBuilder(
+
+                        //PIC BUTTON APPROVAL
+                        approvalButton(
                           stream: ticketBloc.pic,
-                          builder: (context, snapshot) {
-                            return Visibility(
-                              visible: snapshot.hasData,
-                              child: FlatButton(
-                                color: Colors.blue,
-                                onPressed: snapshot.hasData
-                                    ? () async {
-                                        doUpdate(1, ticketId, _selectedPics);
-                                      }
-                                    : null,
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.done,
-                                      color: Colors.white,
-                                    ),
-                                    Text(
-                                      '  Sent to PIC  ',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              replacement: FlatButton(
-                                color: Colors.grey,
-                                onPressed: () {},
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.done,
-                                      color: Colors.white,
-                                    ),
-                                    Text(
-                                      '  Sent to PIC  ',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
+                          title: '  Sent to PIC  ',
+                          ticketId: widget.ticket.ticketId,
+                          idapproval: 1,
+                          doUpdate: doUpdate,
                         ),
+
                       ],
                     ),
                   ),
 
                   //HELPDESK
                   Visibility(
-                    visible: status == 2,
+                    visible: widget.ticket.ticketStatusId == 2,
                     child: Column(
                       children: [
                         FutureBuilder(
@@ -290,7 +257,7 @@ class _TicketState extends State<Ticket> {
                                   return Column(
                                     children: [
                                       Text('Ticket Status: ' +
-                                          status.toString()),
+                                          widget.ticket.ticketStatusId.toString()),
                                       Card(
                                         elevation: 0.0,
                                         child: Padding(
@@ -349,117 +316,54 @@ class _TicketState extends State<Ticket> {
                             }
                           },
                         ),
-                        StreamBuilder(
+
+                        //HELPDESK BUTTON APPROVAL
+                        approvalButton(
                           stream: ticketBloc.helpdesk,
-                          builder: (context, snapshot) {
-                            return Visibility(
-                              visible: snapshot.hasData,
-                              child: FlatButton(
-                                color: Colors.blue,
-                                onPressed: snapshot.hasData
-                                    ? () async {
-                                  doUpdate(2, ticketId, _selectedHelpdesks);
-                                }
-                                    : null,
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.done,
-                                      color: Colors.white,
-                                    ),
-                                    Text(
-                                      '  Sent to Helpdesk  ',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              replacement: FlatButton(
-                                color: Colors.grey,
-                                onPressed: () {},
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.done,
-                                      color: Colors.white,
-                                    ),
-                                    Text(
-                                      '  Sent to Helpdesk  ',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
+                          title: '  Sent to Helpdesk  ',
+                          ticketId: widget.ticket.ticketId,
+                          idapproval: 2,
+                          doUpdate: doUpdate,
                         ),
+
                       ],
                     ),
                   ),
 
-                  Visibility(visible: status == 3, child: FlatButton(
-                    color: Colors.green,
-                    onPressed: () async {
-                      doUpdate(3, ticketId, _hcisdh);
-                    },
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.done,
-                          color: Colors.white,
-                        ),
-                        Text(
-                          '  Sent to HCIS Dept Head  ',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ],
+                  //HCIS deptHead Approval Button, status == 3
+                  Visibility(
+                    visible: widget.ticket.ticketStatusId == 3,
+                    child: approvalButton2(
+                      approval: 3,
+                      ticketId: widget.ticket.ticketId,
+                      employeeId: _hcisdh,
+                      doUpdate: doUpdate,
+                      title: 'Sent to HCIS Dept Head',
                     ),
-                  ),
                   ),
 
                   SizedBox(height: 5),
-                  Divider(
-                    height: 1,
-                    thickness: 1,
-                  ),
+                  Divider(height: 1, thickness: 1,),
                   SizedBox(height: 5),
 
-                  FlatButton(
-                    color: Colors.green,
-                    onPressed: () async {
-                      doUpdate(4, ticketId, widget.user.data.employeeId);
-                    },
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.done,
-                          color: Colors.white,
-                        ),
-                        Text(
-                          '  Final Approve  ',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ],
-                    ),
+                  //FINAL APPROVE BUTTON
+                  approvalButton2(
+                      approval: 4,
+                      ticketId: widget.ticket.ticketId,
+                      employeeId: widget.user.data.employeeId,
+                      doUpdate: doUpdate,
+                      title: '  Final Approve '
                   ),
 
-                  FlatButton(
-                    color: Colors.red,
-                    onPressed: () async {
-                      doUpdate(5, ticketId, widget.user.data.employeeId);
-                    },
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.close,
-                          color: Colors.white,
-                        ),
-                        Text(
-                          '  Reject',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ],
-                    ),
+                  //REJECT BUTTON
+                  approvalButton2(
+                      approval: 5,
+                      ticketId: widget.ticket.ticketId,
+                      employeeId: widget.user.data.employeeId,
+                      doUpdate: doUpdate,
+                      title: '  Reject',
+                      icon: Icons.close,
+                      buttonColor: Colors.red
                   ),
 
                 ],
@@ -759,8 +663,7 @@ class _TicketState extends State<Ticket> {
           child: FloatingActionButton.extended(
             label: Text('Action'),
             onPressed: () {
-              _update(context, 'Select Approval', widget.ticket.ticketId,
-                  widget.ticket.ticketStatusId, widget.ticket.employeeId);
+              _update(context);
             },
             icon: Icon(Icons.add),
           ),

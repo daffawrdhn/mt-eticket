@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:mt/bloc/error/error_bloc.dart';
+import 'package:mt/model/response/ticket/helpdesk_response.dart';
+import 'package:mt/model/response/ticket/pic_response.dart';
 import 'package:mt/model/response/ticket/ticketAdd_response.dart';
 import 'package:mt/model/response/ticket/ticketUpdate_response.dart';
 import 'package:mt/model/response/ticket/tickets_response.dart';
@@ -35,6 +37,8 @@ class TicketUpdateBloc extends Object {
   Future update(int approval, int id, String employeeId) async {
     loadingBloc.updateLoading(true);
     appData.setErrMsg("");
+
+    print('EMPLOYEE: '+employeeId);
 
     TicketUpdateResponse response = await _ticket.updateTicket(approval, id, employeeId);
 
