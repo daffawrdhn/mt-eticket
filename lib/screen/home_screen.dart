@@ -71,6 +71,21 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(_appBarTitle),
+          actions: <Widget>[
+            Visibility(
+                visible: _appBarTitle == 'Approval',
+                child: Padding(
+                    padding: EdgeInsets.only(right: 10.0),
+                    child: IconButton(
+                      icon: Icon(Icons.history),
+                      onPressed: () {
+                        // do something when button is pressed
+                        Future.microtask(() => Navigator.pushNamed(context, '/history'));
+                      },
+                    ),
+                ),
+            )
+          ],
         ),
         // drawer: DrawerWidget(user: _user.data,),
         body: Center(

@@ -19,6 +19,7 @@ import 'package:mt/resource/values/values.dart';
 import 'package:mt/widget/reuseable/button/button_approval.dart';
 import 'package:mt/widget/reuseable/button/button_approval2.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
+import 'package:mt/widget/reuseable/expandable/expandable_card.dart';
 
 class Ticket extends StatefulWidget {
   final Data ticket;
@@ -45,11 +46,8 @@ class _TicketState extends State<Ticket> {
 
   Future<Uint8List> _imageFuture;
 
-  TicketsProvider _tickets = TicketsProvider();
-
   _fetchFeaturePics(int regionalId) async {
-    try {
-      PicResponse response = await _tickets.getPics(regionalId);
+      PicResponse response = await ticketBloc.getPics(regionalId.toString());
       // Ensure that employeeIds are unique
       Set<String> uniqueIds = Set();
       _pics = response.results.data.pIC.where((pic) {
@@ -59,18 +57,12 @@ class _TicketState extends State<Ticket> {
         uniqueIds.add(pic.employeeId);
         return true;
       }).toList();
-      setState(() {
         _selectedPics = '0';
-      });
-    } catch (error) {
-      // Handle the error
-      errorBloc.updateErrMsg('Failed Get PICs data');
-    }
+
   }
 
   _fetchFeatureHelpdesks(int regionalId) async {
-    try {
-      HelpdeskResponse response = await _tickets.getHelpdesks(regionalId);
+      HelpdeskResponse response = await ticketBloc.getHelpdesks(regionalId.toString());
       // Ensure that employeeIds are unique
       Set<String> uniqueIds = Set();
       _helpdesks = response.results.data.hELPDESK.where((helpdesk) {
@@ -80,13 +72,7 @@ class _TicketState extends State<Ticket> {
         uniqueIds.add(helpdesk.employeeId);
         return true;
       }).toList();
-      setState(() {
         _selectedHelpdesks = '0';
-      });
-    } catch (error) {
-      // Handle the error
-      errorBloc.updateErrMsg('Failed Get PICs data');
-    }
   }
 
   void doUpdate(int approval, int id, String EmployeeId) async {
@@ -124,14 +110,22 @@ class _TicketState extends State<Ticket> {
                 title: Text(ticket.history[index].description != null
                     ? ticket.history[index].description
                     : 'No description provided'),
-                subtitle: Text('by ' +
+                subtitle: Text(
+                    ticket.history[index].supervisor.employeeId == appData.user.data.employeeId ? 'by You at ' +
+                        DateFormat.yMd().format(
+                            DateTime.parse(ticket.history[index].createdAt)) +
+                        ' ' +
+                        DateFormat.jm().format(
+                            DateTime.parse(ticket.history[index].createdAt))
+                        : 'by ' +
                     ticket.history[index].supervisor.employeeName +
                     ' at ' +
                     DateFormat.yMd().format(
                         DateTime.parse(ticket.history[index].createdAt)) +
                     ' ' +
                     DateFormat.jm().format(
-                        DateTime.parse(ticket.history[index].createdAt))),
+                        DateTime.parse(ticket.history[index].createdAt))
+                ),
               );
             },
           ),
@@ -336,7 +330,7 @@ class _TicketState extends State<Ticket> {
                       ticketId: widget.ticket.ticketId,
                       employeeId: _hcisdh,
                       doUpdate: doUpdate,
-                      title: 'Sent to HCIS Dept Head',
+                      title: 'Sent to HCIS Dept Head', buttonColor: Colors.blue
                     ),
                   ),
 
@@ -485,40 +479,34 @@ class _TicketState extends State<Ticket> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     SizedBox(
-                      height: 10.0,
+                      height: 16.0,
                     ),
-                    Container(
-                      width: double.infinity,
-                      child: Card(
-                        elevation: 3.0,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                'EMPLOYEE',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              Text(
-                                  'Employee ID: ${widget.ticket.employee.employeeId}'),
-                              Text(
-                                  'Employee Name: ${widget.ticket.employee.employeeName}'),
-                              Text(
-                                  'Organization: ${widget.ticket.employee.organization.organizationName}'),
-                              Text(
-                                  'Regional: ${widget.ticket.employee.regional.regionalName}'),
-                            ],
-                          ),
-                        ),
-                      ),
+
+                    //EMPLOYEE
+                    ExpandableCard(
+                      title: 'EMPLOYEE',
+                      textList: [
+                        'Employee ID: ${widget.ticket.employee.employeeId}',
+                        'Employee Name: ${widget.ticket.employee.employeeName}',
+                        'Organization: ${widget.ticket.employee.organization.organizationName}',
+                        'Regional: ${widget.ticket.employee.regional.regionalName}'
+                      ],
                     ),
-                    SizedBox(
-                      height: 8.0,
+
+                    SizedBox( height: 8.0, ),
+
+                    //SUPERVISOR
+                    ExpandableCard(
+                      title: 'SUPERVISOR',
+                      textList: [
+                        'Supervisor ID: ${widget.ticket.supervisor.employeeId}',
+                        'Supervisor Name: ${widget.ticket.supervisor.employeeName}',
+                        'Organization: ${widget.ticket.supervisor.organization.organizationName}'
+                      ],
                     ),
+
+                    SizedBox( height: 8.0, ),
+
                     Container(
                       width: double.infinity,
                       child: Card(
@@ -531,7 +519,7 @@ class _TicketState extends State<Ticket> {
                               Row(
                                 children: <Widget>[
                                   Text(
-                                    'TICKET',
+                                    'TICKET - ' + widget.ticket.ticketId.toString(),
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
@@ -551,7 +539,6 @@ class _TicketState extends State<Ticket> {
                                   ),
                                 ],
                               ),
-                              Text('ID: ${widget.ticket.ticketId}'),
                               Text(
                                   'Status: ${widget.ticket.ticketStatus.ticketStatusNext}'),
                               Text(
@@ -618,37 +605,7 @@ class _TicketState extends State<Ticket> {
                       ),
                     ),
                     SizedBox(
-                      height: 8.0,
-                    ),
-                    Container(
-                      width: double.infinity,
-                      child: Card(
-                        elevation: 3.0,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                'SUPERVISOR',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              Text(
-                                  'Supervisor ID: ${widget.ticket.supervisor.employeeId}'),
-                              Text(
-                                  'Supervisor Name: ${widget.ticket.supervisor.employeeName}'),
-                              Text(
-                                  'Organization: ${widget.ticket.supervisor.organization.organizationName}'),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 8.0,
+                      height: 16.0,
                     ),
                     responseWidget(),
                     errResponse(),
@@ -657,7 +614,7 @@ class _TicketState extends State<Ticket> {
           ),
         ),
         floatingActionButton: Visibility(
-          visible: widget.type != 'ticket',
+          visible: widget.type == 'approval',
           child: FloatingActionButton.extended(
             label: Text('Action'),
             onPressed: () {

@@ -62,13 +62,9 @@ class TicketsCardList extends StatelessWidget {
                   ButtonBar(
                     children: <Widget>[
                       OutlineButton(
-                        child: type == 'ticket' ? Text('VIEW') : Text('APPROVE'),
+                        child: type == 'ticket' ? Text('VIEW') : (type == 'history' ? Text('CHECK') : Text('APPROVE')),
                         onPressed: () {
-                          if (type == 'ticket') {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => Ticket(ticket: tickets[index], type: 'ticket', user: user)));
-                          } else if (type == 'approval') {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => Ticket(ticket: tickets[index], type: 'approval', user: user)));
-                          }
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => Ticket(ticket: tickets[index], type: type, user: user)));
                         },
                         borderSide: BorderSide(color: Colors.blue),
                       ),

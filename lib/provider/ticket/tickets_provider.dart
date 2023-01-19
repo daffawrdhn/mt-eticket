@@ -86,6 +86,17 @@ class TicketsProvider {
     }
   }
 
+  Future<TicketsResponse> history() async {
+    try {
+      print(Prefs.authToken.toString());
+      _dio.options.headers["Authorization"] = "Bearer ${AppData().token}";
+      Response response = await _dio.get(urlAPI.getHistory);
+      return TicketsResponse.fromJson(response.data);
+    } on DioError catch(e) {
+      return TicketsResponse.withError(ErrHandler.getErrMessage(e));
+    }
+  }
+
   Future<TicketUpdateResponse> updateTicket(int approval, int id, String employeeId) async {
     try {
       print(Prefs.authToken.toString());

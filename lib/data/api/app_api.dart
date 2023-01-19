@@ -24,6 +24,7 @@ class urlAPI {
   static const String getphoto = "/get-photo/";
   static const String getpics = "/get-pics/";
   static const String gethelpdesk = "/get-helpdesks/";
+  static const String getHistory = "/get-history";
 
 
   static const String posts = "/blogs";
