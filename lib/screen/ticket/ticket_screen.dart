@@ -146,8 +146,7 @@ class _TicketState extends State<Ticket> {
         useSafeArea: true,
         builder: (BuildContext context) {
           return AlertDialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             title: Text('Menu'),
             content: Container(
               child: Column(
@@ -188,7 +187,6 @@ class _TicketState extends State<Ticket> {
                                                       setState(() {
                                                         _selectedPics = newValue;
                                                       });
-                                                      print('dari ticket: '+_selectedPics);
                                                       if (_selectedPics !=
                                                           '0') {
                                                         ticketBloc.changePic(

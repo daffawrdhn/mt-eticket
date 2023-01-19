@@ -68,35 +68,41 @@ class _TicketsNavState extends State<TicketsNav> {
           ),
         ),
         Expanded(
-          child: FutureBuilder<TicketsResponse>(
-            future: ticketBloc.get(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                _tickets = snapshot.data.results.data;
-                return _tickets.isEmpty
-                    ? Center(child: Text("No tickets found"))
-                    : StreamBuilder(
-                    stream: ticketBloc.searchText,
-                    initialData: "",
-                    builder: (context, searchData ) {
-                      return TicketsCardList(
-                        tickets: _tickets
-                            .where((ticket) =>
-                        ticket.ticketTitle
-                            .toLowerCase()
-                            .contains(searchData.data.toLowerCase()) ||
-                            ticket.ticketId
-                                .toString()
-                                .contains(searchData.data))
-                            .toList(),
-                        type: 'ticket',
-                      );
-                    });
-              } else if (snapshot.hasError) {
-                return Center(child: Text(snapshot.error));
-              }
-              return Center(child: CircularProgressIndicator());
+          child: RefreshIndicator(
+            onRefresh: () async {
+              ticketBloc.resetResponse();
+              await ticketBloc.get();
             },
+            child: FutureBuilder<TicketsResponse>(
+              future: ticketBloc.get(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  _tickets = snapshot.data.results.data;
+                  return _tickets.isEmpty
+                      ? Center(child: Text("No tickets found"))
+                      : StreamBuilder(
+                      stream: ticketBloc.searchText,
+                      initialData: "",
+                      builder: (context, searchData ) {
+                        return TicketsCardList(
+                          tickets: _tickets
+                              .where((ticket) =>
+                          ticket.ticketTitle
+                              .toLowerCase()
+                              .contains(searchData.data.toLowerCase()) ||
+                              ticket.ticketId
+                                  .toString()
+                                  .contains(searchData.data))
+                              .toList(),
+                          type: 'ticket',
+                        );
+                      });
+                } else if (snapshot.hasError) {
+                  return Center(child: Text(snapshot.error));
+                }
+                return Center(child: CircularProgressIndicator());
+              },
+            ),
           ),
         ),
         errResponse(),

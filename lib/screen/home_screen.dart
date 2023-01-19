@@ -23,22 +23,25 @@ class _HomeScreenState extends State<HomeScreen> {
   String _appBarTitle = 'Home';  // Add this line
 
   void _changeIndex(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    switch (index) {
-      case 0:
-        _appBarTitle = 'Home';
-        break;
-      case 1:
-        _appBarTitle = 'Tickets';
-        break;
-      case 2:
-        _appBarTitle = 'Approval';
-        break;
-      case 3:
-        _appBarTitle = 'Profile';
-        break;
+    if(_selectedIndex == index) {
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+      switch (index) {
+        case 0:
+          _appBarTitle = 'Home';
+          break;
+        case 1:
+          _appBarTitle = 'Tickets';
+          break;
+        case 2:
+          _appBarTitle = 'Approval';
+          break;
+        case 3:
+          _appBarTitle = 'Profile';
+          break;
+      }
     }
   }
 
@@ -52,26 +55,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     super.dispose();
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    switch (index) {
-      case 0:
-        _appBarTitle = 'Home';
-        break;
-      case 1:
-        _appBarTitle = 'Tickets';
-        break;
-      case 2:
-        _appBarTitle = 'Approval';
-        break;
-      case 3:
-        _appBarTitle = 'Profile';
-        break;
-    }
   }
 
   @override
@@ -116,24 +99,29 @@ class _HomeScreenState extends State<HomeScreen> {
           currentIndex: _selectedIndex,
           selectedItemColor: AppColors.loginSubmit,
           onTap: (int index) {
-            setState(() {
-              _selectedIndex = index;
-            });
-            switch (index) {
-              case 0:
-                _appBarTitle = 'Home';
-                break;
-              case 1:
-                _appBarTitle = 'Tickets';
-                break;
-              case 2:
-                _appBarTitle = 'Approval';
-                break;
-              case 3:
-                _appBarTitle = 'Profile';
-                break;
+            if (_selectedIndex == index) {
+
+            } else {
+              setState(() {
+                _selectedIndex = index;
+              });
+              switch (index) {
+                case 0:
+                  _appBarTitle = 'Home';
+                  break;
+                case 1:
+                  _appBarTitle = 'Tickets';
+                  break;
+                case 2:
+                  _appBarTitle = 'Approval';
+                  break;
+                case 3:
+                  _appBarTitle = 'Profile';
+                  break;
+              }
             }
-          }),
+          }
+          ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.pushNamed(context, '/add');
