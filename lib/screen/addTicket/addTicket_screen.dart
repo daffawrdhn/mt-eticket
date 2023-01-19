@@ -145,17 +145,6 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
     Prefs.clear();
     AppData().count = 1;
 
-    // _fetchFeatureSubData().then((_) {
-    //   setState(() {
-    //     // Set the initial value for _selectedSubFeatureId
-    //     _selectedSubFeatureId = _subFeatures[0].subFeatureId;
-    //     // Set the initial value for _selectedFeatureId
-    //     _selectedFeatureId = _features[0].featureId;
-    //     // Update the value in ticketAddBloc
-    //     ticketAddBloc.changeSubfeature(_selectedSubFeatureId);
-    //     ticketAddBloc.changeFeature(_selectedFeatureId);
-    //   });
-    // });
     ticketAddBloc.resetBloc();
   }
 

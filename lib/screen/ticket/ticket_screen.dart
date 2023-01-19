@@ -484,7 +484,9 @@ class _TicketState extends State<Ticket> {
 
                     //EMPLOYEE
                     ExpandableCard(
+                      icon: Icon(Icons.person),
                       title: 'EMPLOYEE',
+                      titleBold: true,
                       textList: [
                         'Employee ID: ${widget.ticket.employee.employeeId}',
                         'Employee Name: ${widget.ticket.employee.employeeName}',
@@ -497,7 +499,9 @@ class _TicketState extends State<Ticket> {
 
                     //SUPERVISOR
                     ExpandableCard(
+                      icon: Icon(Icons.supervisor_account),
                       title: 'SUPERVISOR',
+                      titleBold: true,
                       textList: [
                         'Supervisor ID: ${widget.ticket.supervisor.employeeId}',
                         'Supervisor Name: ${widget.ticket.supervisor.employeeName}',

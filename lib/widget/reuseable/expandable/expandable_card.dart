@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 
 class ExpandableCard extends StatefulWidget {
   final String title;
+  final bool titleBold;
+  final Icon icon;
   final List<String> textList;
 
   ExpandableCard({
     @required this.title,
+    @required this.icon,
+    this.titleBold,
     @required this.textList,
   });
 
@@ -26,10 +30,11 @@ class _ExpandableCardState extends State<ExpandableCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             ListTile(
+              leading: widget.icon,
               title: Text(
                 widget.title,
                 style: TextStyle(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: widget.titleBold == true ? FontWeight.bold : FontWeight.normal,
                   fontSize: 16,
                 ),
               ),
