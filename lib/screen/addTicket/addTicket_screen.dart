@@ -175,6 +175,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
         _subFeatures = [];
         _selectedSubFeatureId = 0;
       });
+
     } catch (error) {
       // Handle the error
       print(error);
@@ -187,21 +188,21 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
       return StreamBuilder(
           stream: ticketAddBloc.submitValid,
           builder: (context, snapshot) {
-            return SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: 50.0,
-                child: ElevatedButton(
-                  child: Text('CREATE'),
-                  style: ElevatedButton.styleFrom(
-                      elevation: 15.0,
-                      primary: AppColors.loginSubmit,
-                      shape: new RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(30.0),
-                      ),
-                      textStyle:
-                          Styles.customTextStyle(Colors.black, 'bold', 18.0)),
-                  onPressed: snapshot.data == true ? doLogin : null,
-                ));
+              return SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: 50.0,
+                  child: ElevatedButton(
+                    child: Text('CREATE'),
+                    style: ElevatedButton.styleFrom(
+                        elevation: 15.0,
+                        primary: AppColors.loginSubmit,
+                        shape: new RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(30.0),
+                        ),
+                        textStyle:
+                            Styles.customTextStyle(Colors.black, 'bold', 18.0)),
+                    onPressed: snapshot.data == true && _selectedSubFeatureId != 0 ? doLogin : null,
+                  ));
           });
     }
 
@@ -363,11 +364,12 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                             onChanged: (int newValue) {
                                               if (newValue != 0) {
                                                 ticketAddBloc.changeFeature(newValue);
+                                                ticketAddBloc.resetSub();
                                                 // Set the selectedFeatureId and fetch the sub-features for the selected feature
                                                 setState(() {
                                                   _selectedFeatureId = newValue;
                                                   _subFeatures = _features.firstWhere((feature) => feature.featureId == _selectedFeatureId).subFeature;
-                                                  // _selectedSubFeatureId = _subFeatures[0].subFeatureId;
+                                                  _selectedSubFeatureId = 0;
                                                   // ticketAddBloc.changeSubfeature(_subFeatures[0].subFeatureId);
 
                                                 });

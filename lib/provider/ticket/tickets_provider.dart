@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:dio/dio.dart';
 import 'package:mt/data/local/app_data.dart';
 import 'package:mt/data/sharedpref/preferences.dart';
+import 'package:mt/model/response/ticket/depthead_response.dart';
 import 'package:mt/model/response/ticket/helpdesk_response.dart';
 import 'package:mt/model/response/ticket/pic_response.dart';
 import 'package:mt/model/response/ticket/ticketAdd_response.dart';
@@ -44,6 +45,17 @@ class TicketsProvider {
       return HelpdeskResponse.fromJson(response.data);
     } on DioError catch(e) {
       return HelpdeskResponse.withError(ErrHandler.getErrMessage(e));
+    }
+  }
+
+  Future<DeptheadResponse> getDepthead() async {
+    try {
+      print(Prefs.authToken.toString());
+      _dio.options.headers["Authorization"] = "Bearer ${AppData().token}";
+      Response response = await _dio.get(urlAPI.getdepthead);
+      return DeptheadResponse.fromJson(response.data);
+    } on DioError catch(e) {
+      return DeptheadResponse.withError(ErrHandler.getErrMessage(e));
     }
   }
   

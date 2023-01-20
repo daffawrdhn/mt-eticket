@@ -8,9 +8,11 @@ import 'package:mt/bloc/ticket/ticketUpdate_bloc.dart';
 import 'package:mt/bloc/ticket/ticket_bloc.dart';
 import 'package:mt/data/local/app_data.dart';
 import 'package:mt/model/modelJson/login/login_model.dart' as usernow;
+import 'package:mt/model/modelJson/ticket/depthead_model.dart' as depthead;
 import 'package:mt/model/modelJson/ticket/helpdesk_model.dart' as helpdesk;
 import 'package:mt/model/modelJson/ticket/pic_model.dart' as pic;
 import 'package:mt/model/modelJson/ticket/tickets_model.dart';
+import 'package:mt/model/response/ticket/depthead_response.dart';
 import 'package:mt/model/response/ticket/helpdesk_response.dart';
 import 'package:mt/model/response/ticket/pic_response.dart';
 import 'package:mt/model/response/ticket/ticketUpdate_response.dart';
@@ -33,16 +35,15 @@ class Ticket extends StatefulWidget {
 
 class _TicketState extends State<Ticket> {
 
-  //HCIS Dept Head
-  String _hcisdh = '000000000';
-
-  // Declare a variable to store the selected feature ID
+  // Declare a variable to store the selected list
   String _selectedPics;
   String _selectedHelpdesks;
+  String _selectedDepthead;
 
   // Declare a list of Feature objects to store the fetched data
   List<pic.PIC> _pics;
   List<helpdesk.HELPDESK> _helpdesks;
+  List<depthead.DEPTHEAD> _depthead;
 
   Future<Uint8List> _imageFuture;
 
@@ -73,6 +74,20 @@ class _TicketState extends State<Ticket> {
         return true;
       }).toList();
         _selectedHelpdesks = '0';
+  }
+
+  _fetchFeatureDepthead() async {
+    DeptheadResponse response = await ticketBloc.getDepthead();
+    // Ensure that employeeIds are unique
+    Set<String> uniqueIds = Set();
+    _depthead = response.results.data.dEPTHEAD.where((depthead) {
+      if (uniqueIds.contains(depthead.employeeId)) {
+        return false;
+      }
+      uniqueIds.add(depthead.employeeId);
+      return true;
+    }).toList();
+    _selectedDepthead = '0';
   }
 
   void doUpdate(int approval, int id, String EmployeeId) async {
@@ -322,15 +337,87 @@ class _TicketState extends State<Ticket> {
                     ),
                   ),
 
-                  //HCIS deptHead Approval Button, status == 3
+                  //DEPTHEAD
                   Visibility(
                     visible: widget.ticket.ticketStatusId == 3,
-                    child: approvalButton2(
-                      approval: 3,
-                      ticketId: widget.ticket.ticketId,
-                      employeeId: _hcisdh,
-                      doUpdate: doUpdate,
-                      title: 'Sent to HCIS Dept Head', buttonColor: Colors.blue
+                    child: Column(
+                      children: [
+                        FutureBuilder(
+                          future: _fetchFeatureDepthead(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData || _depthead != null) {
+                              return StatefulBuilder(
+                                builder: (BuildContext context, setState) {
+                                  return Column(
+                                    children: [
+                                      Card(
+                                        elevation: 0.0,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0),
+                                          child: Flex(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                              direction: Axis.horizontal,
+                                              children: [
+                                                Expanded(
+                                                  flex: 1,
+                                                  child: DropdownButton<String>(
+                                                    value: _selectedDepthead,
+                                                    onChanged:
+                                                        (String newValue) {
+                                                      setState(() {
+                                                        _selectedDepthead =
+                                                            newValue;
+                                                      });
+                                                      if (_selectedDepthead != '0') {
+                                                        ticketBloc.changeDepthead(newValue);
+                                                      } else {
+                                                        ticketBloc.resetBloc();
+                                                      }
+                                                    },
+                                                    items: [
+                                                      DropdownMenuItem<String>(
+                                                        value: '0',
+                                                        child: Text('Select DeptHead'),
+                                                      ),
+                                                      ..._depthead.map((depthead) {
+                                                        return DropdownMenuItem<
+                                                            String>(
+                                                          value: depthead.employeeId,
+                                                          child: Text(depthead
+                                                              .employeeName +
+                                                              ' - ' +
+                                                              depthead.employeeId),
+                                                        );
+                                                      }).toList()
+                                                    ],
+                                                  ),
+                                                ),
+                                                SizedBox(width: 2.0),
+                                              ]),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            } else {
+                              return CircularProgressIndicator();
+                            }
+                          },
+                        ),
+
+                        //HELPDESK BUTTON APPROVAL
+                        approvalButton(
+                          stream: ticketBloc.depthead,
+                          title: '  Sent to Depthead  ',
+                          ticketId: widget.ticket.ticketId,
+                          idapproval: 3,
+                          doUpdate: doUpdate,
+                        ),
+
+                      ],
                     ),
                   ),
 

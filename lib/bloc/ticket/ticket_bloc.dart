@@ -1,5 +1,6 @@
 import 'package:mt/bloc/error/error_bloc.dart';
 import 'package:mt/bloc/loading/loading_bloc.dart';
+import 'package:mt/model/response/ticket/depthead_response.dart';
 import 'package:mt/model/response/ticket/helpdesk_response.dart';
 import 'package:mt/model/response/ticket/pic_response.dart';
 import 'package:mt/model/response/ticket/tickets_response.dart';
@@ -17,23 +18,26 @@ class TicketBloc extends Object {
   final BehaviorSubject<TicketsResponse> _subject = BehaviorSubject<TicketsResponse>();
   final BehaviorSubject<PicResponse> _subject_pic = BehaviorSubject<PicResponse>(); //PIC
   final BehaviorSubject<HelpdeskResponse> _subject_helpdesk = BehaviorSubject<HelpdeskResponse>(); //HELPDESK
-
+  final BehaviorSubject<DeptheadResponse> _subject_depthead = BehaviorSubject<DeptheadResponse>(); //HELPDESK
 
   final _searchText = BehaviorSubject<String>();
   final _pic = BehaviorSubject<String>();
   final _helpdesk = BehaviorSubject<String>();
+  final _depthead = BehaviorSubject<String>();
   final _approval = BehaviorSubject<bool>();
 
 
   Stream<String> get searchText => _searchText.stream;
   Stream<String> get pic => _pic.stream;
   Stream<String> get helpdesk => _helpdesk.stream;
+  Stream<String> get depthead => _depthead.stream;
   Stream<bool> get approval => _approval.stream;
 
 
   Function(String) get changeSearchText => _searchText.sink.add;
   Function(String) get changePic => _pic.sink.add;
   Function(String) get changeHelpdesk => _helpdesk.sink.add;
+  Function(String) get changeDepthead => _depthead.sink.add;
   Function(bool) get changeApproval => _approval.sink.add;
 
 
@@ -102,6 +106,19 @@ class TicketBloc extends Object {
     }
   }
 
+  Future<DeptheadResponse> getDepthead() async {
+    appData.setErrMsg("");
+    DeptheadResponse response = await _ticket.getDepthead();
+    if (response.results.success == true) {
+      _subject_depthead.sink.add(response);
+      return response;
+    } else {
+      _subject_depthead.sink.add(response);
+      appData.setErrMsg(response.error);
+      errorBloc.updateErrMsg(response.error);
+    }
+  }
+
   void loadingState(bool loading){
     loadingBloc.updateLoading(loading);
   }
@@ -112,6 +129,7 @@ class TicketBloc extends Object {
     // _searchText.add(null);
     _pic.sink.add(null);
     _helpdesk.sink.add(null);
+    _depthead.sink.add(null);
     _approval.sink.add(null);
 
   }
@@ -127,6 +145,7 @@ class TicketBloc extends Object {
     _pic.close();
     _searchText.close();
     _helpdesk.close();
+    _depthead.close();
     _approval.close();
   }
 }
