@@ -364,7 +364,6 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                             onChanged: (int newValue) {
                                               if (newValue != 0) {
                                                 ticketAddBloc.changeFeature(newValue);
-                                                ticketAddBloc.resetSub();
                                                 // Set the selectedFeatureId and fetch the sub-features for the selected feature
                                                 setState(() {
                                                   _selectedFeatureId = newValue;

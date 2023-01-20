@@ -5,14 +5,8 @@ import 'package:mt/model/response/ticket/ticketAdd_response.dart';
 import 'package:mt/provider/ticket/ticketAdd_provider.dart';
 import '../../bloc/loading/loading_bloc.dart';
 import '../../data/local/app_data.dart';
-import '../../data/sharedpref/preferences.dart';
 import 'package:rxdart/rxdart.dart';
-
-import 'package:mt/provider/changePassword/changePassword_provider.dart';
 import 'package:mt/bloc/ticket/add_validators.dart';
-
-
-
 
 class TicketAddBloc extends Object with ValidatorsAdd {
   final TicketAddProvider _ticketAdd = TicketAddProvider();
