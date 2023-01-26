@@ -48,7 +48,9 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
 
   //we can upload image from camera or from gallery based on parameter
   Future getImage(ImageSource media) async {
-    var img = await picker.pickImage(source: media);
+    var img = await picker.pickImage(
+        source: media,
+        imageQuality: 25);
 
     setState(() {
       image = img;
@@ -69,22 +71,9 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             title: Text('Please choose media to select'),
             content: Container(
-              height: MediaQuery.of(context).size.height / 6,
+              height: MediaQuery.of(context).size.height / 12,
               child: Column(
                 children: [
-                  ElevatedButton(
-                    //if user click this button, user can upload image from gallery
-                    onPressed: () {
-                      Navigator.pop(context);
-                      getImage(ImageSource.gallery);
-                    },
-                    child: Row(
-                      children: [
-                        Icon(Icons.image),
-                        Text('From Gallery'),
-                      ],
-                    ),
-                  ),
                   ElevatedButton(
                     //if user click this button. user can upload image from camera
                     onPressed: () {
@@ -473,8 +462,8 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                 return TextField(
                                   maxLines: 6,
                                   onChanged: ticketAddBloc.changeDescription,
-                                  keyboardType: TextInputType.text,
-                                  textInputAction: TextInputAction.next,
+                                  keyboardType: TextInputType.multiline,
+                                  textInputAction: TextInputAction.newline,
                                   style: Styles.customTextStyle(
                                       Colors.black, 'bold', 15.0),
                                   decoration: Decorations.textInputDecoration(
@@ -484,6 +473,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                 );
                               })),
                     ),
+                    SizedBox(height: 20.0),
                     Card(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -496,36 +486,50 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                 ? Column(
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20),
+                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                                   child: ClipRRect(
-                                    borderRadius:
-                                    BorderRadius.circular(8),
-                                    child: Image.file(
-                                      //to show image, you type like this.
-                                      File(image.path),
-                                      fit: BoxFit.cover,
-                                      width: MediaQuery.of(context)
-                                          .size
-                                          .width,
-                                      height: 300,
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: InkWell(
+                                      onTap: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              content: InteractiveViewer(
+                                                minScale: 0.5,
+                                                maxScale: 2.5,
+                                                child: Image.file(File(image.path)),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                      child: Image.file(
+                                        File(image.path),
+                                        fit: BoxFit.cover,
+                                        width: MediaQuery.of(context).size.width,
+                                        height: 300,
+                                      ),
                                     ),
                                   ),
                                 ),
                                 // Add an ElevatedButton for removing the image
-                                ElevatedButton(
-                                  onPressed: () {
-                                    // Remove the selected image
-                                    ticketAddBloc.changePhoto(null);
-                                    setState(() {
-                                      image = null;
-                                    });
-                                  },
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.delete),
-                                      Text('Remove Image'),
-                                    ],
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      // Remove the selected image
+                                      ticketAddBloc.changePhoto(null);
+                                      setState(() {
+                                        image = null;
+                                      });
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.delete),
+                                        Text('Remove Image'),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],
@@ -542,9 +546,6 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                     child: Text('Upload Photo'),
                                   )
                                 : Container(),
-                            SizedBox(
-                              height: 10,
-                            ),
                             //if image not null show the image
                             //if image null show text
                           ],

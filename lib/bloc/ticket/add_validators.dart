@@ -45,7 +45,7 @@ class ValidatorsAdd {
   final validateDescription = StreamTransformer<String, String>.fromHandlers(
       handleData: (description, sink) {
         if(description != null){
-          if (description.contains(RegExp(r'^(?=.{1,}$)'))) {
+          if (description.trim().isNotEmpty) {
             sink.add(description);
           } else {
             sink.addError('Please input Ticket Description');
@@ -53,6 +53,7 @@ class ValidatorsAdd {
         }
       }
   );
+
 
   final validatePhoto = StreamTransformer<File, File>.fromHandlers(
       handleData: (photo, sink) {

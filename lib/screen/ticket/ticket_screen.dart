@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -22,6 +23,9 @@ import 'package:mt/widget/reuseable/button/button_approval.dart';
 import 'package:mt/widget/reuseable/button/button_approval2.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
 import 'package:mt/widget/reuseable/expandable/expandable_card.dart';
+import 'package:mt/widget/reuseable/text/text_detail.dart';
+import 'package:mt/widget/reuseable/text/text_detailed.dart';
+import 'package:photo_view/photo_view.dart';
 
 class Ticket extends StatefulWidget {
   final Data ticket;
@@ -34,7 +38,6 @@ class Ticket extends StatefulWidget {
 }
 
 class _TicketState extends State<Ticket> {
-
   // Declare a variable to store the selected list
   String _selectedPics;
   String _selectedHelpdesks;
@@ -48,32 +51,32 @@ class _TicketState extends State<Ticket> {
   Future<Uint8List> _imageFuture;
 
   _fetchFeaturePics(int regionalId) async {
-      PicResponse response = await ticketBloc.getPics(regionalId.toString());
-      // Ensure that employeeIds are unique
-      Set<String> uniqueIds = Set();
-      _pics = response.results.data.pIC.where((pic) {
-        if (uniqueIds.contains(pic.employeeId)) {
-          return false;
-        }
-        uniqueIds.add(pic.employeeId);
-        return true;
-      }).toList();
-        _selectedPics = '0';
-
+    PicResponse response = await ticketBloc.getPics(regionalId.toString());
+    // Ensure that employeeIds are unique
+    Set<String> uniqueIds = Set();
+    _pics = response.results.data.pIC.where((pic) {
+      if (uniqueIds.contains(pic.employeeId)) {
+        return false;
+      }
+      uniqueIds.add(pic.employeeId);
+      return true;
+    }).toList();
+    _selectedPics = '0';
   }
 
   _fetchFeatureHelpdesks(int regionalId) async {
-      HelpdeskResponse response = await ticketBloc.getHelpdesks(regionalId.toString());
-      // Ensure that employeeIds are unique
-      Set<String> uniqueIds = Set();
-      _helpdesks = response.results.data.hELPDESK.where((helpdesk) {
-        if (uniqueIds.contains(helpdesk.employeeId)) {
-          return false;
-        }
-        uniqueIds.add(helpdesk.employeeId);
-        return true;
-      }).toList();
-        _selectedHelpdesks = '0';
+    HelpdeskResponse response =
+        await ticketBloc.getHelpdesks(regionalId.toString());
+    // Ensure that employeeIds are unique
+    Set<String> uniqueIds = Set();
+    _helpdesks = response.results.data.hELPDESK.where((helpdesk) {
+      if (uniqueIds.contains(helpdesk.employeeId)) {
+        return false;
+      }
+      uniqueIds.add(helpdesk.employeeId);
+      return true;
+    }).toList();
+    _selectedHelpdesks = '0';
   }
 
   _fetchFeatureDepthead() async {
@@ -98,10 +101,11 @@ class _TicketState extends State<Ticket> {
 
   void popupDialogAlertChange(String message) {
     showAlertDialog(
+      color: Colors.blue,
       context: context,
       message: message == 'null' ? "" : message,
-      icon: Icons.done,
-      type: 'success',
+      icon: message.toLowerCase().contains("reject") ? Icons.close : Icons.done,
+      type: message.toLowerCase().contains("reject") ? 'failed' : 'success',
       onOk: () {
         // Close the dialog
         Navigator.of(context).pop();
@@ -125,22 +129,22 @@ class _TicketState extends State<Ticket> {
                 title: Text(ticket.history[index].description != null
                     ? ticket.history[index].description
                     : 'No description provided'),
-                subtitle: Text(
-                    ticket.history[index].supervisor.employeeId == appData.user.data.employeeId ? 'by You at ' +
+                subtitle: Text(ticket.history[index].supervisor.employeeId ==
+                        appData.user.data.employeeId
+                    ? 'by You at ' +
                         DateFormat.yMd().format(
                             DateTime.parse(ticket.history[index].createdAt)) +
                         ' ' +
                         DateFormat.jm().format(
                             DateTime.parse(ticket.history[index].createdAt))
-                        : 'by ' +
-                    ticket.history[index].supervisor.employeeName +
-                    ' at ' +
-                    DateFormat.yMd().format(
-                        DateTime.parse(ticket.history[index].createdAt)) +
-                    ' ' +
-                    DateFormat.jm().format(
-                        DateTime.parse(ticket.history[index].createdAt))
-                ),
+                    : 'by ' +
+                        ticket.history[index].supervisor.employeeName +
+                        ' at ' +
+                        DateFormat.yMd().format(
+                            DateTime.parse(ticket.history[index].createdAt)) +
+                        ' ' +
+                        DateFormat.jm().format(
+                            DateTime.parse(ticket.history[index].createdAt))),
               );
             },
           ),
@@ -155,12 +159,12 @@ class _TicketState extends State<Ticket> {
         useSafeArea: true,
         builder: (BuildContext context) {
           return AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             title: Text('Menu'),
             content: Container(
               child: Column(
                 children: [
-
                   //PIC REGIONAL
                   Visibility(
                     visible: widget.ticket.ticketStatusId == 1,
@@ -175,8 +179,6 @@ class _TicketState extends State<Ticket> {
                                 builder: (BuildContext context, setState) {
                                   return Column(
                                     children: [
-                                      Text('Ticket Status: ' +
-                                          widget.ticket.ticketStatusId.toString()),
                                       Card(
                                         elevation: 0.0,
                                         child: Padding(
@@ -194,7 +196,8 @@ class _TicketState extends State<Ticket> {
                                                     onChanged:
                                                         (String newValue) {
                                                       setState(() {
-                                                        _selectedPics = newValue;
+                                                        _selectedPics =
+                                                            newValue;
                                                       });
                                                       if (_selectedPics !=
                                                           '0') {
@@ -245,7 +248,6 @@ class _TicketState extends State<Ticket> {
                           idapproval: 1,
                           doUpdate: doUpdate,
                         ),
-
                       ],
                     ),
                   ),
@@ -256,15 +258,14 @@ class _TicketState extends State<Ticket> {
                     child: Column(
                       children: [
                         FutureBuilder(
-                          future: _fetchFeatureHelpdesks(widget.ticket.employee.regional.regionalId),
+                          future: _fetchFeatureHelpdesks(
+                              widget.ticket.employee.regional.regionalId),
                           builder: (context, snapshot) {
                             if (snapshot.hasData || _helpdesks != null) {
                               return StatefulBuilder(
                                 builder: (BuildContext context, setState) {
                                   return Column(
                                     children: [
-                                      Text('Ticket Status: ' +
-                                          widget.ticket.ticketStatusId.toString()),
                                       Card(
                                         elevation: 0.0,
                                         child: Padding(
@@ -272,7 +273,7 @@ class _TicketState extends State<Ticket> {
                                               horizontal: 8.0),
                                           child: Flex(
                                               mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                                  MainAxisAlignment.center,
                                               direction: Axis.horizontal,
                                               children: [
                                                 Expanded(
@@ -285,8 +286,11 @@ class _TicketState extends State<Ticket> {
                                                         _selectedHelpdesks =
                                                             newValue;
                                                       });
-                                                      if (_selectedHelpdesks != '0') {
-                                                        ticketBloc.changeHelpdesk(newValue);
+                                                      if (_selectedHelpdesks !=
+                                                          '0') {
+                                                        ticketBloc
+                                                            .changeHelpdesk(
+                                                                newValue);
                                                       } else {
                                                         ticketBloc.resetBloc();
                                                       }
@@ -294,17 +298,20 @@ class _TicketState extends State<Ticket> {
                                                     items: [
                                                       DropdownMenuItem<String>(
                                                         value: '0',
-                                                        child:
-                                                        Text('Select Helpdesk'),
+                                                        child: Text(
+                                                            'Select Helpdesk'),
                                                       ),
-                                                      ..._helpdesks.map((helpdesk) {
+                                                      ..._helpdesks
+                                                          .map((helpdesk) {
                                                         return DropdownMenuItem<
                                                             String>(
-                                                          value: helpdesk.employeeId,
+                                                          value: helpdesk
+                                                              .employeeId,
                                                           child: Text(helpdesk
-                                                              .employeeName +
+                                                                  .employeeName +
                                                               ' - ' +
-                                                              helpdesk.employeeId),
+                                                              helpdesk
+                                                                  .employeeId),
                                                         );
                                                       }).toList()
                                                     ],
@@ -332,7 +339,6 @@ class _TicketState extends State<Ticket> {
                           idapproval: 2,
                           doUpdate: doUpdate,
                         ),
-
                       ],
                     ),
                   ),
@@ -357,7 +363,7 @@ class _TicketState extends State<Ticket> {
                                               horizontal: 8.0),
                                           child: Flex(
                                               mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                                  MainAxisAlignment.center,
                                               direction: Axis.horizontal,
                                               children: [
                                                 Expanded(
@@ -370,8 +376,11 @@ class _TicketState extends State<Ticket> {
                                                         _selectedDepthead =
                                                             newValue;
                                                       });
-                                                      if (_selectedDepthead != '0') {
-                                                        ticketBloc.changeDepthead(newValue);
+                                                      if (_selectedDepthead !=
+                                                          '0') {
+                                                        ticketBloc
+                                                            .changeDepthead(
+                                                                newValue);
                                                       } else {
                                                         ticketBloc.resetBloc();
                                                       }
@@ -379,16 +388,20 @@ class _TicketState extends State<Ticket> {
                                                     items: [
                                                       DropdownMenuItem<String>(
                                                         value: '0',
-                                                        child: Text('Select DeptHead'),
+                                                        child: Text(
+                                                            'Select DeptHead'),
                                                       ),
-                                                      ..._depthead.map((depthead) {
+                                                      ..._depthead
+                                                          .map((depthead) {
                                                         return DropdownMenuItem<
                                                             String>(
-                                                          value: depthead.employeeId,
+                                                          value: depthead
+                                                              .employeeId,
                                                           child: Text(depthead
-                                                              .employeeName +
+                                                                  .employeeName +
                                                               ' - ' +
-                                                              depthead.employeeId),
+                                                              depthead
+                                                                  .employeeId),
                                                         );
                                                       }).toList()
                                                     ],
@@ -416,22 +429,27 @@ class _TicketState extends State<Ticket> {
                           idapproval: 3,
                           doUpdate: doUpdate,
                         ),
-
                       ],
                     ),
                   ),
 
                   SizedBox(height: 5),
-                  Divider(height: 1, thickness: 1,),
+                  Divider(
+                    height: 1,
+                    thickness: 1,
+                  ),
                   SizedBox(height: 5),
 
                   //FINAL APPROVE BUTTON
-                  approvalButton2(
-                      approval: 4,
-                      ticketId: widget.ticket.ticketId,
-                      employeeId: widget.user.data.employeeId,
-                      doUpdate: doUpdate,
-                      title: '  Final Approve '
+                  Visibility(
+                    visible: widget.ticket.ticketStatusId == 3 ||
+                        widget.ticket.ticketStatusId == 4,
+                    child: approvalButton2(
+                        approval: 4,
+                        ticketId: widget.ticket.ticketId,
+                        employeeId: widget.user.data.employeeId,
+                        doUpdate: doUpdate,
+                        title: '  Final Approve '),
                   ),
 
                   //REJECT BUTTON
@@ -442,9 +460,7 @@ class _TicketState extends State<Ticket> {
                       doUpdate: doUpdate,
                       title: '  Reject',
                       icon: Icons.close,
-                      buttonColor: Colors.red
-                  ),
-
+                      buttonColor: Colors.red),
                 ],
               ),
             ),
@@ -456,13 +472,13 @@ class _TicketState extends State<Ticket> {
     });
   }
 
-  void popupDialogAlert(String message){
+  void popupDialogAlert(String message) {
     showAlertDialog(
       context: context,
       message: message == 'null' ? "" : message,
       icon: Icons.info_outline,
       type: 'failed',
-      onOk: (){
+      onOk: () {
         Navigator.pop(context);
         errorBloc.resetBloc();
       },
@@ -472,10 +488,10 @@ class _TicketState extends State<Ticket> {
   @override
   void initState() {
     super.initState();
-    _imageFuture = TicketsProvider().getPhoto(widget.ticket.ticketId);
     AppData().count = 1;
     ticketUpdateBloc.resetBloc();
     ticketBloc.resetBloc();
+    _imageFuture = ticketBloc.getFoto(widget.ticket.ticketId);
   }
 
   @override
@@ -489,16 +505,17 @@ class _TicketState extends State<Ticket> {
     super.didChangeDependencies();
   }
 
-  Widget errResponse(){
+  Widget errResponse() {
     return StreamBuilder(
       initialData: null,
       stream: errorBloc.errMsg,
       builder: (context, snapshot) {
         if (snapshot.data != null && snapshot.data.toString().length > 1) {
           appData.count = appData.count + 1;
-          if(appData.count == 2){
+          if (appData.count == 2) {
             appData.count = 0;
-            WidgetsBinding.instance.addPostFrameCallback((_) => popupDialogAlert(snapshot.data));
+            WidgetsBinding.instance
+                .addPostFrameCallback((_) => popupDialogAlert(snapshot.data));
           }
           return Container();
         } else {
@@ -565,8 +582,9 @@ class _TicketState extends State<Ticket> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+
                     SizedBox(
-                      height: 16.0,
+                      height: 8.0,
                     ),
 
                     //EMPLOYEE
@@ -582,7 +600,9 @@ class _TicketState extends State<Ticket> {
                       ],
                     ),
 
-                    SizedBox( height: 8.0, ),
+                    SizedBox(
+                      height: 8.0,
+                    ),
 
                     //SUPERVISOR
                     ExpandableCard(
@@ -596,7 +616,9 @@ class _TicketState extends State<Ticket> {
                       ],
                     ),
 
-                    SizedBox( height: 8.0, ),
+                    SizedBox(
+                      height: 8.0,
+                    ),
 
                     Container(
                       width: double.infinity,
@@ -610,7 +632,8 @@ class _TicketState extends State<Ticket> {
                               Row(
                                 children: <Widget>[
                                   Text(
-                                    'TICKET - ' + widget.ticket.ticketId.toString(),
+                                    'TICKET - ' +
+                                        widget.ticket.ticketId.toString(),
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
@@ -630,71 +653,111 @@ class _TicketState extends State<Ticket> {
                                   ),
                                 ],
                               ),
-                              Text(
-                                  'Status: ${widget.ticket.ticketStatus.ticketStatusNext}'),
-                              Text(
-                                  'Feature: ${widget.ticket.feature.featureName}'),
-                              Text(
-                                  'Sub feature: ${widget.ticket.subFeature.subFeatureName}'),
-                              Text(
-                                  "Created at: ${DateFormat.yMd().format(DateTime.parse(widget.ticket.createdAt))} ${DateFormat.jm().format(DateTime.parse(widget.ticket.createdAt))}"),
-                              Text(
-                                  "Last Update: ${DateFormat.yMd().format(DateTime.parse(widget.ticket.history.last.createdAt))} ${DateFormat.jm().format(DateTime.parse(widget.ticket.history.last.createdAt))}"),
+                              textDetail(label: 'Status', initialValue: widget.ticket.ticketStatus.ticketStatusNext),
+                              Visibility(
+                                visible: widget.ticket.ticketStatusId != 5 && widget.ticket.ticketStatusId != 6,
+                                child: textDetail(label: 'Current Approval', initialValue: widget.ticket.supervisorId + ' - ' + widget.ticket.supervisor.employeeName),
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    flex: 1,
+                                    child: textDetail(label: 'Type', initialValue: widget.ticket.feature.featureName),) ,
+                                  Expanded(
+                                    flex: 1,
+                                    child: textDetail(label: 'Sub-Feature', initialValue: widget.ticket.subFeature.subFeatureName),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    flex: 1,
+                                    child: textDetail(label: 'Created at', initialValue: DateFormat.yMd().format(DateTime.parse(widget.ticket.createdAt))+ ' ' +DateFormat.jm().format(DateTime.parse(widget.ticket.createdAt))),) ,
+                                  Expanded(
+                                    flex: 1,
+                                    child: textDetail(label: 'Last Update', initialValue: DateFormat.yMd().format(DateTime.parse(widget.ticket.history.last.createdAt))+ ' ' +DateFormat.jm().format(DateTime.parse(widget.ticket.history.last.createdAt))),
+                                  ),
+                                ],
+                              ),
                               SizedBox(
                                 height: 8.0,
                               ),
-                              Text('Title: ${widget.ticket.ticketTitle}'),
+                              Divider(
+                                color: Colors.blue,
+                                height: 10,
+                                thickness: 1.0,
+                              ),
                               SizedBox(
                                 height: 8.0,
                               ),
-                              Text('${widget.ticket.ticketDescription}'),
+                              textDetailed(label: 'Title', text: widget.ticket.ticketTitle),
+                              textDetailed(label: 'Description', text: widget.ticket.ticketDescription),
                               SizedBox(
                                 height: 8.0,
                               ),
-                        FutureBuilder(
-                          future: _imageFuture,
-                          builder: (context, image) {
-                            if (image.connectionState == ConnectionState.done) {
-                              if (image.hasData && image.data != null) {
-                                return GestureDetector(
-                                  onTap: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          content: InteractiveViewer(
-                                            maxScale: 2.5,
-                                            minScale: 0.5,
+                              Divider(
+                                color: Colors.blue,
+                                height: 10,
+                                thickness: 1.0,
+                              ),
+                              SizedBox(
+                                height: 8.0,
+                              ),
+                              Text('PHOTO',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              Center(
+                                  child: FutureBuilder<Uint8List>(
+                                    future: _imageFuture,
+                                    builder: (context, AsyncSnapshot<Uint8List> image) {
+                                      if (image.connectionState == ConnectionState.done) {
+                                        if (image.hasData && image.data != null) {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (BuildContext context) {
+                                                    return Scaffold(
+                                                      appBar: AppBar(
+                                                        title: Text("Picture - ID "+widget.ticket.ticketId.toString()),
+                                                      ),
+                                                      body: Container(
+                                                        child: PhotoView(
+                                                          enableRotation: true,
+                                                          imageProvider: MemoryImage(image.data),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              );
+                                            },
                                             child: Image.memory(
                                               image.data,
-                                              fit: BoxFit.contain,
+                                              height: 300,
                                             ),
-                                          ),
+                                          );
+                                        } else {
+                                          return Text('No Picture Uploaded');
+                                        }
+                                      } else {
+                                        return Center(
+                                          child: CircularProgressIndicator(),
                                         );
-                                      },
-                                    );
-                                  },
-                                  child: Image.memory(
-                                    image.data,
-                                    height: 300,
+                                      }
+                                    },
                                   ),
-                                );
-                              } else {
-                                return Text('No Picture Uploaded');
-                              }
-                            } else {
-                              return Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
-                          },
-                        ),
-
+                              ),
                             ],
                           ),
                         ),
                       ),
                     ),
+
                     SizedBox(
                       height: 16.0,
                     ),

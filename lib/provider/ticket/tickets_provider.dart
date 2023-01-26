@@ -76,6 +76,23 @@ class TicketsProvider {
     }
   }
 
+  Future<Uint8List> getFoto(int ticketId) async {
+    try {
+      Response response = await _dio.get(urlAPI.getphoto + ticketId.toString(),
+        options: Options(
+          responseType: ResponseType.bytes,
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Authorization': 'Bearer ${AppData().token}',
+          },
+        ),
+      );
+      return response.data;
+    } catch (e) {
+      return e;
+    }
+  }
+
   Future<TicketsResponse> getTickets() async {
     try {
       print(Prefs.authToken.toString());

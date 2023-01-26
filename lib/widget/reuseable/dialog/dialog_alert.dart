@@ -7,6 +7,7 @@ Future<void> showAlertDialog({
   @required String type,
   @required IconData icon,
   @required VoidCallback onOk,
+  Color color = Colors.green,
 }) async {
   return await showDialog(
     context: context,
@@ -47,7 +48,7 @@ Future<void> showAlertDialog({
                               child: Text(StringConst.ok, textScaleFactor: 1.0,),
                               style: ElevatedButton.styleFrom(
                                   elevation: 10.0,
-                                  primary: Colors.green,
+                                  primary: color,
                                   shape: new RoundedRectangleBorder(
                                     borderRadius: new BorderRadius.circular(30.0),
                                   ),

@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:dio/dio.dart';
 import 'package:mt/bloc/error/error_bloc.dart';
 import 'package:mt/bloc/loading/loading_bloc.dart';
 import 'package:mt/model/response/ticket/depthead_response.dart';
@@ -19,6 +22,7 @@ class TicketBloc extends Object {
   final BehaviorSubject<PicResponse> _subject_pic = BehaviorSubject<PicResponse>(); //PIC
   final BehaviorSubject<HelpdeskResponse> _subject_helpdesk = BehaviorSubject<HelpdeskResponse>(); //HELPDESK
   final BehaviorSubject<DeptheadResponse> _subject_depthead = BehaviorSubject<DeptheadResponse>(); //HELPDESK
+  final BehaviorSubject<Uint8List> _foto = BehaviorSubject<Uint8List>(); //FOTO
 
   final _searchText = BehaviorSubject<String>();
   final _pic = BehaviorSubject<String>();
@@ -26,12 +30,12 @@ class TicketBloc extends Object {
   final _depthead = BehaviorSubject<String>();
   final _approval = BehaviorSubject<bool>();
 
-
   Stream<String> get searchText => _searchText.stream;
   Stream<String> get pic => _pic.stream;
   Stream<String> get helpdesk => _helpdesk.stream;
   Stream<String> get depthead => _depthead.stream;
   Stream<bool> get approval => _approval.stream;
+  Stream<Uint8List> get foto => _foto.stream;
 
 
   Function(String) get changeSearchText => _searchText.sink.add;
@@ -39,7 +43,20 @@ class TicketBloc extends Object {
   Function(String) get changeHelpdesk => _helpdesk.sink.add;
   Function(String) get changeDepthead => _depthead.sink.add;
   Function(bool) get changeApproval => _approval.sink.add;
+  Function(Uint8List) get changeFoto => _foto.sink.add;
 
+  Future<Uint8List> getFoto(ticketId) async {
+    appData.setErrMsg("");
+    Uint8List response = await _ticket.getFoto(ticketId);
+    try {
+      _foto.sink.add(response);
+      return response;
+    } catch (e) {
+      _foto.sink.add(null);
+      appData.setErrMsg(e.toString());
+      errorBloc.updateErrMsg(e.toString());
+    }
+  }
 
   Future<TicketsResponse> get() async {
     appData.setErrMsg("");
@@ -131,7 +148,7 @@ class TicketBloc extends Object {
     _helpdesk.sink.add(null);
     _depthead.sink.add(null);
     _approval.sink.add(null);
-
+    _foto.sink.add(null);
   }
 
   resetResponse() {
@@ -147,6 +164,7 @@ class TicketBloc extends Object {
     _helpdesk.close();
     _depthead.close();
     _approval.close();
+    _foto.close();
   }
 }
 final ticketBloc = TicketBloc();
