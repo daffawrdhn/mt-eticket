@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mt/bloc/error/error_bloc.dart';
+import 'package:mt/bloc/loading/loading_bloc.dart';
 import 'package:mt/bloc/ticket/ticketUpdate_bloc.dart';
 import 'package:mt/bloc/ticket/ticket_bloc.dart';
 import 'package:mt/data/local/app_data.dart';
@@ -22,6 +23,7 @@ import 'package:mt/resource/values/values.dart';
 import 'package:mt/widget/reuseable/button/button_approval.dart';
 import 'package:mt/widget/reuseable/button/button_approval2.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
+import 'package:mt/widget/reuseable/dialog/dialog_alert_loading.dart';
 import 'package:mt/widget/reuseable/expandable/expandable_card.dart';
 import 'package:mt/widget/reuseable/text/text_detail.dart';
 import 'package:mt/widget/reuseable/text/text_detailed.dart';
@@ -104,7 +106,7 @@ class _TicketState extends State<Ticket> {
       color: Colors.blue,
       context: context,
       message: message == 'null' ? "" : message,
-      icon: message.toLowerCase().contains("reject") ? Icons.close : Icons.done,
+      icon: message.toLowerCase().contains("reject") ? Icons.sticky_note_2_outlined : Icons.done,
       type: message.toLowerCase().contains("reject") ? 'failed' : 'success',
       onOk: () {
         // Close the dialog
@@ -114,6 +116,17 @@ class _TicketState extends State<Ticket> {
         Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
       },
     );
+  }
+
+  void popupLoading(String message) {
+    loadingDialog(
+      context: context,
+      message: message == 'null' ? "" : message,
+    );
+  }
+
+  void closePopupLoading() {
+    Navigator.pop(context);
   }
 
   void _showHistoryModal(BuildContext context, Data ticket) {
@@ -195,9 +208,9 @@ class _TicketState extends State<Ticket> {
                                                     value: _selectedPics,
                                                     onChanged:
                                                         (String newValue) {
-                                                      setState(() {
-                                                        _selectedPics =
-                                                            newValue;
+
+                                                          setState(() {
+                                                        _selectedPics = newValue;
                                                       });
                                                       if (_selectedPics !=
                                                           '0') {
@@ -282,9 +295,8 @@ class _TicketState extends State<Ticket> {
                                                     value: _selectedHelpdesks,
                                                     onChanged:
                                                         (String newValue) {
-                                                      setState(() {
-                                                        _selectedHelpdesks =
-                                                            newValue;
+                                                          setState(() {
+                                                        _selectedHelpdesks = newValue;
                                                       });
                                                       if (_selectedHelpdesks !=
                                                           '0') {
@@ -373,8 +385,7 @@ class _TicketState extends State<Ticket> {
                                                     onChanged:
                                                         (String newValue) {
                                                       setState(() {
-                                                        _selectedDepthead =
-                                                            newValue;
+                                                        _selectedDepthead = newValue;
                                                       });
                                                       if (_selectedDepthead !=
                                                           '0') {
@@ -421,7 +432,7 @@ class _TicketState extends State<Ticket> {
                           },
                         ),
 
-                        //HELPDESK BUTTON APPROVAL
+                        //DEPT HEAD BUTTON APPROVAL
                         approvalButton(
                           stream: ticketBloc.depthead,
                           title: '  Sent to Depthead  ',
@@ -458,7 +469,7 @@ class _TicketState extends State<Ticket> {
                       ticketId: widget.ticket.ticketId,
                       employeeId: widget.user.data.employeeId,
                       doUpdate: doUpdate,
-                      title: '  Reject',
+                      title: '  Reject  ',
                       icon: Icons.close,
                       buttonColor: Colors.red),
                 ],
@@ -514,8 +525,7 @@ class _TicketState extends State<Ticket> {
           appData.count = appData.count + 1;
           if (appData.count == 2) {
             appData.count = 0;
-            WidgetsBinding.instance
-                .addPostFrameCallback((_) => popupDialogAlert(snapshot.data));
+            WidgetsBinding.instance.addPostFrameCallback((_) => popupDialogAlert(snapshot.data));
           }
           return Container();
         } else {
@@ -533,8 +543,7 @@ class _TicketState extends State<Ticket> {
           if (snapshot.data.error != null && snapshot.data.error.length > 0) {
             return Container();
           } else {
-            WidgetsBinding.instance.addPostFrameCallback(
-                (_) => popupDialogAlertChange(snapshot.data.results.message));
+            WidgetsBinding.instance.addPostFrameCallback((_) => popupDialogAlertChange(snapshot.data.results.message));
             // Future.microtask(() => Navigator.pushReplacementNamed(context, '/home'));
             return _buildErrorWidget("");
           }
@@ -565,6 +574,20 @@ class _TicketState extends State<Ticket> {
     ));
   }
 
+  Widget _buildLoadingWidget() {
+    return StreamBuilder(
+        stream: loadingBloc.isLoading,
+        builder: (context, snapshot) {
+          if(snapshot.data == true){
+            WidgetsBinding.instance.addPostFrameCallback((_) => popupLoading('Loading...'));
+            return Container();
+          }else{
+            return Container();
+          }
+        }
+    );
+  }
+
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
@@ -583,6 +606,7 @@ class _TicketState extends State<Ticket> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
 
+                    _buildLoadingWidget(),
                     SizedBox(
                       height: 8.0,
                     ),
@@ -656,8 +680,9 @@ class _TicketState extends State<Ticket> {
                               textDetail(label: 'Status', initialValue: widget.ticket.ticketStatus.ticketStatusNext),
                               Visibility(
                                 visible: widget.ticket.ticketStatusId != 5 && widget.ticket.ticketStatusId != 6,
-                                child: textDetail(label: 'Current Approval', initialValue: widget.ticket.supervisorId + ' - ' + widget.ticket.supervisor.employeeName),
+                                child: textDetail(label: 'Current Approval', initialValue: widget.ticket.supervisorId == appData.user.data.employeeId ? 'You' : widget.ticket.supervisorId + ' - ' + widget.ticket.currentapproval.employeeName),
                               ),
+
                               Row(
                                 children: [
                                   Expanded(

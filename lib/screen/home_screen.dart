@@ -137,13 +137,14 @@ class _HomeScreenState extends State<HomeScreen> {
             }
           }
           ),
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: Visibility(visible: _selectedIndex == 1,
+          child: FloatingActionButton(
           onPressed: () {
             Navigator.pushNamed(context, '/add');
           },
           tooltip: 'Add Post',
           child: Icon(Icons.add),
-        ),
+        ),),
       ),
       onWillPop: () => showDialog<bool>(
         context: context,

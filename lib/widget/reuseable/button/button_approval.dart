@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mt/bloc/ticket/ticket_bloc.dart';
 
 class approvalButton extends StatelessWidget {
 
@@ -16,6 +17,8 @@ class approvalButton extends StatelessWidget {
      this.doUpdate,
   });
 
+  bool close;
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -28,12 +31,40 @@ class approvalButton extends StatelessWidget {
             onPressed: snapshot.hasData
                 ? () async {
 
-              // print(idapproval.toString());
-              // print(ticketId.toString());
-              // print(snapshot.data);
-              doUpdate(idapproval, ticketId, snapshot.data);
-            }
-                : null,
+              // Show confirmation dialog
+              await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text("Confirmation"),
+                    content: Text("Are you sure you "+title+" ?"),
+                    actions: <Widget>[
+                      FlatButton(
+                        child: Text("Cancel"),
+                        onPressed: () {
+                          close = false;
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      FlatButton(
+                        child: Text("Proceed"),
+                        onPressed: () {
+                          close = true;
+                          Navigator.of(context).pop();
+                          doUpdate(idapproval, ticketId, snapshot.data);
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+              if(close == false){
+              } else {
+                close = null;
+                Navigator.of(context).pop();
+              }
+
+            } : null,
             child: Row(
               children: [
                 Icon(

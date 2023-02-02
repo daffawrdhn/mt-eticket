@@ -3,16 +3,12 @@ import 'package:mt/data/sharedpref/preferences.dart';
 import 'package:rxdart/rxdart.dart';
 
 class HomeBloc {
-  final _selectedIndexSubject = BehaviorSubject<int>();
-  Stream<int> get selectedIndexStream => _selectedIndexSubject.stream;
-  int get selectedIndex => _selectedIndexSubject.value;
-
-  void onItemTapped(int index) {
-    _selectedIndexSubject.add(index);
-  }
+  final _fabstatus = BehaviorSubject<bool>();
+  Stream<bool> get fab => _fabstatus.stream;
+  Function(bool) get changeFab => _fabstatus.sink.add;
 
   void dispose() {
-    _selectedIndexSubject.close();
+    _fabstatus.close();
   }
 }
 

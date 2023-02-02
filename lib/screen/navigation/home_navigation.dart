@@ -1,8 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mt/bloc/error/error_bloc.dart';
 import 'package:mt/bloc/summary/summary_bloc.dart';
 import 'package:mt/data/local/app_data.dart';
 import 'package:mt/model/summary/summary_response.dart';
+import 'package:mt/resource/values/values.dart';
 
 import 'package:mt/widget/reuseable/card/card_status.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
@@ -35,6 +37,15 @@ class _HomeNavState extends State<HomeNav> {
       };
     });
   }
+
+  final colorList = <Color>[
+    Colors.blue, //Open
+    Colors.yellow, //AP1
+    Colors.orange, //AP2
+    Colors.red, //AP3
+    Colors.green, //complete
+    Colors.grey //reject
+  ];
 
   @override
   void initState() {
@@ -115,11 +126,26 @@ class _HomeNavState extends State<HomeNav> {
             ),
             SizedBox(height: 10.0),
 
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              child: Text('Ticket Summary',
+                style: TextStyle(
+                    fontSize: 36,
+                    color: Colors.black38,
+                    fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
             FutureBuilder(
                   future: dataMap == null ? _fetchSummary() : null ,
                   builder: (context, summary) {
                     if (summary.hasData || dataMap != null) {
-                      return PieChart(dataMap: dataMap);
+                      return PieChart(
+                          chartValuesOptions: ChartValuesOptions(
+                            decimalPlaces: 0,
+                          ),
+                          dataMap: dataMap,
+                          colorList: colorList,);
                     } else {
                       return Center(child: CircularProgressIndicator());
                     }

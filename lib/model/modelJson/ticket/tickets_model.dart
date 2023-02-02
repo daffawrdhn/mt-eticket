@@ -1,6 +1,6 @@
 class tickets {
   bool success;
-  String token;
+  Null token;
   List<Data> data;
   String message;
 
@@ -44,6 +44,7 @@ class Data {
   String updatedAt;
   Employee employee;
   Employee supervisor;
+  Currentapproval currentapproval;
   List<History> history;
   Feature feature;
   SubFeature subFeature;
@@ -63,6 +64,7 @@ class Data {
         this.updatedAt,
         this.employee,
         this.supervisor,
+        this.currentapproval,
         this.history,
         this.feature,
         this.subFeature,
@@ -85,6 +87,9 @@ class Data {
         : null;
     supervisor = json['supervisor'] != null
         ? new Employee.fromJson(json['supervisor'])
+        : null;
+    currentapproval = json['currentapproval'] != null
+        ? new Currentapproval.fromJson(json['currentapproval'])
         : null;
     if (json['history'] != null) {
       history = <History>[];
@@ -121,6 +126,9 @@ class Data {
     if (this.supervisor != null) {
       data['supervisor'] = this.supervisor.toJson();
     }
+    if (this.currentapproval != null) {
+      data['currentapproval'] = this.currentapproval.toJson();
+    }
     if (this.history != null) {
       data['history'] = this.history.map((v) => v.toJson()).toList();
     }
@@ -145,6 +153,8 @@ class Employee {
   String employeeEmail;
   String employeeKtp;
   String employeeBirth;
+  String joinDate;
+  String quitDate;
   String apiToken;
   Organization organization;
   Regional regional;
@@ -157,6 +167,8 @@ class Employee {
         this.employeeEmail,
         this.employeeKtp,
         this.employeeBirth,
+        this.joinDate,
+        this.quitDate,
         this.apiToken,
         this.organization,
         this.regional});
@@ -169,6 +181,8 @@ class Employee {
     employeeEmail = json['employee_email'];
     employeeKtp = json['employee_ktp'];
     employeeBirth = json['employee_birth'];
+    joinDate = json['join_date'];
+    quitDate = json['quit_date'];
     apiToken = json['api_token'];
     organization = json['organization'] != null
         ? new Organization.fromJson(json['organization'])
@@ -187,6 +201,8 @@ class Employee {
     data['employee_email'] = this.employeeEmail;
     data['employee_ktp'] = this.employeeKtp;
     data['employee_birth'] = this.employeeBirth;
+    data['join_date'] = this.joinDate;
+    data['quit_date'] = this.quitDate;
     data['api_token'] = this.apiToken;
     if (this.organization != null) {
       data['organization'] = this.organization.toJson();
@@ -253,6 +269,22 @@ class Regional {
   }
 }
 
+class Currentapproval {
+  String employeeName;
+
+  Currentapproval({this.employeeName});
+
+  Currentapproval.fromJson(Map<String, dynamic> json) {
+    employeeName = json['employee_name'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['employee_name'] = this.employeeName;
+    return data;
+  }
+}
+
 class History {
   int id;
   int ticketId;
@@ -314,6 +346,8 @@ class Supervisor {
   String employeeEmail;
   String employeeKtp;
   String employeeBirth;
+  String joinDate;
+  String quitDate;
   String apiToken;
 
   Supervisor(
@@ -324,6 +358,8 @@ class Supervisor {
         this.employeeEmail,
         this.employeeKtp,
         this.employeeBirth,
+        this.joinDate,
+        this.quitDate,
         this.apiToken});
 
   Supervisor.fromJson(Map<String, dynamic> json) {
@@ -334,6 +370,8 @@ class Supervisor {
     employeeEmail = json['employee_email'];
     employeeKtp = json['employee_ktp'];
     employeeBirth = json['employee_birth'];
+    joinDate = json['join_date'];
+    quitDate = json['quit_date'];
     apiToken = json['api_token'];
   }
 
@@ -346,6 +384,8 @@ class Supervisor {
     data['employee_email'] = this.employeeEmail;
     data['employee_ktp'] = this.employeeKtp;
     data['employee_birth'] = this.employeeBirth;
+    data['join_date'] = this.joinDate;
+    data['quit_date'] = this.quitDate;
     data['api_token'] = this.apiToken;
     return data;
   }
