@@ -71,9 +71,12 @@ class approvalButton extends StatelessWidget {
                   Icons.done,
                   color: Colors.white,
                 ),
-                Text(
-                  title,
-                  style: TextStyle(color: Colors.white),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    title,
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             ),
@@ -87,9 +90,12 @@ class approvalButton extends StatelessWidget {
                   Icons.done,
                   color: Colors.white,
                 ),
-                Text(
-                  title,
-                  style: TextStyle(color: Colors.white),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    title,
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             ),

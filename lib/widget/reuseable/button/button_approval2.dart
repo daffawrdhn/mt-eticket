@@ -33,7 +33,7 @@ class approvalButton2 extends StatelessWidget {
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text("Confirmation"),
-              content: Text("Are you sure you want to"+title+" ?"),
+              content: Text("Are you sure you want to "+title+" ?"),
               actions: <Widget>[
                 FlatButton(
                   child: Text("Cancel"),
@@ -66,9 +66,12 @@ class approvalButton2 extends StatelessWidget {
             icon,
             color: Colors.white,
           ),
-          Text(
-            title,
-            style: TextStyle(color: Colors.white),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text(
+              title,
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),

@@ -256,7 +256,7 @@ class _TicketState extends State<Ticket> {
                         //PIC BUTTON APPROVAL
                         approvalButton(
                           stream: ticketBloc.pic,
-                          title: '  Sent to PIC  ',
+                          title: 'Sent to PIC',
                           ticketId: widget.ticket.ticketId,
                           idapproval: 1,
                           doUpdate: doUpdate,
@@ -435,7 +435,7 @@ class _TicketState extends State<Ticket> {
                         //DEPT HEAD BUTTON APPROVAL
                         approvalButton(
                           stream: ticketBloc.depthead,
-                          title: '  Sent to Depthead  ',
+                          title: 'Sent to Depthead',
                           ticketId: widget.ticket.ticketId,
                           idapproval: 3,
                           doUpdate: doUpdate,
@@ -460,7 +460,7 @@ class _TicketState extends State<Ticket> {
                         ticketId: widget.ticket.ticketId,
                         employeeId: widget.user.data.employeeId,
                         doUpdate: doUpdate,
-                        title: '  Final Approve '),
+                        title: 'Final Approve'),
                   ),
 
                   //REJECT BUTTON
@@ -469,7 +469,7 @@ class _TicketState extends State<Ticket> {
                       ticketId: widget.ticket.ticketId,
                       employeeId: widget.user.data.employeeId,
                       doUpdate: doUpdate,
-                      title: '  Reject  ',
+                      title: 'Reject',
                       icon: Icons.close,
                       buttonColor: Colors.red),
                 ],
