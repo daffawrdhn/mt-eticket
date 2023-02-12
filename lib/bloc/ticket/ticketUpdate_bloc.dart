@@ -45,11 +45,12 @@ class TicketUpdateBloc extends Object {
     if (response.results.success == true) {
       _subject.sink.add(response);
     } else {
+      loadingBloc.updateLoading(false);
       _subject.sink.add(response);
       appData.setErrMsg(response.error);
       errorBloc.updateErrMsg(response.error);
     }
-    loadingState(false);
+    loadingBloc.updateLoading(false);
   }
 
   void loadingState(bool loading) {

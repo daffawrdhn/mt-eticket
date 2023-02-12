@@ -118,13 +118,6 @@ class _TicketState extends State<Ticket> {
     );
   }
 
-  void popupLoading(String message) {
-    loadingDialog(
-      context: context,
-      message: message == 'null' ? "" : message,
-    );
-  }
-
   void closePopupLoading() {
     Navigator.pop(context);
   }
@@ -592,20 +585,6 @@ class _TicketState extends State<Ticket> {
     ));
   }
 
-  Widget _buildLoadingWidget() {
-    return StreamBuilder(
-        stream: loadingBloc.isLoading,
-        builder: (context, snapshot) {
-          if(snapshot.data == true){
-            WidgetsBinding.instance.addPostFrameCallback((_) => popupLoading('Loading...'));
-            return Container();
-          }else{
-            return Container();
-          }
-        }
-    );
-  }
-
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
@@ -622,8 +601,6 @@ class _TicketState extends State<Ticket> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-
-                _buildLoadingWidget(),
 
                 //EMPLOYEE
                 ExpandableCard(
@@ -820,33 +797,70 @@ class _TicketState extends State<Ticket> {
             ),
             ),
 
-
-            Visibility(
-              visible: widget.type == 'approval',
-              child: Expanded(
-                flex: 4,
-              child: Material(
-                color: AppColors.loginSubmit,
-                child: InkWell(
-                  onTap: () {
-                    _update();
-                  },
-                  child: const SizedBox(
-                    height: kToolbarHeight,
-                    width: double.infinity,
-                    child: Center(
-                      child: Text('MENU',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+            StreamBuilder(
+                stream: loadingBloc.isLoading,
+                builder: (context, snapshot) {
+                  if (snapshot.data == true) {
+                    return Visibility(
+                      visible: widget.type == 'approval',
+                      child: Expanded(
+                        flex: 4,
+                        child: Material(
+                          color: AppColors.loginSubmit,
+                          child: InkWell(
+                            onTap: () {
+                            },
+                            child: SizedBox(
+                              height: kToolbarHeight,
+                              width: double.infinity,
+                              child: Center(
+                                child: Transform.scale(
+                                  scale: 0.75,
+                                  child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
-              ),
+                    );
+                  } else {
+                    return Visibility(
+                      visible: widget.type == 'approval',
+                      child: Expanded(
+                        flex: 4,
+                        child: Material(
+                          color: AppColors.loginSubmit,
+                          child: InkWell(
+                            onTap: () {
+                              _update();
+                              setState(() {
+                                _selectedPics = '0';
+                                _selectedHelpdesks = '0';
+                                _selectedDepthead = '0';
+                              });
+                            },
+                            child: const SizedBox(
+                              height: kToolbarHeight,
+                              width: double.infinity,
+                              child: Center(
+                                child: Text('MENU',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                }
             ),
-            )
           ],
         ),
         )

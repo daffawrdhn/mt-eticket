@@ -526,8 +526,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                           valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
                         ),
                         SizedBox(height: 10),
-                        Text(StringConst.loading,
-                            style: Theme.of(context).textTheme.caption),
+                        Text(StringConst.loading, style: Theme.of(context).textTheme.caption),
                       ],
                     ));
               } else {

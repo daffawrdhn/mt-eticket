@@ -169,14 +169,6 @@ class _CheckForgotScreenState extends State<CheckForgotScreen> {
           title: Text('Change Password'),
         ),
       backgroundColor: Colors.white,
-      bottomNavigationBar: BottomAppBar(
-        color: Colors.transparent,
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Text('1.0.0', style: Styles.customTextStyle(Colors.black, 'bold', 15.0),textAlign: TextAlign.center,),
-        ),
-        elevation: 0,
-      ),
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).requestFocus(new FocusNode());

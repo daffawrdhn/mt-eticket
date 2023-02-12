@@ -214,6 +214,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           builder: (context, snapshot) {
                             return TextField(
                               maxLength: 12,
+                              textInputAction: TextInputAction.next,
                               onChanged: loginBloc.changePassword,
                               obscureText: _obscureText,
                               style: Styles.customTextStyle(Colors.black, 'bold', 15.0),

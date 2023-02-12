@@ -170,14 +170,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             title: Text('Change Password'),
           ),
           backgroundColor: Colors.white,
-          bottomNavigationBar: BottomAppBar(
-            color: Colors.transparent,
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Text('1.0.0', style: Styles.customTextStyle(Colors.black, 'bold', 15.0),textAlign: TextAlign.center,),
-            ),
-            elevation: 0,
-          ),
           body: Container(
             alignment: Alignment.center,
             child: SingleChildScrollView(

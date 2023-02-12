@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mt/bloc/home/logout_bloc.dart';
+import 'package:mt/data/local/app_data.dart';
 import 'package:mt/model/modelJson/login/login_model.dart';
 import 'package:mt/resource/values/values.dart';
 
@@ -69,6 +70,13 @@ class ProfileNav extends StatelessWidget {
             // Logout action
             doLogout(context);
           },
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text("Version "+AppData().version, style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),),
+          ),
         ),
       ],
     );

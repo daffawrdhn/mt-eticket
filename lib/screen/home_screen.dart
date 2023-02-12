@@ -122,9 +122,15 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               ListTile(
                 leading: Icon(
+                  Icons.label,
+                ),
+                title: Text(AppData().user.data.supervisorId),
+              ),
+              ListTile(
+                leading: Icon(
                   Icons.person,
                 ),
-                title: Text(AppData().user.data.supervisorId+' - '+AppData().user.data.supervisorName),
+                title: Text(AppData().user.data.supervisorName),
               ),
             ],
           ),
