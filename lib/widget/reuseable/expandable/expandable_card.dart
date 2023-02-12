@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mt/data/local/app_data.dart';
+import 'package:mt/resource/values/values.dart';
 
 class ExpandableCard extends StatefulWidget {
   final String title;
@@ -22,8 +24,15 @@ class _ExpandableCardState extends State<ExpandableCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 3.0,
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.grey,
+            width: 1.0,
+          ),
+        ),
+      ),
       child: Padding(
         padding: _isExpanded ? const EdgeInsets.symmetric(vertical: 16.0) : const EdgeInsets.symmetric(vertical: 1.0),
         child: Column(
@@ -52,7 +61,7 @@ class _ExpandableCardState extends State<ExpandableCard> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Divider(
-                    color: Colors.blue,
+                    color: AppColors.loginSubmit,
                     height: 10,
                     thickness: 1.0,
                   ),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mt/bloc/error/error_bloc.dart';
 import 'package:mt/bloc/ticket/ticket_bloc.dart';
@@ -7,6 +9,7 @@ import 'package:mt/provider/ticket/tickets_provider.dart';
 import 'package:mt/widget/reuseable/card/card_tickets.dart';
 import 'package:mt/model/modelJson/ticket/tickets_model.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
+import 'package:mt/widget/reuseable/dialog/dialog_error.dart';
 
 class TicketsNav extends StatefulWidget {
   @override
@@ -24,36 +27,9 @@ class _TicketsNavState extends State<TicketsNav> {
     AppData().count = 1;
   }
 
-  void popupDialogAlert(String message) {
-    showAlertDialog(
-      context: context,
-      message: message == 'null' ? "" : message,
-      icon: Icons.info_outline,
-      type: 'failed',
-      onOk: () {
-        Navigator.pop(context);
-        errorBloc.resetBloc();
-      },
-    );
-  }
-
-  Widget errResponse() {
-    return StreamBuilder(
-      initialData: null,
-      stream: errorBloc.errMsg,
-      builder: (context, snapshot) {
-        if (snapshot.data != null && snapshot.data.toString().length > 1) {
-          appData.count = appData.count + 1;
-          if (appData.count == 2) {
-            appData.count = 0;
-            WidgetsBinding.instance.addPostFrameCallback((_) => popupDialogAlert(snapshot.data));
-          }
-          return Container();
-        } else {
-          return Container();
-        }
-      },
-    );
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -105,7 +81,7 @@ class _TicketsNavState extends State<TicketsNav> {
             ),
           ),
         ),
-        errResponse(),
+        eResponse(),
       ],
     );
   }

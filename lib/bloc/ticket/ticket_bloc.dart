@@ -29,6 +29,7 @@ class TicketBloc extends Object {
   final _helpdesk = BehaviorSubject<String>();
   final _depthead = BehaviorSubject<String>();
   final _approval = BehaviorSubject<bool>();
+  final _name = BehaviorSubject<String>();
 
   Stream<String> get searchText => _searchText.stream;
   Stream<String> get pic => _pic.stream;
@@ -36,6 +37,7 @@ class TicketBloc extends Object {
   Stream<String> get depthead => _depthead.stream;
   Stream<bool> get approval => _approval.stream;
   Stream<Uint8List> get foto => _foto.stream;
+  Stream<String> get name => _name.stream;
 
 
   Function(String) get changeSearchText => _searchText.sink.add;
@@ -44,6 +46,7 @@ class TicketBloc extends Object {
   Function(String) get changeDepthead => _depthead.sink.add;
   Function(bool) get changeApproval => _approval.sink.add;
   Function(Uint8List) get changeFoto => _foto.sink.add;
+  Function(String) get changeName => _name.sink.add;
 
   Future<Uint8List> getFoto(ticketId) async {
     appData.setErrMsg("");

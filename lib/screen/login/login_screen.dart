@@ -9,6 +9,7 @@ import 'package:mt/helper/widget/widget_helper.dart';
 import 'package:mt/model/response/login/login_response.dart';
 import 'package:mt/resource/values/values.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
+import 'package:mt/widget/reuseable/dialog/dialog_error.dart';
 import 'package:package_info/package_info.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -35,19 +36,6 @@ class _LoginScreenState extends State<LoginScreen> {
     FocusScope.of(context).requestFocus(FocusNode());
     loginBloc.resetResponse();
     loginBloc.login();
-  }
-
-  void popupDialogAlert(String message){
-    showAlertDialog(
-      context: context,
-      message: message == 'null' ? "" : message,
-      icon: Icons.info_outline,
-      type: 'failed',
-      onOk: (){
-        Navigator.pop(context);
-        errorBloc.resetBloc();
-      },
-    );
   }
 
   void initState(){
@@ -142,25 +130,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ));
     }
 
-    Widget errResponse(){
-      return StreamBuilder(
-        initialData: null,
-        stream: errorBloc.errMsg,
-        builder: (context, snapshot) {
-          if (snapshot.data != null && snapshot.data.toString().length > 1) {
-            appData.count = appData.count + 1;
-            if(appData.count == 2){
-              appData.count = 0;
-              WidgetsBinding.instance.addPostFrameCallback((_) => popupDialogAlert(snapshot.data));
-            }
-            return Container();
-          } else {
-            return Container();
-          }
-        },
-      );
-    }
-
     Widget responseWidget(){
       return StreamBuilder<LoginResponse>(
         stream: loginBloc.subject.stream,
@@ -188,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
           color: Colors.transparent,
           child: Padding(
             padding: const EdgeInsets.all(10.0),
-            child: Text('1.0.0', style: Styles.customTextStyle(Colors.black, 'bold', 15.0),textAlign: TextAlign.center,),
+            child: Text(AppData().version, style: Styles.customTextStyle(Colors.black, 'bold', 15.0),textAlign: TextAlign.center,),
           ),
           elevation: 0,
         ),
@@ -283,7 +252,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   responseWidget(),
                   SizedBox(height: 15.0),
                   SizedBox(height: 20.0),
-                  errResponse(),
+                  eResponse(),
                 ],
               )
             ),

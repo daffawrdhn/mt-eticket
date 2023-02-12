@@ -7,12 +7,12 @@ import 'package:mt/data/local/app_data.dart';
 import 'package:mt/data/sharedpref/preferences.dart';
 import 'package:mt/helper/widget/widget_helper.dart';
 import 'package:mt/model/response/changePassword/changePassword_response.dart';
-import 'package:mt/model/response/login/login_response.dart';
 import 'package:mt/resource/values/values.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
 
 // import 'package:mt/bloc/login/login_bloc.dart';
 import 'package:mt/bloc/changePassword/changePassword_bloc.dart';
+import 'package:mt/widget/reuseable/dialog/dialog_error.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
 
@@ -46,19 +46,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     FocusScope.of(context).requestFocus(FocusNode());
     changePasswordBloc.resetResponse();
     changePasswordBloc.change();
-  }
-
-  void popupDialogAlert(String message){
-    showAlertDialog(
-      context: context,
-      message: message == 'null' ? "" : message,
-      icon: Icons.info_outline,
-      type: 'failed',
-      onOk: (){
-        Navigator.pop(context);
-        errorBloc.resetBloc();
-      },
-    );
   }
 
   void popupDialogAlertChange(String message) {
@@ -141,21 +128,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       );
     }
 
-    Widget _changePassword() {
-      return GestureDetector(
-        onTap: () {
-          Future.microtask(() => Navigator.pushReplacementNamed(context, '/checkdata'));
-        },
-        child: Text('Change Password',
-          style: TextStyle(
-              decoration: TextDecoration.underline,
-              fontWeight: FontWeight.bold,
-              color: AppColors.loginSubmit
-          ),
-        ),
-      );
-    }
-
     Widget _buildErrorWidget(String error) {
       return Center(
           child: Column(
@@ -168,25 +140,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               ),
             ],
           ));
-    }
-
-    Widget errResponse(){
-      return StreamBuilder(
-        initialData: null,
-        stream: errorBloc.errMsg,
-        builder: (context, snapshot) {
-          if (snapshot.data != null && snapshot.data.toString().length > 1) {
-            appData.count = appData.count + 1;
-            if(appData.count == 2){
-              appData.count = 0;
-              WidgetsBinding.instance.addPostFrameCallback((_) => popupDialogAlert(snapshot.data));
-            }
-            return Container();
-          } else {
-            return Container();
-          }
-        },
-      );
     }
 
     Widget responseWidget(){
@@ -210,26 +163,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       );
     }
 
-    Widget _backToLogin() {
-      return GestureDetector(
-        onTap: () async {
-          AppData().token = "";
-          Prefs.clear();
-          Future.microtask(() => Navigator.pushReplacementNamed(context, '/login'));
-        },
-        child: Text('Back to Login',
-          style: TextStyle(
-              decoration: TextDecoration.underline,
-              fontWeight: FontWeight.bold,
-              color: AppColors.loginSubmit
-          ),
-        ),
-      );
-    }
-
     return SafeArea(
       child: Scaffold(
           appBar: AppBar(
+            backgroundColor: AppColors.loginSubmit,
             title: Text('Change Password'),
           ),
           backgroundColor: Colors.white,
@@ -403,7 +340,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       responseWidget(),
                       SizedBox(height: 15.0),
                       SizedBox(height: 20.0),
-                      errResponse(),
+                      eResponse(),
                     ],
                   )
               ),

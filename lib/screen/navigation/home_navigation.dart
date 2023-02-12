@@ -8,6 +8,7 @@ import 'package:mt/resource/values/values.dart';
 
 import 'package:mt/widget/reuseable/card/card_status.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
+import 'package:mt/widget/reuseable/dialog/dialog_error.dart';
 import 'package:pie_chart/pie_chart.dart';
 
 class HomeNav extends StatefulWidget {
@@ -54,109 +55,69 @@ class _HomeNavState extends State<HomeNav> {
     AppData().count = 1;
   }
 
-  void popupDialogAlert(BuildContext context, String message) {
-    showAlertDialog(
-      context: context,
-      message: message == 'null' ? "" : message,
-      icon: Icons.info_outline,
-      type: 'failed',
-      onOk: () {
-        Navigator.pop(context);
-        errorBloc.resetBloc();
-      },
-    );
-  }
-
-  Widget errResponse() {
-    return StreamBuilder(
-      initialData: null,
-      stream: errorBloc.errMsg,
-      builder: (context, snapshot) {
-        if (snapshot.data != null && snapshot.data.toString().length > 1) {
-          appData.count = appData.count + 1;
-          if (appData.count == 2) {
-            appData.count = 0;
-            WidgetsBinding.instance.addPostFrameCallback(
-                    (_) => popupDialogAlert(context, snapshot.data));
-          }
-          return Container();
-        } else {
-          return Container();
-        }
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: ListView(
-          children: <Widget>[
-            SizedBox(height: 15.0),
-            CustomCard(
-              leading: Icon(Icons.search),
-              title: 'Tickets',
-              subtitle: 'Check your ticket status here.',
-              actions: <Widget>[
-                OutlineButton(
-                  child: Text('CHECK'),
-                  onPressed: () {
-                    widget.onChangeIndex(1);
-                  },
-                  borderSide: BorderSide(color: Colors.blue),
-                ),
-              ],
-            ),
-            SizedBox(height: 10.0),
-            CustomCard(
-              leading: Icon(Icons.approval),
-              title: 'Approval',
-              subtitle: 'Ticket dont aproved by itself, check here.',
-              actions: <Widget>[
-                OutlineButton(
-                  child: Text('APPROVE'),
-                  onPressed: () {
-                    widget.onChangeIndex(2);
-                  },
-                  borderSide: BorderSide(color: Colors.blue),
-                ),
-              ],
-            ),
-            SizedBox(height: 10.0),
+      child: ListView(
+        children: <Widget>[
+          SizedBox(height: 10.0),
+          CustomCard(
+            leading: Icon(Icons.search),
+            title: 'Tickets',
+            subtitle: 'Check your ticket status here.',
+            textbutton: 'Check',
+            action: 1,
+            go: (index) {
+              widget.onChangeIndex(index);
+            },
+          ),
+          SizedBox(height: 10.0),
+          CustomCard(
+            leading: Icon(Icons.approval),
+            title: 'Approval',
+            subtitle: 'Ticket dont aproved by itself, check here.',
+            textbutton: 'Approve',
+            action: 2,
+            go: (index) {
+              widget.onChangeIndex(index);
+            },
+          ),
+          SizedBox(height: 10.0),
 
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text('Ticket Summary',
-                style: TextStyle(
-                    fontSize: 36,
-                    color: Colors.black38,
-                    fontWeight: FontWeight.bold,
-                ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text('Ticket Summary',
+              style: TextStyle(
+                  fontSize: 36,
+                  color: AppColors.loginSubmit,
+                  fontWeight: FontWeight.bold,
               ),
             ),
-            FutureBuilder(
-                  future: dataMap == null ? _fetchSummary() : null ,
-                  builder: (context, summary) {
-                    if (summary.hasData || dataMap != null) {
-                      return PieChart(
+          ),
+          FutureBuilder(
+                future: dataMap == null ? _fetchSummary() : null ,
+                builder: (context, summary) {
+                  if (summary.hasData || dataMap != null) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: PieChart(
+                        emptyColor: AppColors.loginSubmit.withOpacity(0.2),
                           chartValuesOptions: ChartValuesOptions(
                             decimalPlaces: 0,
                           ),
                           dataMap: dataMap,
-                          colorList: colorList,);
-                    } else {
-                      return Center(child: CircularProgressIndicator());
-                    }
-                    },
-            ),
+                          colorList: colorList,),
+                    );
+                  } else {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  },
+          ),
 
-            SizedBox(height: 10.0),
+          SizedBox(height: 10.0),
 
-            errResponse(),
-          ],
-        ),
+          eResponse(),
+        ],
       ),
     );
   }

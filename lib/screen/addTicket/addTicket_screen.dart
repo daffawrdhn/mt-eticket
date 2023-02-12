@@ -14,6 +14,7 @@ import 'package:mt/data/local/app_data.dart';
 import 'package:mt/data/sharedpref/preferences.dart';
 import 'package:mt/resource/values/values.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
+import 'package:mt/widget/reuseable/dialog/dialog_error.dart';
 
 class AddTicketScreen extends StatefulWidget {
   @override
@@ -75,6 +76,9 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
               child: Column(
                 children: [
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: AppColors.loginSubmit,
+                    ),
                     //if user click this button. user can upload image from camera
                     onPressed: () {
                       Navigator.pop(context);
@@ -98,19 +102,6 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
     FocusScope.of(context).requestFocus(FocusNode());
     ticketAddBloc.resetResponse();
     ticketAddBloc.create();
-  }
-
-  void popupDialogAlert(String message) {
-    showAlertDialog(
-      context: context,
-      message: message == 'null' ? "" : message,
-      icon: Icons.info_outline,
-      type: 'failed',
-      onOk: () {
-        Navigator.pop(context);
-        errorBloc.resetBloc();
-      },
-    );
   }
 
   void popupDialogAlertChange(String message) {
@@ -179,42 +170,16 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
           builder: (context, snapshot) {
               return SizedBox(
                   width: MediaQuery.of(context).size.width,
-                  height: 50.0,
+                  height: 60.0,
                   child: ElevatedButton(
                     child: Text('CREATE'),
                     style: ElevatedButton.styleFrom(
                         elevation: 15.0,
                         primary: AppColors.loginSubmit,
-                        shape: new RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(30.0),
-                        ),
                         textStyle:
                             Styles.customTextStyle(Colors.black, 'bold', 18.0)),
                     onPressed: snapshot.data == true && _selectedSubFeatureId != 0 ? doLogin : null,
                   ));
-          });
-    }
-
-    Widget _buildLoadingWidget() {
-      return StreamBuilder(
-          stream: loadingBloc.isLoading,
-          builder: (context, snapshot) {
-            if (snapshot.data == true) {
-              return Center(
-                  child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(
-                    valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
-                  ),
-                  SizedBox(height: 10),
-                  Text(StringConst.loading,
-                      style: Theme.of(context).textTheme.caption),
-                ],
-              ));
-            } else {
-              return submitButton();
-            }
           });
     }
 
@@ -234,26 +199,6 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
           ),
         ],
       ));
-    }
-
-    Widget errResponse() {
-      return StreamBuilder(
-        initialData: null,
-        stream: errorBloc.errMsg,
-        builder: (context, snapshot) {
-          if (snapshot.data != null && snapshot.data.toString().length > 1) {
-            appData.count = appData.count + 1;
-            if (appData.count == 2) {
-              appData.count = 0;
-              WidgetsBinding.instance
-                  .addPostFrameCallback((_) => popupDialogAlert(snapshot.data));
-            }
-            return Container();
-          } else {
-            return Container();
-          }
-        },
-      );
     }
 
     Widget responseWidget() {
@@ -281,6 +226,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: AppColors.loginSubmit,
           title: Text('Create New Ticket'),
         ),
         backgroundColor: Colors.white,
@@ -517,6 +463,9 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                 Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
                                   child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      primary: AppColors.loginSubmit,
+                                    ),
                                     onPressed: () {
                                       // Remove the selected image
                                       ticketAddBloc.changePhoto(null);
@@ -540,6 +489,9 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                             ),
                             image == null
                                 ? ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: AppColors.loginSubmit,
+                              ),
                                     onPressed: () {
                                       SelectImg();
                                     },
@@ -553,16 +505,36 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                       ),
                     ),
                     SizedBox(height: 20.0),
-                    _buildLoadingWidget(),
                     SizedBox(height: 20.0),
                     responseWidget(),
                     SizedBox(height: 15.0),
                     SizedBox(height: 20.0),
-                    errResponse(),
+                    eResponse(),
                   ],
                 )),
           ),
         ),
+        bottomNavigationBar: StreamBuilder(
+            stream: loadingBloc.isLoading,
+            builder: (context, snapshot) {
+              if (snapshot.data == true) {
+                return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(
+                          valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+                        ),
+                        SizedBox(height: 10),
+                        Text(StringConst.loading,
+                            style: Theme.of(context).textTheme.caption),
+                      ],
+                    ));
+              } else {
+                return submitButton();
+              }
+            }
+        )
       ),
     );
   }

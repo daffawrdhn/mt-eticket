@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mt/data/local/app_data.dart';
 import 'package:mt/data/sharedpref/preferences.dart';
 import 'package:mt/resource/values/values.dart';
 import 'package:package_info/package_info.dart';
@@ -14,8 +15,8 @@ class _SplashScreenState extends State<SplashScreen>{
   PackageInfo _packageInfo = PackageInfo(
     appName: 'Unknown',
     packageName: 'Unknown',
-    version: 'Unknown',
-    buildNumber: 'Unknown',
+    version: '1.0.9',
+    buildNumber: '1',
   );
 
   startTimeout() {
@@ -78,7 +79,7 @@ class _SplashScreenState extends State<SplashScreen>{
                     left: MediaQuery.of(context).size.width * 0.45,
                     right: 140,
                     child: Text(
-                        _packageInfo.version,
+                        AppData().version,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.black,

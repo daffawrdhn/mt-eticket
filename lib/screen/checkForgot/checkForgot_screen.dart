@@ -13,6 +13,7 @@ import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
 
 import 'package:mt/bloc/checkForgot/checkForgot_bloc.dart';
 import 'package:mt/model/response/checkForgot/checkForgot_response.dart';
+import 'package:mt/widget/reuseable/dialog/dialog_error.dart';
 
 
 class CheckForgotScreen extends StatefulWidget {
@@ -43,19 +44,6 @@ class _CheckForgotScreenState extends State<CheckForgotScreen> {
     checkForgotBloc.resetResponse();
     // loginBloc.login();
     checkForgotBloc.check();
-  }
-
-  void popupDialogAlert(String message){
-    showAlertDialog(
-      context: context,
-      message: message == 'null' ? "" : message,
-      icon: Icons.info_outline,
-      type: 'failed',
-      onOk: (){
-        Navigator.of(context).pop();
-        errorBloc.resetBloc();
-      },
-    );
   }
 
   void initState(){
@@ -154,25 +142,6 @@ class _CheckForgotScreenState extends State<CheckForgotScreen> {
           ));
     }
 
-    Widget errResponse(){
-      return StreamBuilder(
-        initialData: null,
-        stream: errorBloc.errMsg,
-        builder: (context, snapshot) {
-          if (snapshot.data != null && snapshot.data.toString().length > 1) {
-            appData.count = appData.count + 1;
-            if(appData.count == 2){
-              appData.count = 0;
-              WidgetsBinding.instance.addPostFrameCallback((_) => popupDialogAlert(snapshot.data));
-            }
-            return Container();
-          } else {
-            return Container();
-          }
-        },
-      );
-    }
-
     Widget responseWidget(){
       return StreamBuilder<CheckForgotResponse>(
         stream: checkForgotBloc.subject.stream,
@@ -196,6 +165,7 @@ class _CheckForgotScreenState extends State<CheckForgotScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: AppColors.loginSubmit,
           title: Text('Change Password'),
         ),
       backgroundColor: Colors.white,
@@ -322,7 +292,7 @@ class _CheckForgotScreenState extends State<CheckForgotScreen> {
                   responseWidget(),
                   SizedBox(height: 15.0),
                   SizedBox(height: 20.0),
-                  errResponse(),
+                  eResponse(),
                 ],
               )
           ),

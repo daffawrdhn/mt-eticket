@@ -16,39 +16,34 @@ class ProfileNav extends StatelessWidget {
 
         Padding(
           padding: const EdgeInsets.all(10.0),
-          child: Card(
+          child: Column(
+            children: <Widget>[
 
-            elevation: 3.0,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-            child: Column(
-              children: <Widget>[
-
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Container(
-                    height: 100.0,
-                    width: 100.0,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          fit: BoxFit.fill,
-                          image: AssetImage(ImagePath.profile),
-                        )
-                    ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Container(
+                  height: 100.0,
+                  width: 100.0,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        fit: BoxFit.fill,
+                        image: AssetImage(ImagePath.profile),
+                      )
                   ),
                 ),
+              ),
 
-                Text(user.data.employeeId, style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
-                SizedBox(height: 5.0),
-                Text(user.data.employeeName, style: TextStyle(fontSize: 16.0)),
-                SizedBox(height: 5.0),
-                Text(user.data.employeeEmail, style: TextStyle(fontSize: 16.0)),
-                SizedBox(height: 5.0),
-                Text(user.data.organization.organizationName, style: TextStyle(fontSize: 16.0)),
-                SizedBox(height: 10.0),
+              Text(user.data.employeeId, style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
+              SizedBox(height: 5.0),
+              Text(user.data.employeeName, style: TextStyle(fontSize: 16.0)),
+              SizedBox(height: 5.0),
+              Text(user.data.employeeEmail, style: TextStyle(fontSize: 16.0)),
+              SizedBox(height: 5.0),
+              Text(user.data.organization.organizationName, style: TextStyle(fontSize: 16.0)),
+              SizedBox(height: 10.0),
 
-              ],
-            ),
+            ],
           ),
         ),
 

@@ -5,9 +5,11 @@ import 'package:mt/data/local/app_data.dart';
 import 'package:mt/model/modelJson/login/login_model.dart' as user;
 import 'package:mt/model/response/ticket/tickets_response.dart';
 import 'package:mt/provider/ticket/tickets_provider.dart';
+import 'package:mt/resource/values/values.dart';
 import 'package:mt/widget/reuseable/card/card_tickets.dart';
 import 'package:mt/model/modelJson/ticket/tickets_model.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
+import 'package:mt/widget/reuseable/dialog/dialog_error.dart';
 
 class HistoryScreen extends StatefulWidget {
   @override
@@ -29,23 +31,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
     super.dispose();
   }
 
-  void popupDialogAlert(String message) {
-    showAlertDialog(
-      context: context,
-      message: message == 'null' ? "" : message,
-      icon: Icons.info_outline,
-      type: 'failed',
-      onOk: () {
-        Navigator.pop(context);
-        errorBloc.resetBloc();
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppColors.loginSubmit,
         title: Text('History'),
       ),
       body: Center(child: history(),),
@@ -101,28 +91,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
             ),
           ),
         ),
-        errResponse(),
+        eResponse(),
       ],
     );
   }
 
-  Widget errResponse() {
-    return StreamBuilder(
-      initialData: null,
-      stream: errorBloc.errMsg,
-      builder: (context, snapshot) {
-        if (snapshot.data != null && snapshot.data.toString().length > 1) {
-          appData.count = appData.count + 1;
-          if (appData.count == 2) {
-            appData.count = 0;
-            WidgetsBinding.instance.addPostFrameCallback((_) => popupDialogAlert(snapshot.data));
-          }
-          return Container();
-        } else {
-          return Container();
-        }
-      },
-    );
-  }
 }
 

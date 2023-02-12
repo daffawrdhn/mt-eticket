@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mt/bloc/ticket/ticket_bloc.dart';
+import 'package:mt/resource/values/values.dart';
 
 class approvalButton extends StatelessWidget {
 
@@ -26,11 +27,12 @@ class approvalButton extends StatelessWidget {
       builder: (context, snapshot) {
         return Visibility(
           visible: snapshot.hasData,
-          child: FlatButton(
-            color: Colors.blue,
+          child: TextButton(
+            style: TextButton.styleFrom(
+              backgroundColor: AppColors.loginSubmit,
+            ),
             onPressed: snapshot.hasData
                 ? () async {
-
               // Show confirmation dialog
               await showDialog(
                 context: context,
