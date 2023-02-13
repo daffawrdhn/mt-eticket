@@ -120,6 +120,10 @@ class _HomeScreenState extends State<HomeScreen> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              Image(
+                image: AssetImage(ImagePath.logo_h),
+                height: 100,
+              ),
               ListTile(
                 leading: Icon(
                   Icons.label,

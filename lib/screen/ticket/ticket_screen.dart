@@ -169,7 +169,7 @@ class _TicketState extends State<Ticket> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Padding(
-                padding: EdgeInsets.only(left: 50.0,top: 100.0,right: 50.0,bottom: 0.0),
+                padding: EdgeInsets.only(left: 50.0,top: 110.0,right: 50.0,bottom: 0.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -180,10 +180,8 @@ class _TicketState extends State<Ticket> {
                         widget.ticket.ticketStatusId == 4 ? 'FINAL APPROVE' :
                         widget.ticket.ticketStatusId == 5 ? 'COMPLETED' :
                         widget.ticket.ticketStatusId == 6 ? 'REJECTED' :
-                        'Error',
-                        style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),),
+                        'Error', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32),
+                    ),
                     //PIC REGIONAL
                     Visibility(
                       visible: widget.ticket.ticketStatusId == 1,
@@ -474,6 +472,7 @@ class _TicketState extends State<Ticket> {
                               approval: 1,
                               doUpdate: doUpdate,
                               closeCallback: closeBottomSheet,
+                              statusId: widget.ticket.ticketStatusId,
                             ),
                           ),
                       ),
@@ -488,6 +487,7 @@ class _TicketState extends State<Ticket> {
                               approval: 2,
                               doUpdate: doUpdate,
                               closeCallback: closeBottomSheet,
+                              statusId: widget.ticket.ticketStatusId,
                             ),
                           ),
                       ),
@@ -503,6 +503,7 @@ class _TicketState extends State<Ticket> {
                               approval: 3,
                               doUpdate: doUpdate,
                               closeCallback: closeBottomSheet,
+                              statusId: widget.ticket.ticketStatusId,
                             ),
                           )
                       ),

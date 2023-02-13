@@ -58,66 +58,71 @@ class _HomeNavState extends State<HomeNav> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: ListView(
-        children: <Widget>[
-          SizedBox(height: 10.0),
-          CustomCard(
-            leading: Icon(Icons.search),
-            title: 'Tickets',
-            subtitle: 'Check your ticket status here.',
-            textbutton: 'Check',
-            action: 1,
-            go: (index) {
-              widget.onChangeIndex(index);
-            },
-          ),
-          SizedBox(height: 10.0),
-          CustomCard(
-            leading: Icon(Icons.approval),
-            title: 'Approval',
-            subtitle: 'Ticket dont aproved by itself, check here.',
-            textbutton: 'Approve',
-            action: 2,
-            go: (index) {
-              widget.onChangeIndex(index);
-            },
-          ),
-          SizedBox(height: 10.0),
+      child: RefreshIndicator(
+        onRefresh: () async {
+          _fetchSummary();
+        },
+        child: ListView(
+          children: <Widget>[
+            SizedBox(height: 10.0),
+            CustomCard(
+              leading: Icon(Icons.search),
+              title: 'Tickets',
+              subtitle: 'Check your ticket status here.',
+              textbutton: 'Check',
+              action: 1,
+              go: (index) {
+                widget.onChangeIndex(index);
+              },
+            ),
+            SizedBox(height: 10.0),
+            CustomCard(
+              leading: Icon(Icons.approval),
+              title: 'Approval',
+              subtitle: 'Ticket dont aproved by itself, check here.',
+              textbutton: 'Approve',
+              action: 2,
+              go: (index) {
+                widget.onChangeIndex(index);
+              },
+            ),
+            SizedBox(height: 10.0),
 
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text('Ticket Summary',
-              style: TextStyle(
-                  fontSize: 36,
-                  color: AppColors.loginSubmit,
-                  fontWeight: FontWeight.bold,
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text('Ticket Summary',
+                style: TextStyle(
+                    fontSize: 36,
+                    color: AppColors.loginSubmit,
+                    fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
-          FutureBuilder(
-                future: dataMap == null ? _fetchSummary() : null ,
-                builder: (context, summary) {
-                  if (summary.hasData || dataMap != null) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: PieChart(
-                        emptyColor: AppColors.loginSubmit.withOpacity(0.2),
-                          chartValuesOptions: ChartValuesOptions(
-                            decimalPlaces: 0,
-                          ),
-                          dataMap: dataMap,
-                          colorList: colorList,),
-                    );
-                  } else {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                  },
-          ),
+            FutureBuilder(
+                  future: dataMap == null ? _fetchSummary() : null ,
+                  builder: (context, summary) {
+                    if (summary.hasData || dataMap != null) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: PieChart(
+                          emptyColor: AppColors.loginSubmit.withOpacity(0.2),
+                            chartValuesOptions: ChartValuesOptions(
+                              decimalPlaces: 0,
+                            ),
+                            dataMap: dataMap,
+                            colorList: colorList,),
+                      );
+                    } else {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    },
+            ),
 
-          SizedBox(height: 10.0),
+            SizedBox(height: 10.0),
 
-          eResponse(),
-        ],
+            eResponse(),
+          ],
+        ),
       ),
     );
   }
