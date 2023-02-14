@@ -52,7 +52,7 @@ class _TicketState extends State<Ticket> {
 
   Future<Uint8List> _imageFuture;
 
-  _fetchFeaturePics(int regionalId) async {
+    _fetchFeaturePics(int regionalId) async {
     PicResponse response = await ticketBloc.getPics(regionalId.toString());
     // Ensure that employeeIds are unique
     Set<String> uniqueIds = Set();

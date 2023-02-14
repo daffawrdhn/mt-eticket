@@ -15,9 +15,6 @@ Future<void> showAlertDialog({
     builder: (context) => WillPopScope(
       onWillPop: () async => false,
       child: AlertDialog(
-        //title: Text('Warning'),
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10))),
         content: SingleChildScrollView(
           child: Container(
             width: double.maxFinite,
@@ -47,11 +44,7 @@ Future<void> showAlertDialog({
                             child: ElevatedButton(
                               child: Text(StringConst.ok, textScaleFactor: 1.0,),
                               style: ElevatedButton.styleFrom(
-                                  elevation: 10.0,
                                   primary: color,
-                                  shape: new RoundedRectangleBorder(
-                                    borderRadius: new BorderRadius.circular(30.0),
-                                  ),
                                   textStyle: Styles.customTextStyle(Colors.white, 'bold', 18.0)),
                               onPressed: onOk,
                             )
