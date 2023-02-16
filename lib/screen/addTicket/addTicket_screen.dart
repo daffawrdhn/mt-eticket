@@ -293,7 +293,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         direction: Axis.horizontal,
                                       children: [
-                                        Expanded(flex: 1,
+                                        Expanded(flex: 4,
                                           child: DropdownButton<int>(
                                             value: _selectedFeatureId,
                                             onChanged: (int newValue) {
@@ -314,15 +314,14 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                                     DropdownMenuItem<int>(
                                                       value: 0,
                                                       child: Text(
-                                                          "Select a Feature"),
+                                                          "Select a Type"),
                                                     ),
                                                     ..._features.map((feature) {
                                                       return DropdownMenuItem<
                                                           int>(
                                                         value:
                                                             feature.featureId,
-                                                        child: Text(feature
-                                                            .featureName),
+                                                        child: Text(feature.featureName,softWrap: true,),
                                                       );
                                                     }).toList(),
                                                   ]
@@ -330,14 +329,13 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                                     return DropdownMenuItem<
                                                         int>(
                                                       value: feature.featureId,
-                                                      child: Text(
-                                                          feature.featureName),
+                                                      child: Text(feature.featureName,softWrap: true,),
                                                     );
                                                   }).toList(),
                                           ),
                                         ),
                                         SizedBox(width: 2.0),
-                                        Expanded(flex: 1,
+                                        Expanded(flex: 5,
                                           child: DropdownButton<int>(
                                             value: _selectedSubFeatureId,
                                             onChanged: (int newValue) {
@@ -361,10 +359,8 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                                         .map((subFeature) {
                                                       return DropdownMenuItem<
                                                           int>(
-                                                        value: subFeature
-                                                            .subFeatureId,
-                                                        child: Text(subFeature
-                                                            .subFeatureName),
+                                                        value: subFeature.subFeatureId,
+                                                        child: Text(subFeature.subFeatureName,softWrap: true,),
                                                       );
                                                     }).toList(),
                                                   ]
@@ -373,9 +369,8 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                                                     return DropdownMenuItem<
                                                         int>(
                                                       value: subFeature
-                                                          .subFeatureId,
-                                                      child: Text(subFeature
-                                                          .subFeatureName),
+                                                        .subFeatureId,
+                                                      child: Text(subFeature.subFeatureName,softWrap: true,),
                                                     );
                                                   }).toList(),
                                           ),
