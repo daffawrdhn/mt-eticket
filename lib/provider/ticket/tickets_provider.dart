@@ -126,6 +126,28 @@ class TicketsProvider {
     }
   }
 
+  Future<TicketsResponse> todohistory() async {
+    try {
+      print(Prefs.authToken.toString());
+      _dio.options.headers["Authorization"] = "Bearer ${AppData().token}";
+      Response response = await _dio.get(urlAPI.getTodoHistory);
+      return TicketsResponse.fromJson(response.data);
+    } on DioError catch(e) {
+      return TicketsResponse.withError(ErrHandler.getErrMessage(e));
+    }
+  }
+
+  Future<TicketsResponse> todo() async {
+    try {
+      print(Prefs.authToken.toString());
+      _dio.options.headers["Authorization"] = "Bearer ${AppData().token}";
+      Response response = await _dio.get(urlAPI.getTodo);
+      return TicketsResponse.fromJson(response.data);
+    } on DioError catch(e) {
+      return TicketsResponse.withError(ErrHandler.getErrMessage(e));
+    }
+  }
+
   Future<TicketUpdateResponse> updateTicket(int approval, int id, String employeeId) async {
     try {
       print(Prefs.authToken.toString());
@@ -140,12 +162,19 @@ class TicketsProvider {
         case 3: //approve 3
           Response response = await _dio.patch(urlAPI.updateticketstatus+id.toString()+'?ticket_status_id=4&id='+employeeId);
           return TicketUpdateResponse.fromJson(response.data);
-        case 4: //completed
+        case 4: //approved
           Response response = await _dio.patch(urlAPI.updateticketstatus + id.toString() + '?ticket_status_id=5&id='+employeeId);
           return TicketUpdateResponse.fromJson(response.data);
         case 5: //reject
           Response response = await _dio.patch(urlAPI.updateticketstatus + id.toString() + '?ticket_status_id=6&id='+employeeId);
           return TicketUpdateResponse.fromJson(response.data);
+        case 6: //progress
+          Response response = await _dio.patch(urlAPI.updateticketstatus + id.toString() + '?ticket_status_id=7&id='+employeeId);
+          return TicketUpdateResponse.fromJson(response.data);
+        case 7: //complete / done
+          Response response = await _dio.patch(urlAPI.updateticketstatus + id.toString() + '?ticket_status_id=8&id='+employeeId);
+          return TicketUpdateResponse.fromJson(response.data);
+
         default:
           return TicketUpdateResponse.withError('Invalid approval value');
       }

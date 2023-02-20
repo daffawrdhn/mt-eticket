@@ -7,6 +7,7 @@ import 'package:mt/screen/navigation/approval_navigation.dart';
 import 'package:mt/screen/navigation/home_navigation.dart';
 import 'package:mt/screen/navigation/profile_navigation.dart';
 import 'package:mt/screen/navigation/tickets_navigation.dart';
+import 'package:mt/screen/navigation/todo_navigation.dart';
 import 'package:mt/widget/reuseable/drawer/drawer.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,6 +22,17 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
   String _appBarTitle = 'Home';  // Add this line
+
+  final colorList = <Color>[
+    Colors.blue[100], //new
+    Colors.blue[300], //ap1
+    Colors.blue[600], //ap2
+    Colors.yellow[200], //ap3
+    Colors.yellow[400], //approved
+    Colors.grey[500], //reject
+    Colors.green[200], //progress
+    Colors.green[600] //completed
+  ];
 
   void _changeIndex(int index) {
     if(_selectedIndex == index) {
@@ -39,6 +51,9 @@ class _HomeScreenState extends State<HomeScreen> {
           _appBarTitle = 'Approval';
           break;
         case 3:
+          _appBarTitle = 'Todo';
+          break;
+        case 4:
           _appBarTitle = 'Profile';
           break;
       }
@@ -57,44 +72,56 @@ class _HomeScreenState extends State<HomeScreen> {
               ListTile(
                 leading: Icon(
                   Icons.sticky_note_2_outlined,
-                  color: Colors.blue,
+                  color: colorList[0],
                 ),
                 title: Text("Open"),
               ),
               ListTile(
                 leading: Icon(
                   Icons.looks_one,
-                  color: Colors.yellow,
+                  color: colorList[1],
                 ),
                 title: Text("Approval 1"),
               ),
               ListTile(
                 leading: Icon(
                   Icons.looks_two,
-                  color: Colors.orange,
+                  color: colorList[2],
                 ),
                 title: Text("Approval 2"),
               ),
               ListTile(
                 leading: Icon(
                   Icons.looks_3,
-                  color: Colors.red,
+                  color: colorList[3],
                 ),
                 title: Text("Approval 3"),
               ),
               ListTile(
                 leading: Icon(
                   Icons.sticky_note_2_rounded,
-                  color: Colors.green,
+                  color: colorList[4],
                 ),
-                title: Text("Complete"),
+                title: Text("Approved"),
               ),
               ListTile(
                 leading: Icon(
                   Icons.sticky_note_2_rounded,
-                  color: Colors.grey,
+                  color: colorList[5],
                 ),
                 title: Text("Rejected"),
+              ),ListTile(
+                leading: Icon(
+                  Icons.timelapse,
+                  color: colorList[6],
+                ),
+                title: Text("On progress"),
+              ),ListTile(
+                leading: Icon(
+                  Icons.done,
+                  color: colorList[7],
+                ),
+                title: Text("Completed"),
               ),
             ],
           ),
@@ -171,6 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
       HomeNav(onChangeIndex: _changeIndex),
       TicketsNav(),
       ApprovalNav(),
+      TodoNav(),
       ProfileNav(user: _user),
     ];
 
@@ -208,6 +236,19 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Visibility(
               visible: _selectedIndex == 3,
+              child: Padding(
+                padding: EdgeInsets.only(right: 10.0),
+                child: IconButton(
+                  icon: Icon(Icons.history),
+                  onPressed: () {
+                    // do something when button is pressed
+                    Future.microtask(() => Navigator.pushNamed(context, '/todohistory'));
+                  },
+                ),
+              ),
+            ),
+            Visibility(
+              visible: _selectedIndex == 4,
               child: Padding(
                 padding: EdgeInsets.only(right: 10.0),
                 child: IconButton(
@@ -250,6 +291,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 title: Text('Approval'),
               ),
               BottomNavigationBarItem(
+                icon: Icon(Icons.wysiwyg),
+                title: Text('Todo'),
+              ),
+              BottomNavigationBarItem(
                 icon: Icon(Icons.person),
                 title: Text('Profile'),
               ),
@@ -274,6 +319,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     _appBarTitle = 'Approval';
                     break;
                   case 3:
+                    _appBarTitle = 'Todo';
+                    break;
+                  case 4:
                     _appBarTitle = 'Profile';
                     break;
                 }

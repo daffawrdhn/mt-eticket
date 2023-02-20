@@ -26,6 +26,8 @@ class urlAPI {
   static const String gethelpdesk = "/get-helpdesks/";
   static const String getdepthead = "/get-depthead";
   static const String getHistory = "/get-history";
+  static const String getTodo = "/get-todo";
+  static const String getTodoHistory = "/get-todo-history";
   static const String getSummary = "/get-summary";
 
 

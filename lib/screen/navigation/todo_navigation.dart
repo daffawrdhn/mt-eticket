@@ -1,29 +1,33 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mt/bloc/error/error_bloc.dart';
 import 'package:mt/bloc/ticket/ticket_bloc.dart';
 import 'package:mt/data/local/app_data.dart';
-import 'package:mt/model/modelJson/login/login_model.dart' as user;
 import 'package:mt/model/response/ticket/tickets_response.dart';
 import 'package:mt/provider/ticket/tickets_provider.dart';
-import 'package:mt/resource/values/values.dart';
 import 'package:mt/widget/reuseable/card/card_tickets.dart';
 import 'package:mt/model/modelJson/ticket/tickets_model.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_error.dart';
+import 'package:mt/model/modelJson/login/login_model.dart' as user;
 
-class HistoryScreen extends StatefulWidget {
+class TodoNav extends StatefulWidget {
   @override
-  _HistoryScreenState createState() => _HistoryScreenState();
+  _TodoNavState createState() => _TodoNavState();
 }
 
-class _HistoryScreenState extends State<HistoryScreen> {
+class _TodoNavState extends State<TodoNav> {
 
-  List<Data> _tickets;
+  List<Data> _todos;
+  user.Login _user;
 
   @override
   void initState() {
     super.initState();
     ticketBloc.resetResponse();
+    _user = appData.user;
+    AppData().count = 1;
   }
 
   @override
@@ -33,16 +37,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.loginSubmit,
-        title: Text('Approval - History'),
-      ),
-      body: Center(child: history(),),
-    );
-  }
-
-  Widget history(){
     return Column(
       children: <Widget>[
         TextField(
@@ -56,31 +50,30 @@ class _HistoryScreenState extends State<HistoryScreen> {
           child: RefreshIndicator(
             onRefresh: () async {
               ticketBloc.resetResponse();
-              await ticketBloc.getHistory();
+              await ticketBloc.getTodo();
             },
             child: FutureBuilder<TicketsResponse>(
-              future: ticketBloc.getHistory(),
+              future: ticketBloc.getTodo(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  _tickets = snapshot.data.results.data;
-                  return _tickets.isEmpty
+                  _todos = snapshot.data.results.data;
+                  return _todos.isEmpty
                       ? Center(child: Text("No tickets found"))
                       : StreamBuilder(
                       stream: ticketBloc.searchText,
                       initialData: "",
                       builder: (context, searchData ) {
                         return TicketsCardList(
-                          tickets: _tickets
+                          tickets: _todos
                               .where((ticket) =>
-                          (ticket.ticketTitle
+                          ticket.ticketTitle
                               .toLowerCase()
                               .contains(searchData.data.toLowerCase()) ||
                               ticket.ticketId
                                   .toString()
                                   .contains(searchData.data))
-                              && ticket.ticketStatusId != 1)
                               .toList(),
-                          type: 'history',
+                          type: 'todo', user: _user,
                         );
                       });
                 } else if (snapshot.hasError) {
@@ -95,6 +88,4 @@ class _HistoryScreenState extends State<HistoryScreen> {
       ],
     );
   }
-
 }
-

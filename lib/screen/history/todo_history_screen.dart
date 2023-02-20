@@ -11,12 +11,12 @@ import 'package:mt/model/modelJson/ticket/tickets_model.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_error.dart';
 
-class HistoryScreen extends StatefulWidget {
+class TodoHistoryScreen extends StatefulWidget {
   @override
-  _HistoryScreenState createState() => _HistoryScreenState();
+  _TodoHistoryScreenState createState() => _TodoHistoryScreenState();
 }
 
-class _HistoryScreenState extends State<HistoryScreen> {
+class _TodoHistoryScreenState extends State<TodoHistoryScreen> {
 
   List<Data> _tickets;
 
@@ -36,7 +36,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.loginSubmit,
-        title: Text('Approval - History'),
+        title: Text('Todo - History'),
       ),
       body: Center(child: history(),),
     );
@@ -56,10 +56,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
           child: RefreshIndicator(
             onRefresh: () async {
               ticketBloc.resetResponse();
-              await ticketBloc.getHistory();
+              await ticketBloc.getTodoHistory();
             },
             child: FutureBuilder<TicketsResponse>(
-              future: ticketBloc.getHistory(),
+              future: ticketBloc.getTodoHistory(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   _tickets = snapshot.data.results.data;

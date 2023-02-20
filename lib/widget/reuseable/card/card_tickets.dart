@@ -25,6 +25,20 @@ class TicketsCardList extends StatelessWidget {
       child: ListView.builder(
       itemCount: tickets.length,
       itemBuilder: (context, index) {
+
+        final List<Map<String, dynamic>> statusInfo = [
+          {'icon': Icons.sticky_note_2_outlined, 'color': Colors.blue[100]},
+          {'icon': Icons.looks_one, 'color': Colors.blue[300]},
+          {'icon': Icons.looks_two, 'color': Colors.blue[600]},
+          {'icon': Icons.looks_3, 'color': Colors.yellow[200]},
+          {'icon': Icons.sticky_note_2_rounded, 'color': Colors.yellow[400]},
+          {'icon': Icons.sticky_note_2_rounded, 'color': Colors.grey},
+          {'icon': Icons.timelapse, 'color': Colors.green[200]},
+          {'icon': Icons.done, 'color': Colors.green[600]},
+        ];
+
+        final int statusId = tickets[index].ticketStatusId - 1; // Subtract 1 to match list index
+
         EdgeInsets padding = index == 0 ?
         EdgeInsets.only(left: 8.0,top: 0.0,right: 8.0,bottom: 0.0):
         EdgeInsets.only(left: 8.0,top: 0.0,right: 8.0,bottom: 0.0);
@@ -39,7 +53,7 @@ class TicketsCardList extends StatelessWidget {
                   border: Border(
                     bottom: BorderSide(
                       color: Colors.grey,
-                      width: 0.5,
+                      width: 1.0,
                     ),
                   ),
                 ),
@@ -54,19 +68,8 @@ class TicketsCardList extends StatelessWidget {
                     children: <Widget>[
                       ListTile(
                         leading: Icon(
-                            tickets[index].ticketStatusId == 1 ? Icons.sticky_note_2_outlined :
-                            tickets[index].ticketStatusId == 2 ? Icons.looks_one :
-                            tickets[index].ticketStatusId == 3 ? Icons.looks_two :
-                            tickets[index].ticketStatusId == 4 ? Icons.looks_3 :
-                            tickets[index].ticketStatusId == 5 ? Icons.sticky_note_2_rounded :
-                            tickets[index].ticketStatusId == 6 ? Icons.sticky_note_2_rounded :
-                            Icons.error, color: tickets[index].ticketStatusId == 1 ? Colors.blue :
-                        tickets[index].ticketStatusId == 2 ? Colors.yellow :
-                        tickets[index].ticketStatusId == 3 ? Colors.orange :
-                        tickets[index].ticketStatusId == 4 ? Colors.red :
-                        tickets[index].ticketStatusId == 5 ? Colors.green :
-                        tickets[index].ticketStatusId == 6 ? Colors.grey :
-                        Colors.black
+                          statusInfo[statusId]['icon'],
+                          color: statusInfo[statusId]['color'],
                         ),
                         title: Padding(
                           padding: EdgeInsets.only(top: 12.0),

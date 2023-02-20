@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:mt/data/local/app_data.dart';
 import 'package:mt/resource/values/values.dart';
@@ -11,17 +10,16 @@ class CustomCard extends StatelessWidget {
   final String textbutton;
   final int action;
   final Function go;
-  final bool custom;// Declare the callback function as a parameter
+  final bool custom; // Declare the callback function as a parameter
 
-  CustomCard({
-    @required this.leading,
-    @required this.title,
-    @required this.subtitle,
-    @required this.textbutton,
-    @required this.action,
-    @required this.go,
-    this.custom
-  });
+  CustomCard(
+      {@required this.leading,
+      @required this.title,
+      @required this.subtitle,
+      @required this.textbutton,
+      @required this.action,
+      @required this.go,
+      this.custom});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +28,7 @@ class CustomCard extends StatelessWidget {
         border: Border(
           bottom: BorderSide(
             color: Colors.grey,
-            width: 0.75,
+            width: 1.0,
           ),
         ),
       ),
@@ -44,29 +42,31 @@ class CustomCard extends StatelessWidget {
           ),
           ButtonBar(
             children: [
+              OutlinedButton(
+                onPressed: () {
+                  go(action);
+                },
+                child: Text(
+                  textbutton,
+                  style: TextStyle(color: AppColors.loginSubmit),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: AppColors.loginSubmit),
+                ),
+              ),
               Visibility(visible: custom == true,
                 child: OutlinedButton(
                   onPressed: () {
-                    Future.microtask(() => Navigator.pushNamed(context, '/add'));
+                    go(3);
                   },
-                  child: Text('+', style: TextStyle(color: AppColors.loginSubmit),),
+                  child: Text('Todo', style: TextStyle(color: AppColors.loginSubmit),),
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: AppColors.loginSubmit),
                   ),
                 ),
               ),
-              OutlinedButton(
-                onPressed: () {
-                  go(action);
-                },
-              child: Text(textbutton, style: TextStyle(color: AppColors.loginSubmit),),
-              style: OutlinedButton.styleFrom(
-                side: BorderSide(color: AppColors.loginSubmit),
-              ),
-            ),
             ],
           ),
-
         ],
       ),
     );

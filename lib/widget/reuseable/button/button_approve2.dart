@@ -54,7 +54,11 @@ class approveButton2 extends StatelessWidget {
                                 ),),
                               Text('CONFIRM', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32),),
                               SizedBox(height: 10.0,),
-                              Text("Are you sure to reject Ticket-ID"+ticketId.toString()+" ?", style: TextStyle(fontSize: 18),),
+
+                              Visibility(visible: approval == 5, child: Text("Are you sure to reject Ticket-ID"+ticketId.toString()+" ?", style: TextStyle(fontSize: 18),),),
+                              Visibility(visible: approval == 6, child: Text("Are you sure to do Ticket-ID"+ticketId.toString()+" request ?", style: TextStyle(fontSize: 16),),),
+                              Visibility(visible: approval == 7, child: Text("Are you sure to set complete Ticket-ID"+ticketId.toString()+" ?", style: TextStyle(fontSize: 16),),),
+
                             ],
                           ),
                         ),

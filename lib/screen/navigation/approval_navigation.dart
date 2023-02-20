@@ -25,6 +25,7 @@ class _ApprovalNavState extends State<ApprovalNav> {
     super.initState();
     ticketBloc.resetResponse();
     _user = appData.user;
+    AppData().count = 1;
   }
 
   @override

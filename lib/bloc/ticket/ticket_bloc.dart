@@ -100,6 +100,32 @@ class TicketBloc extends Object {
     }
   }
 
+  Future<TicketsResponse> getTodoHistory() async {
+    appData.setErrMsg("");
+    TicketsResponse response = await _ticket.todohistory();
+    if (response.results.success == true) {
+      _subject.sink.add(response);
+      return response;
+    } else {
+      _subject.sink.add(response);
+      appData.setErrMsg(response.error);
+      errorBloc.updateErrMsg(response.error);
+    }
+  }
+
+  Future<TicketsResponse> getTodo() async {
+    appData.setErrMsg("");
+    TicketsResponse response = await _ticket.todo();
+    if (response.results.success == true) {
+      _subject.sink.add(response);
+      return response;
+    } else {
+      _subject.sink.add(response);
+      appData.setErrMsg(response.error);
+      errorBloc.updateErrMsg(response.error);
+    }
+  }
+
   Future<PicResponse> getPics(regionalId) async {
     appData.setErrMsg("");
     PicResponse response = await _ticket.getPics(regionalId);

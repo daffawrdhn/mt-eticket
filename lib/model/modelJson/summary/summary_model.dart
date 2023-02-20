@@ -30,8 +30,10 @@ class Data {
   int ap1;
   int ap2;
   int ap3;
-  int completed;
+  int approved;
   int rejected;
+  int onprogress;
+  int completed;
   int total;
 
   Data(
@@ -42,8 +44,10 @@ class Data {
     ap1 = json['ap1'];
     ap2 = json['ap2'];
     ap3 = json['ap3'];
-    completed = json['completed'];
+    approved = json['approved'];
     rejected = json['rejected'];
+    onprogress = json['onprogress'];
+    completed = json['completed'];
     total = json['total'];
   }
 
@@ -53,8 +57,10 @@ class Data {
     data['ap1'] = this.ap1;
     data['ap2'] = this.ap2;
     data['ap3'] = this.ap3;
-    data['completed'] = this.completed;
+    data['approved'] = this.approved;
     data['rejected'] = this.rejected;
+    data['onprogress'] = this.onprogress;
+    data['completed'] = this.completed;
     data['total'] = this.total;
     return data;
   }

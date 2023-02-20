@@ -7,6 +7,7 @@ import 'package:mt/model/summary/summary_response.dart';
 import 'package:mt/resource/values/values.dart';
 
 import 'package:mt/widget/reuseable/card/card_status.dart';
+import 'package:mt/widget/reuseable/card/card_status2.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_error.dart';
 import 'package:pie_chart/pie_chart.dart';
@@ -33,19 +34,23 @@ class _HomeNavState extends State<HomeNav> {
         "AP1": response.results.data.ap1.toDouble(),
         "AP2": response.results.data.ap2.toDouble(),
         "AP3": response.results.data.ap3.toDouble(),
-        "Complete": response.results.data.completed.toDouble(),
+        "Approved": response.results.data.approved.toDouble(),
         "Reject": response.results.data.rejected.toDouble(),
+        "On Progress": response.results.data.onprogress.toDouble(),
+        "Completed": response.results.data.completed.toDouble(),
       };
     });
   }
 
   final colorList = <Color>[
-    Colors.blue, //Open
-    Colors.yellow, //AP1
-    Colors.orange, //AP2
-    Colors.red, //AP3
-    Colors.green, //complete
-    Colors.grey //reject
+    Colors.blue[100], //new
+    Colors.blue[300], //ap1
+    Colors.blue[600], //ap2
+    Colors.yellow[200], //ap3
+    Colors.yellow[400], //approved
+    Colors.grey[500], //reject
+    Colors.green[200], //progress
+    Colors.green[600] //completed
   ];
 
   @override
@@ -77,6 +82,7 @@ class _HomeNavState extends State<HomeNav> {
             ),
             SizedBox(height: 10.0),
             CustomCard(
+              custom: true,
               leading: Icon(Icons.approval),
               title: 'Approval',
               subtitle: 'Ticket dont aproved by itself, check here.',
@@ -87,7 +93,6 @@ class _HomeNavState extends State<HomeNav> {
               },
             ),
             SizedBox(height: 10.0),
-
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text('Ticket Summary',

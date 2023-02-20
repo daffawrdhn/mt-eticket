@@ -40,6 +40,19 @@ class Ticket extends StatefulWidget {
 }
 
 class _TicketState extends State<Ticket> {
+
+  final List<String> statusText = [
+    'Error',
+    'APPROVAL 1',
+    'APPROVAL 2',
+    'APPROVAL 3',
+    'FINAL APPROVE',
+    'DO JOB REQUEST',
+    'REJECTED',
+    'COMPLETE?',
+    'COMPLETED',
+  ];
+
   // Declare a variable to store the selected list
   String _selectedPics;
   String _selectedHelpdesks;
@@ -124,6 +137,7 @@ class _TicketState extends State<Ticket> {
 
   void _showHistoryModal(BuildContext context, Data ticket) {
     showModalBottomSheet(
+      enableDrag: true,
       context: context,
       builder: (context) {
         return Container(
@@ -135,6 +149,10 @@ class _TicketState extends State<Ticket> {
                 title: Text(ticket.history[index].description != null
                     ? ticket.history[index].description
                     : 'No description provided'),
+                // title: Text((ticket.history[index].description != null
+                //     ? ticket.history[index].description
+                //     : 'No description provided') +
+                //     (index == ticket.history.length - 1 ? ' - AP 3' : '')),
                 subtitle: Text(ticket.history[index].supervisor.employeeId ==
                         appData.user.data.employeeId
                     ? 'by You at ' +
@@ -174,13 +192,8 @@ class _TicketState extends State<Ticket> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                        widget.ticket.ticketStatusId == 1 ? 'APPROVAL 1' :
-                        widget.ticket.ticketStatusId == 2 ? 'APPROVAL 2' :
-                        widget.ticket.ticketStatusId == 3 ? 'APPROVAL 3' :
-                        widget.ticket.ticketStatusId == 4 ? 'FINAL APPROVE' :
-                        widget.ticket.ticketStatusId == 5 ? 'COMPLETED' :
-                        widget.ticket.ticketStatusId == 6 ? 'REJECTED' :
-                        'Error', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32),
+                      statusText[widget.ticket.ticketStatusId],
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32),
                     ),
                     //PIC REGIONAL
                     Visibility(
@@ -508,6 +521,37 @@ class _TicketState extends State<Ticket> {
                           )
                       ),
 
+                      // final approve
+                      Visibility(visible: widget.ticket.ticketStatusId == 5 ,
+                        child: Expanded(
+                          flex: 2,
+                          child: approveButton2(
+                            approval: 6,
+                            ticketId: widget.ticket.ticketId,
+                            employeeId: widget.user.data.employeeId,
+                            doUpdate: doUpdate,
+                            title: 'DO JOB',
+                            buttonColor: Colors.green,
+                            closeCallback: closeBottomSheet,
+                          ),
+                        ),
+                      ),
+
+                      Visibility(visible: widget.ticket.ticketStatusId == 7 ,
+                        child: Expanded(
+                          flex: 2,
+                          child: approveButton2(
+                            approval: 7,
+                            ticketId: widget.ticket.ticketId,
+                            employeeId: widget.user.data.employeeId,
+                            doUpdate: doUpdate,
+                            title: 'COMPLETE',
+                            buttonColor: Colors.green,
+                            closeCallback: closeBottomSheet,
+                          ),
+                        ),
+                      ),
+
                     ],
                   ),
                 ],
@@ -670,7 +714,7 @@ class _TicketState extends State<Ticket> {
                           ],
                         ),
                         Visibility(
-                          visible: widget.ticket.ticketStatusId != 5 && widget.ticket.ticketStatusId != 6,
+                          visible: widget.ticket.ticketStatusId != 6,
                           child: textDetail(label: 'Current Approval', initialValue: widget.ticket.supervisorId == appData.user.data.employeeId ? 'You' : widget.ticket.supervisorId + ' - ' + widget.ticket.currentapproval.employeeName),
                         ),
                         Divider(
@@ -760,7 +804,7 @@ class _TicketState extends State<Ticket> {
           ),
         ),
         bottomNavigationBar: Visibility(
-          visible: widget.type == 'approval' || widget.type == 'history',
+          visible: widget.type == 'approval' || widget.type == 'history' || widget.type == 'ticket' || widget.type == 'todo',
           child: Row(
           children: [
 
@@ -781,10 +825,10 @@ class _TicketState extends State<Ticket> {
                         children: [
                           Icon(Icons.history,color: Colors.white,),
                           Visibility(
-                            visible: widget.type != 'approval',
+                            visible: widget.type != 'approval' && widget.type != 'todo',
                             child: SizedBox(width: 8,),),
                           Visibility(
-                            visible: widget.type != 'approval',
+                            visible: widget.type != 'approval' && widget.type != 'todo',
                             child: Text('HISTORY', style: TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -803,7 +847,7 @@ class _TicketState extends State<Ticket> {
                 builder: (context, snapshot) {
                   if (snapshot.data == true) {
                     return Visibility(
-                      visible: widget.type == 'approval',
+                      visible: widget.type == 'approval' || widget.type == 'todo',
                       child: Expanded(
                         flex: 4,
                         child: Material(
@@ -829,7 +873,7 @@ class _TicketState extends State<Ticket> {
                     );
                   } else {
                     return Visibility(
-                      visible: widget.type == 'approval',
+                      visible: widget.type == 'approval' || widget.type == 'todo',
                       child: Expanded(
                         flex: 4,
                         child: Material(
