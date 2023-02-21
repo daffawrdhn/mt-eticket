@@ -27,8 +27,8 @@ class _HomeScreenState extends State<HomeScreen> {
     Colors.blue[100], //new
     Colors.blue[300], //ap1
     Colors.blue[600], //ap2
-    Colors.yellow[200], //ap3
-    Colors.yellow[400], //approved
+    Colors.yellow[400], //ap3
+    Colors.yellow[600], //approved
     Colors.grey[500], //reject
     Colors.green[200], //progress
     Colors.green[600] //completed
@@ -205,6 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return WillPopScope(
       child: Scaffold(
         appBar: AppBar(
+          elevation: 0.0,
           backgroundColor: AppColors.loginSubmit,
           title: Text(_appBarTitle),
           actions: <Widget>[

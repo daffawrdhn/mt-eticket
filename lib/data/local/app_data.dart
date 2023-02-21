@@ -14,7 +14,7 @@ class AppData {
   String errMsg = "";
   String token = "";
 
-  String version = '1.0.9';
+  String version = '1.0.10';
 
   int count = 1;
   Login user;

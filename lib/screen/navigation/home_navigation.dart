@@ -24,6 +24,7 @@ class HomeNav extends StatefulWidget {
 class _HomeNavState extends State<HomeNav> {
 
   Map<String, double> dataMap;
+  int total = 0;
 
   _fetchSummary() async {
     SummaryResponse response = await summaryBloc.get();
@@ -46,8 +47,8 @@ class _HomeNavState extends State<HomeNav> {
     Colors.blue[100], //new
     Colors.blue[300], //ap1
     Colors.blue[600], //ap2
-    Colors.yellow[200], //ap3
-    Colors.yellow[400], //approved
+    Colors.yellow[400], //ap3
+    Colors.yellow[600], //approved
     Colors.grey[500], //reject
     Colors.green[200], //progress
     Colors.green[600] //completed
@@ -67,67 +68,69 @@ class _HomeNavState extends State<HomeNav> {
         onRefresh: () async {
           _fetchSummary();
         },
-        child: ListView(
-          children: <Widget>[
-            SizedBox(height: 10.0),
-            CustomCard(
-              leading: Icon(Icons.search),
-              title: 'Tickets',
-              subtitle: 'Check your ticket status here.',
-              textbutton: 'Check',
-              action: 1,
-              go: (index) {
-                widget.onChangeIndex(index);
-              },
-            ),
-            SizedBox(height: 10.0),
-            CustomCard(
-              custom: true,
-              leading: Icon(Icons.approval),
-              title: 'Approval',
-              subtitle: 'Ticket dont aproved by itself, check here.',
-              textbutton: 'Approve',
-              action: 2,
-              go: (index) {
-                widget.onChangeIndex(index);
-              },
-            ),
-            SizedBox(height: 10.0),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text('Ticket Summary',
-                style: TextStyle(
+        child: Scrollbar(
+          thickness: 5.0,
+          child: ListView(
+            children: <Widget>[
+              SizedBox(height: 10.0),
+              CustomCard(
+                leading: Icon(Icons.search),
+                title: 'Tickets',
+                subtitle: 'Check your ticket status here.',
+                textbutton: 'Check',
+                action: 1,
+                go: (index) {
+                  widget.onChangeIndex(index);
+                },
+              ),
+              SizedBox(height: 10.0),
+              CustomCard(
+                custom: true,
+                leading: Icon(Icons.approval),
+                title: 'Approval',
+                subtitle: 'Ticket dont aproved by itself, check here.',
+                textbutton: 'Approve',
+                action: 2,
+                go: (index) {
+                  widget.onChangeIndex(index);
+                },
+              ),
+              SizedBox(height: 10.0),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text('Ticket Summary',
+                  style: TextStyle(
                     fontSize: 36,
                     color: AppColors.loginSubmit,
                     fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ),
-            FutureBuilder(
-                  future: dataMap == null ? _fetchSummary() : null ,
-                  builder: (context, summary) {
-                    if (summary.hasData || dataMap != null) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: PieChart(
-                          emptyColor: AppColors.loginSubmit.withOpacity(0.2),
-                            chartValuesOptions: ChartValuesOptions(
-                              decimalPlaces: 0,
-                            ),
-                            dataMap: dataMap,
-                            colorList: colorList,),
-                      );
-                    } else {
-                      return Center(child: CircularProgressIndicator());
-                    }
-                    },
-            ),
+              FutureBuilder(
+                future: dataMap == null ? _fetchSummary() : null ,
+                builder: (context, summary) {
+                  if (summary.hasData || dataMap != null) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: PieChart(
+                        emptyColor: AppColors.loginSubmit.withOpacity(0.2),
+                        chartValuesOptions: ChartValuesOptions(
+                          decimalPlaces: 0,
+                        ),
+                        dataMap: dataMap,
+                        colorList: colorList,),
+                    );
+                  } else {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                },
+              ),
+              SizedBox(height: 10.0),
 
-            SizedBox(height: 10.0),
-
-            eResponse(),
-          ],
-        ),
+              eResponse(),
+            ],
+          ),
+        )
       ),
     );
   }

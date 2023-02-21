@@ -30,8 +30,8 @@ class TicketsCardList extends StatelessWidget {
           {'icon': Icons.sticky_note_2_outlined, 'color': Colors.blue[100]},
           {'icon': Icons.looks_one, 'color': Colors.blue[300]},
           {'icon': Icons.looks_two, 'color': Colors.blue[600]},
-          {'icon': Icons.looks_3, 'color': Colors.yellow[200]},
-          {'icon': Icons.sticky_note_2_rounded, 'color': Colors.yellow[400]},
+          {'icon': Icons.looks_3, 'color': Colors.yellow[400]},
+          {'icon': Icons.sticky_note_2_rounded, 'color': Colors.yellow[600]},
           {'icon': Icons.sticky_note_2_rounded, 'color': Colors.grey},
           {'icon': Icons.timelapse, 'color': Colors.green[200]},
           {'icon': Icons.done, 'color': Colors.green[600]},
@@ -82,7 +82,7 @@ class TicketsCardList extends StatelessWidget {
                             Text('Feature: '+ "${tickets[index].feature.featureName}"),
                             Text('Subfeature: ' + "${tickets[index].subFeature.subFeatureName}"),
                             Text('Status: ' + "${tickets[index].ticketStatus.ticketStatusName}"),
-                            Visibility(visible: type == 'approval',
+                            Visibility(visible: type == 'approval' || type == 'todo',
                               child: Row( children: [
                                 Text('Employee Applicant: '),
                                 Text(

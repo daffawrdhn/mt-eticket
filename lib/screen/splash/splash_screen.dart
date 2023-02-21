@@ -15,7 +15,7 @@ class _SplashScreenState extends State<SplashScreen>{
   PackageInfo _packageInfo = PackageInfo(
     appName: 'Unknown',
     packageName: 'Unknown',
-    version: '1.0.9',
+    version: AppData().version,
     buildNumber: '1',
   );
 

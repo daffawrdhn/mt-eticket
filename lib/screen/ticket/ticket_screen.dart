@@ -18,14 +18,10 @@ import 'package:mt/model/response/ticket/helpdesk_response.dart';
 import 'package:mt/model/response/ticket/pic_response.dart';
 import 'package:mt/model/response/ticket/ticketUpdate_response.dart';
 import 'package:mt/resource/values/values.dart';
-import 'package:mt/widget/reuseable/button/button_approve.dart';
-import 'package:mt/widget/reuseable/button/button_approve2.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
-import 'package:mt/widget/reuseable/dialog/dialog_alert_loading.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_error.dart';
 import 'package:mt/widget/reuseable/expandable/expandable_card.dart';
 import 'package:mt/widget/reuseable/text/text_detail.dart';
-import 'package:mt/widget/reuseable/text/text_detail2.dart';
 import 'package:mt/widget/reuseable/text/text_detailed.dart';
 import 'package:photo_view/photo_view.dart';
 
@@ -40,18 +36,6 @@ class Ticket extends StatefulWidget {
 }
 
 class _TicketState extends State<Ticket> {
-
-  final List<String> statusText = [
-    'Error',
-    'APPROVAL 1',
-    'APPROVAL 2',
-    'APPROVAL 3',
-    'FINAL APPROVE',
-    'DO JOB REQUEST',
-    'REJECTED',
-    'COMPLETE?',
-    'COMPLETED',
-  ];
 
   // Declare a variable to store the selected list
   String _selectedPics;
@@ -108,10 +92,108 @@ class _TicketState extends State<Ticket> {
     _selectedDepthead = '0';
   }
 
-  void doUpdate(int approval, int id, String EmployeeId) async {
+  void doUpdate(int approval, int id, String employeeId) async {
     FocusScope.of(context).requestFocus(FocusNode());
     ticketUpdateBloc.resetBloc();
-    ticketUpdateBloc.update(approval, id, EmployeeId);
+    ticketUpdateBloc.update(approval, id, employeeId);
+  }
+
+  Future _modalDoUpdate2(String title,int approveId, int ticketId, Stream<dynamic> stream) async {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        String nama;
+        String nik;
+        return AlertDialog(
+          title: Text(title),
+          content: StreamBuilder(
+              stream: ticketBloc.name,
+              builder: (context, name){
+                if (name.data != null || name.hasData){
+                  nama = name.data;
+                  return StreamBuilder(
+                      stream: stream,
+                      builder: (context, stream){
+                        if (stream.data != null || stream.hasData){
+                          nik = stream.data;
+                          return SingleChildScrollView(
+                            child: ListBody(
+                              children: <Widget>[
+                                Text('Please confirm,'),
+                                Text('Are you sure update this ticket to'),
+                                Text(nama+' - '+nik+' ?'),
+                              ],
+                            ),
+                          );
+                        }
+                        return CircularProgressIndicator();
+                      }
+                  );
+                }
+                return CircularProgressIndicator();
+              }
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel', style: TextStyle(color: Colors.red),),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: AppColors.loginSubmit),
+              ),
+              child: Text('Confirm', style: TextStyle(color: AppColors.loginSubmit),),
+              onPressed: () {
+                closeBottomSheet();
+                Navigator.of(context).pop();
+                doUpdate(approveId, ticketId, nik);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _modalDoUpdate(String title,int approveId, int ticketId, String employeeId) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Please confirm,'),
+                Text('Are you sure update this ticket?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel', style: TextStyle(color: Colors.red),),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: AppColors.loginSubmit),
+              ),
+              child: Text('Confirm', style: TextStyle(color: AppColors.loginSubmit),),
+              onPressed: () {
+                Navigator.of(context).pop();
+                doUpdate(approveId, ticketId, employeeId);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void popupDialogAlertChange(String message) {
@@ -177,387 +259,331 @@ class _TicketState extends State<Ticket> {
     );
   }
 
-  Widget _update() {
+  void _update() {
     showModalBottomSheet(
       enableDrag: true,
       context: context,
       builder: (builder) {
-        return Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(left: 50.0,top: 110.0,right: 50.0,bottom: 0.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      statusText[widget.ticket.ticketStatusId],
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32),
-                    ),
-                    //PIC REGIONAL
-                    Visibility(
-                      visible: widget.ticket.ticketStatusId == 1,
-                      child: Column(
-                        children: [
-                          FutureBuilder(
-                            future: _fetchFeaturePics(
-                                widget.ticket.employee.regional.regionalId),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData || _pics != null) {
-                                return StatefulBuilder(
-                                  builder: (BuildContext context, setState) {
-                                    return Column(
-                                      children: [
-                                        Card(
-                                          elevation: 0.0,
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8.0),
-                                            child: Flex(
-                                                mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                                direction: Axis.horizontal,
-                                                children: [
-                                                  Expanded(
-                                                    flex: 1,
-                                                    child: DropdownButton<String>(
-                                                      value: _selectedPics,
-                                                      onChanged:
-                                                          (String newValue) {
+        return Wrap(
+          children: [
 
-                                                        setState(() {
-                                                          _selectedPics = newValue;
-                                                        });
-                                                        if (_selectedPics !=
-                                                            '0') {
-                                                          ticketBloc.changePic(
-                                                              newValue);
-                                                          ticketBloc.changeName(_pics.firstWhere((pic) => pic.employeeId == newValue).employeeName);
-                                                        } else {
-                                                          ticketBloc.resetBloc();
-                                                        }
-                                                      },
-                                                      items: [
-                                                        DropdownMenuItem<String>(
-                                                          value: '0',
-                                                          child:
-                                                          Text('Select PIC'),
-                                                        ),
-                                                        ..._pics.map((pic) {
-                                                          return DropdownMenuItem<
-                                                              String>(
-                                                            value: pic.employeeId,
-                                                            child: Text(pic
-                                                                .employeeName +
-                                                                ' - ' +
-                                                                pic.employeeId),
-                                                          );
-                                                        }).toList()
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 2.0),
-                                                ]),
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              } else {
-                                return CircularProgressIndicator();
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
+            // //for debug
+            // Text(widget.type),
+            // Text(widget.ticket.ticketStatusId.toString()),
 
-                    //HELPDESK
-                    Visibility(
-                      visible: widget.ticket.ticketStatusId == 2,
-                      child: Column(
-                        children: [
-                          FutureBuilder(
-                            future: _fetchFeatureHelpdesks(
-                                widget.ticket.employee.regional.regionalId),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData || _helpdesks != null) {
-                                return StatefulBuilder(
-                                  builder: (BuildContext context, setState) {
-                                    return Column(
-                                      children: [
-                                        Card(
-                                          elevation: 0.0,
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8.0),
-                                            child: Flex(
-                                                mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                                direction: Axis.horizontal,
-                                                children: [
-                                                  Expanded(
-                                                    flex: 1,
-                                                    child: DropdownButton<String>(
-                                                      value: _selectedHelpdesks,
-                                                      onChanged:
-                                                          (String newValue) {
-                                                        setState(() {
-                                                          _selectedHelpdesks = newValue;
-                                                        });
-                                                        if (_selectedHelpdesks !=
-                                                            '0') {
-                                                          ticketBloc.changeHelpdesk(newValue);
-                                                          ticketBloc.changeName(_helpdesks.firstWhere((helpdesk) => helpdesk.employeeId == newValue).employeeName);
-                                                        } else {
-                                                          ticketBloc.resetBloc();
-                                                        }
-                                                      },
-                                                      items: [
-                                                        DropdownMenuItem<String>(
-                                                          value: '0',
-                                                          child: Text(
-                                                              'Select Helpdesk'),
-                                                        ),
-                                                        ..._helpdesks
-                                                            .map((helpdesk) {
-                                                          return DropdownMenuItem<
-                                                              String>(
-                                                            value: helpdesk
-                                                                .employeeId,
-                                                            child: Text(helpdesk
-                                                                .employeeName +
-                                                                ' - ' +
-                                                                helpdesk
-                                                                    .employeeId),
-                                                          );
-                                                        }).toList()
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 2.0),
-                                                ]),
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              } else {
-                                return CircularProgressIndicator();
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
+            //PIC REGIONAL
+            Visibility(
+              visible: widget.type == 'approval' && widget.ticket.ticketStatusId == 1,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                child: ListTile(
+                  leading: Icon(Icons.supervisor_account),
+                  title: FutureBuilder(
+                    future: _fetchFeaturePics(
+                        widget.ticket.employee.regional.regionalId),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData || _pics != null) {
+                        return StatefulBuilder(
+                          builder: (BuildContext context, setState) {
+                            return DropdownButton<String>(
+                              value: _selectedPics,
+                              onChanged:
+                                  (String newValue) {
 
-                    //DEPTHEAD
-                    Visibility(
-                      visible: widget.ticket.ticketStatusId == 3,
-                      child: Column(
-                        children: [
-                          FutureBuilder(
-                            future: _fetchFeatureDepthead(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData || _depthead != null) {
-                                return StatefulBuilder(
-                                  builder: (BuildContext context, setState) {
-                                    return Column(
-                                      children: [
-                                        Card(
-                                          elevation: 0.0,
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8.0),
-                                            child: Flex(
-                                                mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                                direction: Axis.horizontal,
-                                                children: [
-                                                  Expanded(
-                                                    flex: 1,
-                                                    child: DropdownButton<String>(
-                                                      value: _selectedDepthead,
-                                                      onChanged:
-                                                          (String newValue) {
-                                                        setState(() {
-                                                          _selectedDepthead = newValue;
-                                                        });
-                                                        if (_selectedDepthead !=
-                                                            '0') {
-                                                          ticketBloc.changeDepthead(newValue);
-                                                          ticketBloc.changeName(_depthead.firstWhere((depthead) => depthead.employeeId == newValue).employeeName);
-
-                                                        } else {
-                                                          ticketBloc.resetBloc();
-                                                        }
-                                                      },
-                                                      items: [
-                                                        DropdownMenuItem<String>(
-                                                          value: '0',
-                                                          child: Text(
-                                                              'Select DeptHead'),
-                                                        ),
-                                                        ..._depthead
-                                                            .map((depthead) {
-                                                          return DropdownMenuItem<
-                                                              String>(
-                                                            value: depthead
-                                                                .employeeId,
-                                                            child: Text(depthead
-                                                                .employeeName +
-                                                                ' - ' +
-                                                                depthead
-                                                                    .employeeId),
-                                                          );
-                                                        }).toList()
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 2.0),
-                                                ]),
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              } else {
-                                return CircularProgressIndicator();
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-
-                  ],
+                                setState(() {
+                                  _selectedPics = newValue;
+                                });
+                                if (_selectedPics !=
+                                    '0') {
+                                  ticketBloc.changePic(
+                                      newValue);
+                                  ticketBloc.changeName(_pics.firstWhere((pic) => pic.employeeId == newValue).employeeName);
+                                } else {
+                                  ticketBloc.resetBloc();
+                                }
+                              },
+                              items: [
+                                DropdownMenuItem<String>(
+                                  value: '0',
+                                  child:
+                                  Text('Select PIC'),
+                                ),
+                                ..._pics.map((pic) {
+                                  return DropdownMenuItem<
+                                      String>(
+                                    value: pic.employeeId,
+                                    child: Text(pic
+                                        .employeeName +
+                                        ' - ' +
+                                        pic.employeeId),
+                                  );
+                                }).toList()
+                              ],
+                            );
+                          },
+                        );
+                      } else {
+                        return CircularProgressIndicator();
+                      }
+                    },
+                  ),
                 ),
               ),
+            ),
 
-              Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-
-                      // reject
-                      Expanded(
-                        flex: 1,
-                        child: approveButton2(
-                          approval: 5,
-                          ticketId: widget.ticket.ticketId,
-                          employeeId: widget.user.data.employeeId,
-                          doUpdate: doUpdate,
-                          title: 'REJECT',
-                          buttonColor: Colors.red,
-                          closeCallback: closeBottomSheet,
-                        ),
-                      ),
-
-                      // final approve
-                      Visibility(visible: widget.ticket.ticketStatusId == 3 || widget.ticket.ticketStatusId == 4 ,
-                        child: Expanded(
-                          flex: 2,
-                          child: approveButton2(
-                            approval: 4,
-                            ticketId: widget.ticket.ticketId,
-                            employeeId: widget.user.data.employeeId,
-                            doUpdate: doUpdate,
-                            title: 'FINAL APPROVE',
-                            buttonColor: Colors.green,
-                            closeCallback: closeBottomSheet,
-                          ),
-                        ),
-                      ),
-
-                      Visibility(visible: widget.ticket.ticketStatusId == 1 ,
-                          child: Expanded(
-                            flex: 2,
-                            child: approveButton(
-                              stream: ticketBloc.pic,
-                              title: 'TO PIC',
-                              ticketId: widget.ticket.ticketId,
-                              approval: 1,
-                              doUpdate: doUpdate,
-                              closeCallback: closeBottomSheet,
-                              statusId: widget.ticket.ticketStatusId,
-                            ),
-                          ),
-                      ),
-
-                      Visibility(visible: widget.ticket.ticketStatusId == 2 ,
-                          child: Expanded(
-                            flex: 2,
-                            child: approveButton(
-                              stream: ticketBloc.helpdesk,
-                              title: 'TO HELPDESK',
-                              ticketId: widget.ticket.ticketId,
-                              approval: 2,
-                              doUpdate: doUpdate,
-                              closeCallback: closeBottomSheet,
-                              statusId: widget.ticket.ticketStatusId,
-                            ),
-                          ),
-                      ),
-
-                      // to depthead
-                      Visibility(visible: widget.ticket.ticketStatusId == 3 ,
-                          child: Expanded(
-                            flex: 2,
-                            child: approveButton(
-                              stream: ticketBloc.depthead,
-                              title: 'TO DEPTHEAD',
-                              ticketId: widget.ticket.ticketId,
-                              approval: 3,
-                              doUpdate: doUpdate,
-                              closeCallback: closeBottomSheet,
-                              statusId: widget.ticket.ticketStatusId,
-                            ),
-                          )
-                      ),
-
-                      // final approve
-                      Visibility(visible: widget.ticket.ticketStatusId == 5 ,
-                        child: Expanded(
-                          flex: 2,
-                          child: approveButton2(
-                            approval: 6,
-                            ticketId: widget.ticket.ticketId,
-                            employeeId: widget.user.data.employeeId,
-                            doUpdate: doUpdate,
-                            title: 'DO JOB',
-                            buttonColor: Colors.green,
-                            closeCallback: closeBottomSheet,
-                          ),
-                        ),
-                      ),
-
-                      Visibility(visible: widget.ticket.ticketStatusId == 7 ,
-                        child: Expanded(
-                          flex: 2,
-                          child: approveButton2(
-                            approval: 7,
-                            ticketId: widget.ticket.ticketId,
-                            employeeId: widget.user.data.employeeId,
-                            doUpdate: doUpdate,
-                            title: 'COMPLETE',
-                            buttonColor: Colors.green,
-                            closeCallback: closeBottomSheet,
-                          ),
-                        ),
-                      ),
-
-                    ],
+            //HELPDESK
+            Visibility(
+              visible: widget.ticket.ticketStatusId == 2 && widget.type == 'approval',
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                child: ListTile(
+                  leading: Icon(Icons.supervisor_account),
+                  title: FutureBuilder(
+                    future: _fetchFeatureHelpdesks(widget.ticket.employee.regional.regionalId),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData || _helpdesks != null) {
+                        return StatefulBuilder(
+                          builder: (BuildContext context, setState) {
+                            return DropdownButton<String>(
+                              value: _selectedHelpdesks,
+                              onChanged:
+                                  (String newValue) {
+                                setState(() {
+                                  _selectedHelpdesks = newValue;
+                                });
+                                if (_selectedHelpdesks !=
+                                    '0') {
+                                  ticketBloc.changeHelpdesk(newValue);
+                                  ticketBloc.changeName(_helpdesks.firstWhere((helpdesk) => helpdesk.employeeId == newValue).employeeName);
+                                } else {
+                                  ticketBloc.resetBloc();
+                                }
+                              },
+                              items: [
+                                DropdownMenuItem<String>(
+                                  value: '0',
+                                  child: Text(
+                                      'Select Helpdesk'),
+                                ),
+                                ..._helpdesks
+                                    .map((helpdesk) {
+                                  return DropdownMenuItem<
+                                      String>(
+                                    value: helpdesk
+                                        .employeeId,
+                                    child: Text(helpdesk
+                                        .employeeName +
+                                        ' - ' +
+                                        helpdesk
+                                            .employeeId),
+                                  );
+                                }).toList()
+                              ],
+                            );
+                          },
+                        );
+                      } else {
+                        return CircularProgressIndicator();
+                      }
+                    },
                   ),
-                ],
-              )
-            ],
-          ),
+                ),
+              ),
+            ),
+
+            //DEPTHEAD
+            Visibility(
+              visible: widget.ticket.ticketStatusId == 3 && widget.type == 'approval',
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                child: ListTile(
+                  leading: Icon(Icons.supervisor_account),
+                  title: FutureBuilder(
+                    future: _fetchFeatureDepthead(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData || _depthead != null) {
+                        return StatefulBuilder(
+                          builder: (BuildContext context, setState) {
+                            return DropdownButton<String>(
+                              value: _selectedDepthead,
+                              onChanged:
+                                  (String newValue) {
+                                setState(() {
+                                  _selectedDepthead = newValue;
+                                });
+                                if (_selectedDepthead !=
+                                    '0') {
+                                  ticketBloc.changeDepthead(newValue);
+                                  ticketBloc.changeName(_depthead.firstWhere((depthead) => depthead.employeeId == newValue).employeeName);
+
+                                } else {
+                                  ticketBloc.resetBloc();
+                                }
+                              },
+                              items: [
+                                DropdownMenuItem<String>(
+                                  value: '0',
+                                  child: Text(
+                                      'Select DeptHead'),
+                                ),
+                                ..._depthead
+                                    .map((depthead) {
+                                  return DropdownMenuItem<
+                                      String>(
+                                    value: depthead
+                                        .employeeId,
+                                    child: Text(depthead
+                                        .employeeName +
+                                        ' - ' +
+                                        depthead
+                                            .employeeId),
+                                  );
+                                }).toList()
+                              ],
+                            );
+                          },
+                        );
+                      } else {
+                        return CircularProgressIndicator();
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ),
+
+            Visibility(visible: widget.type == 'approval' && widget.ticket.ticketStatusId != 4,child: Divider(thickness: 1.0,),),
+
+            Visibility(
+              visible: widget.ticket.ticketStatusId == 1 && widget.type == 'approval',
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                child: ListTile(
+                  onTap: (){
+                    if ( _selectedPics != '0'){
+                      _modalDoUpdate2('APPROVAL 1', 1, widget.ticket.ticketId, ticketBloc.pic);
+                    } else {
+                      _modalNoSelect('Select a pic first');
+                    }
+                  },
+                  leading: Icon(Icons.person),
+                  title: Text('Sent to PIC'),
+                ),
+              ),
+            ),
+
+            Visibility(
+              visible: widget.ticket.ticketStatusId == 2 && widget.type == 'approval',
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                child: ListTile(
+                  onTap: (){
+                    if ( _selectedHelpdesks != '0'){
+                      _modalDoUpdate2('APPROVAL 2', 2, widget.ticket.ticketId, ticketBloc.helpdesk);
+                    } else {
+                      _modalNoSelect('Select a helpdesk first');
+                    }
+                  },
+                  leading: Icon(Icons.person),
+                  title: Text('Sent to Helpdesk'),
+                ),
+              ),
+            ),
+
+            Visibility(
+              visible: widget.ticket.ticketStatusId == 3 && widget.type == 'approval',
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                child: ListTile(
+                  onTap: (){
+                    if ( _selectedDepthead != '0'){
+                      _modalDoUpdate2('APPROVAL 3', 3, widget.ticket.ticketId, ticketBloc.depthead);
+                    } else {
+                      _modalNoSelect('Select a depthead first');
+                    }
+                  },
+                  leading: Icon(Icons.person),
+                  title: Text('Sent to Depthead'),
+                ),
+              ),
+            ),
+
+            Visibility(
+              visible: widget.ticket.ticketStatusId == 3 || widget.ticket.ticketStatusId == 4 ,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                child: ListTile(
+                  onTap: (){
+                    Navigator.pop(context);
+                    _modalDoUpdate('Final Approve', 4, widget.ticket.ticketId, widget.user.data.employeeId);
+                    // doUpdate(5, widget.ticket.ticketId, widget.user.data.employeeId);
+                  },
+                  leading: Icon(Icons.done),
+                  title: Text('Final Approve'),
+                ),
+              ),
+            ),
+
+            Visibility(
+              visible: widget.ticket.ticketStatusId == 5 && widget.type == 'todo',
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                child: ListTile(
+                  onTap: (){
+                    Navigator.pop(context);
+                    _modalDoUpdate('Taking Task', 6, widget.ticket.ticketId, widget.user.data.employeeId);
+                    // doUpdate(5, widget.ticket.ticketId, widget.user.data.employeeId);
+                  },
+                  leading: Icon(Icons.timelapse),
+                  title: Text('Take Task'),
+                ),
+              ),
+            ),
+
+            Visibility(
+              visible: widget.ticket.ticketStatusId == 7 && widget.type == 'todo',
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                child: ListTile(
+                  onTap: (){
+                    Navigator.pop(context);
+                    _modalDoUpdate('FINISHING', 7, widget.ticket.ticketId, widget.user.data.employeeId);
+                    // doUpdate(5, widget.ticket.ticketId, widget.user.data.employeeId);
+                  },
+                  leading: Icon(Icons.done_all),
+                  title: Text('Finish Ticket'),
+                ),
+              ),
+            ),
+
+            // reject
+            Visibility(
+              visible: widget.type == 'approval',
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                child: ListTile(
+                  onTap: (){
+                    Navigator.pop(context);
+                    _modalDoUpdate('Reject', 5, widget.ticket.ticketId, widget.user.data.employeeId);
+                    // doUpdate(5, widget.ticket.ticketId, widget.user.data.employeeId);
+                  },
+                  leading: Icon(Icons.close),
+                  title: Text('Reject'),
+                ),
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+              child: ListTile(
+                onTap: (){
+                  _showHistoryModal(context, widget.ticket);
+                },
+                leading: Icon(Icons.history),
+                title: Text('History'),
+              ),
+            ),
+          ],
         );
       },
     ).then((val) {
@@ -589,6 +615,33 @@ class _TicketState extends State<Ticket> {
 
   void closeBottomSheet() {
     Navigator.pop(context);
+  }
+
+  Future<void> _modalNoSelect(String message) async {
+      return showDialog<void>(
+      context: context,
+      barrierDismissible: true, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Please, $message'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK', style: TextStyle(color: AppColors.loginSubmit),),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget responseWidget() {
@@ -637,7 +690,38 @@ class _TicketState extends State<Ticket> {
           backgroundColor: AppColors.loginSubmit,
           title: Text('Ticket: ID${widget.ticket.ticketId}'),
         ),
-        backgroundColor: Colors.white,
+
+
+        floatingActionButton: StreamBuilder(
+            stream: loadingBloc.isLoading,
+            builder: (context, snapshot) {
+              if (snapshot.data == true) {
+                return FloatingActionButton.extended(
+                  backgroundColor: AppColors.white,
+                  onPressed: () {},
+                  tooltip: 'Loading',
+                  icon: CircularProgressIndicator(),
+                  label: Text('Loading', style: TextStyle(color: AppColors.loginSubmit),),
+                );
+              } else {
+                return FloatingActionButton.extended(
+                  backgroundColor: AppColors.loginSubmit,
+                  onPressed: () {
+                    _update();
+                    setState(() {
+                      _selectedPics = '0';
+                      _selectedHelpdesks = '0';
+                      _selectedDepthead = '0';
+                    });
+                  },
+                  tooltip: 'Menu',
+                  label: Text('Menu'),
+                  icon: Icon(Icons.menu),
+                );
+            }
+            }
+        ),
+          backgroundColor: Colors.white,
         body: GestureDetector(
           onTap: () {
             FocusScope.of(context).requestFocus(new FocusNode());
@@ -803,112 +887,6 @@ class _TicketState extends State<Ticket> {
             ),
           ),
         ),
-        bottomNavigationBar: Visibility(
-          visible: widget.type == 'approval' || widget.type == 'history' || widget.type == 'ticket' || widget.type == 'todo',
-          child: Row(
-          children: [
-
-            Expanded(
-              flex: 1,
-              child: Material(
-              color: Colors.grey,
-              child: InkWell(
-                onTap: () {
-                  _showHistoryModal(context, widget.ticket);
-                },
-                child: SizedBox(
-                  height: kToolbarHeight,
-                  width: 100,
-                  child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.history,color: Colors.white,),
-                          Visibility(
-                            visible: widget.type != 'approval' && widget.type != 'todo',
-                            child: SizedBox(width: 8,),),
-                          Visibility(
-                            visible: widget.type != 'approval' && widget.type != 'todo',
-                            child: Text('HISTORY', style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),),)
-                        ],
-                      )
-                  ),
-                ),
-              ),
-            ),
-            ),
-
-            StreamBuilder(
-                stream: loadingBloc.isLoading,
-                builder: (context, snapshot) {
-                  if (snapshot.data == true) {
-                    return Visibility(
-                      visible: widget.type == 'approval' || widget.type == 'todo',
-                      child: Expanded(
-                        flex: 4,
-                        child: Material(
-                          color: AppColors.loginSubmit,
-                          child: InkWell(
-                            onTap: () {
-                            },
-                            child: SizedBox(
-                              height: kToolbarHeight,
-                              width: double.infinity,
-                              child: Center(
-                                child: Transform.scale(
-                                  scale: 0.75,
-                                  child: CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  } else {
-                    return Visibility(
-                      visible: widget.type == 'approval' || widget.type == 'todo',
-                      child: Expanded(
-                        flex: 4,
-                        child: Material(
-                          color: AppColors.loginSubmit,
-                          child: InkWell(
-                            onTap: () {
-                              _update();
-                              setState(() {
-                                _selectedPics = '0';
-                                _selectedHelpdesks = '0';
-                                _selectedDepthead = '0';
-                              });
-                            },
-                            child: const SizedBox(
-                              height: kToolbarHeight,
-                              width: double.infinity,
-                              child: Center(
-                                child: Text('MENU',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                }
-            ),
-          ],
-        ),
-        )
       ),
     );
   }

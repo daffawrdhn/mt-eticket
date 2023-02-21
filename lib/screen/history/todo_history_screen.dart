@@ -80,7 +80,7 @@ class _TodoHistoryScreenState extends State<TodoHistoryScreen> {
                                   .contains(searchData.data))
                               && ticket.ticketStatusId != 1)
                               .toList(),
-                          type: 'history',
+                          type: 'todoHistory',
                         );
                       });
                 } else if (snapshot.hasError) {
