@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:mt/bloc/ticket/ticketAdd_bloc.dart';
+import 'package:mt/model/modelJson/login/login_model.dart';
 import 'package:mt/model/modelJson/ticket/featureSub_model.dart';
 import 'package:mt/model/response/ticket/featureSub_response.dart';
 import 'package:mt/model/response/ticket/ticketAdd_response.dart';
@@ -15,6 +18,7 @@ import 'package:mt/data/sharedpref/preferences.dart';
 import 'package:mt/resource/values/values.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_error.dart';
+import 'package:mt/widget/reuseable/expandable/expandable_card.dart';
 
 class AddTicketScreen extends StatefulWidget {
   @override
@@ -47,11 +51,14 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
 
   final ImagePicker picker = ImagePicker();
 
+  Login _user;
+
+  Timer _timer;
+  DateFormat _dateFormat;
+
   //we can upload image from camera or from gallery based on parameter
   Future getImage(ImageSource media) async {
-    var img = await picker.pickImage(
-        source: media,
-        imageQuality: 25);
+    var img = await picker.pickImage(source: media, imageQuality: 25);
 
     setState(() {
       image = img;
@@ -63,14 +70,14 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
   }
 
   //show popup dialog
-  void SelectImg() {
+  void selectImg() {
     showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            title: Text('Please choose media to select'),
+            title: Text('Upload Photo'),
             content: Container(
               height: MediaQuery.of(context).size.height / 12,
               child: Column(
@@ -87,6 +94,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                     child: Row(
                       children: [
                         Icon(Icons.camera),
+                        SizedBox(width: 8.0,),
                         Text('From Camera'),
                       ],
                     ),
@@ -98,7 +106,8 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
         });
   }
 
-  void doLogin() async {
+  void sendTicket() async {
+    _timer.cancel();
     FocusScope.of(context).requestFocus(FocusNode());
     ticketAddBloc.resetResponse();
     ticketAddBloc.create();
@@ -124,8 +133,14 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
     super.initState();
     Prefs.clear();
     AppData().count = 1;
-
+    _user = appData.user;
     ticketAddBloc.resetBloc();
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+    _dateFormat = DateFormat.yMMMMd().add_Hms();
   }
 
   @override
@@ -155,7 +170,6 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
         _subFeatures = [];
         _selectedSubFeatureId = 0;
       });
-
     } catch (error) {
       // Handle the error
       print(error);
@@ -164,23 +178,56 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     Widget submitButton() {
       return StreamBuilder(
-          stream: ticketAddBloc.submitValid,
-          builder: (context, snapshot) {
-              return SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: 60.0,
-                  child: ElevatedButton(
-                    child: Text('CREATE'),
-                    style: ElevatedButton.styleFrom(
-                        elevation: 15.0,
-                        primary: AppColors.loginSubmit,
-                        textStyle:
-                            Styles.customTextStyle(Colors.black, 'bold', 18.0)),
-                    onPressed: snapshot.data == true && _selectedSubFeatureId != 0 ? doLogin : null,
-                  ));
-          });
+        stream: ticketAddBloc.submitValid,
+        builder: (context, snapshot) {
+          bool isEnabled = snapshot.data == true && _selectedSubFeatureId != 0;
+          return FloatingActionButton.extended(
+            backgroundColor: isEnabled ? AppColors.loginSubmit : Colors.grey[300],
+            onPressed: isEnabled ? () {
+              showDialog(
+                barrierDismissible: false,
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Confirm'),
+                    content: Text('Are you sure to send the ticket?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text('Cancel', style: TextStyle(color: Colors.red),),
+                      ),
+                      OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: AppColors.loginSubmit),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          sendTicket();
+                        },
+                        child: Text('Send'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            } : null,
+            tooltip: 'Send',
+            label: Text(
+              'Send',
+              style: TextStyle(
+                color: isEnabled ? Colors.white : Colors.grey[500],
+              ),
+            ),
+            icon: Icon(
+              Icons.send_outlined,
+              color: isEnabled ? Colors.white : Colors.grey[500],
+            ),
+          );
+        },
+      );
     }
 
     Widget _buildErrorWidget(String error) {
@@ -225,310 +272,350 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
 
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: AppColors.loginSubmit,
-          title: Text('Create New Ticket'),
-        ),
-        backgroundColor: Colors.white,
-        body: GestureDetector(
-          onTap: () {
-            FocusScope.of(context).requestFocus(new FocusNode());
-          },
-          child: SingleChildScrollView(
-            child: Padding(
-                padding: EdgeInsets.fromLTRB(20.0, 0, 20.0, 0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 20.0),
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        'Ticket title',
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                    Card(
-                      elevation: 0.0,
-                      child: Container(
-                          decoration: Decorations.containerBoxDecoration(),
-                          child: StreamBuilder(
+          appBar: AppBar(
+            backgroundColor: AppColors.loginSubmit,
+            title: Text('Create New Ticket'),
+          ),
+          backgroundColor: Colors.white,
+          body: GestureDetector(
+            onTap: () {
+              FocusScope.of(context).requestFocus(new FocusNode());
+            },
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  ExpandableCard(
+                    icon: Icon(Icons.supervisor_account),
+                    title: 'SUPERVISOR',
+                    titleBold: true,
+                    textList: [
+                      'Supervisor ID: ${_user.data.supervisorId}',
+                      'Supervisor Name: ${_user.data.supervisorName}',
+                      'Organization: ${_user.data.organization.organizationName}'
+                    ],
+                  ),
+                  Container(
+                    width: double.infinity,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          SizedBox(height: 8.0,),
+                          Text('Type & Feature',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,),),
+                          FutureBuilder(
+                              future: _features == null
+                                  ? _fetchFeatureSubData()
+                                  : null,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData || _features != null) {
+                                  return Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 2,
+                                        child: DropdownButton<int>(
+                                          isExpanded: true,
+                                          value: _selectedFeatureId,
+                                          onChanged: (int newValue) {
+                                            if (newValue != 0) {
+                                              ticketAddBloc
+                                                  .changeFeature(newValue);
+                                              // Set the selectedFeatureId and fetch the sub-features for the selected feature
+                                              setState(() {
+                                                _selectedFeatureId = newValue;
+                                                _subFeatures = _features
+                                                    .firstWhere((feature) =>
+                                                        feature.featureId ==
+                                                        _selectedFeatureId)
+                                                    .subFeature;
+                                                _selectedSubFeatureId = 0;
+                                                // ticketAddBloc.changeSubfeature(_subFeatures[0].subFeatureId);
+                                              });
+                                            }
+                                          },
+                                          items: _selectedFeatureId == 0
+                                              ? [
+                                                  DropdownMenuItem<int>(
+                                                    value: 0,
+                                                    child:
+                                                        Text("Select a Type"),
+                                                  ),
+                                                  ..._features.map((feature) {
+                                                    return DropdownMenuItem<
+                                                        int>(
+                                                      value: feature.featureId,
+                                                      child: Text(
+                                                        feature.featureName,
+                                                        softWrap: true,
+                                                      ),
+                                                    );
+                                                  }).toList(),
+                                                ]
+                                              : _features.map((feature) {
+                                                  return DropdownMenuItem<int>(
+                                                    value: feature.featureId,
+                                                    child: Text(
+                                                      feature.featureName,
+                                                      softWrap: true,
+                                                    ),
+                                                  );
+                                                }).toList(),
+                                        ),
+                                      ),
+                                      SizedBox(width: 4.0,),
+                                      Expanded(
+                                        flex: 3,
+                                        child: DropdownButton<int>(
+                                          value: _selectedSubFeatureId,
+                                          isExpanded: true,
+                                          onChanged: (int newValue) {
+                                            if (newValue != 0) {
+                                              // Set the selectedSubFeatureId
+                                              ticketAddBloc
+                                                  .changeSubfeature(newValue);
+                                              // Set the selectedSubFeatureId
+                                              setState(() {
+                                                _selectedSubFeatureId =
+                                                    newValue;
+                                              });
+                                            }
+                                          },
+                                          items: _selectedSubFeatureId == 0
+                                              ? [
+                                                  DropdownMenuItem<int>(
+                                                    value: 0,
+                                                    child: Text(
+                                                        "Select a Sub-Feature"),
+                                                  ),
+                                                  ..._subFeatures
+                                                      .map((subFeature) {
+                                                    return DropdownMenuItem<
+                                                        int>(
+                                                      value: subFeature
+                                                          .subFeatureId,
+                                                      child: Text(
+                                                        subFeature
+                                                            .subFeatureName,
+                                                        softWrap: true,
+                                                      ),
+                                                    );
+                                                  }).toList(),
+                                                ]
+                                              : _subFeatures.map((subFeature) {
+                                                  return DropdownMenuItem<int>(
+                                                    value:
+                                                        subFeature.subFeatureId,
+                                                    child: Text(
+                                                      subFeature.subFeatureName,
+                                                      softWrap: true,
+                                                    ),
+                                                  );
+                                                }).toList(),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                } else {
+                                  return Center(child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: CircularProgressIndicator(),
+                                  ));
+                                }
+                              }),
+                          // Text(
+                          //   '*please fill type & feature as ticket purpose', style: TextStyle(color: Colors.black26),
+                          // ),
+                          Divider(
+                            color: AppColors.loginSubmit,
+                            height: 10,
+                            thickness: 1.0,
+                          ),
+                          SizedBox(height: 8.0,),
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Text('Ticket Details',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,),),
+                              ) ,
+                              Expanded(
+                                flex: 1,
+                                child: Text(_dateFormat.format(DateTime.now()),),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10.0,),
+
+                          StreamBuilder(
                               stream: ticketAddBloc.title,
                               builder: (context, snapshot) {
-                                return TextField(
+                                return TextFormField(
                                   maxLength: 100,
                                   onChanged: ticketAddBloc.changeTitle,
                                   keyboardType: TextInputType.text,
                                   textInputAction: TextInputAction.next,
-                                  style: Styles.customTextStyle(
-                                      Colors.black, 'bold', 15.0),
-                                  decoration: Decorations.textInputDecoration(
-                                      StringConst.hintTitle,
+                                  maxLines: 1,
+                                  decoration: Decorations.textInputDecoration2(
+                                      'Ticket',
+                                      'Enter ticket title',
                                       snapshot.error,
                                       Colors.white),
-                                  maxLines: 1,
                                 );
-                              })),
-                    ),
-                    SizedBox(height: 20.0),
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        'Type and Sub-Feature',
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                    FutureBuilder(
-                        future:
-                            _features == null ? _fetchFeatureSubData() : null,
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData || _features != null) {
-                            return Column(
-                              children: [
-                                Card(
-                                  elevation: 0.0,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                    child: Flex(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        direction: Axis.horizontal,
-                                      children: [
-                                        Expanded(flex: 4,
-                                          child: DropdownButton<int>(
-                                            value: _selectedFeatureId,
-                                            onChanged: (int newValue) {
-                                              if (newValue != 0) {
-                                                ticketAddBloc.changeFeature(newValue);
-                                                // Set the selectedFeatureId and fetch the sub-features for the selected feature
-                                                setState(() {
-                                                  _selectedFeatureId = newValue;
-                                                  _subFeatures = _features.firstWhere((feature) => feature.featureId == _selectedFeatureId).subFeature;
-                                                  _selectedSubFeatureId = 0;
-                                                  // ticketAddBloc.changeSubfeature(_subFeatures[0].subFeatureId);
-
-                                                });
-                                              }
-                                            },
-                                            items: _selectedFeatureId == 0
-                                                ? [
-                                                    DropdownMenuItem<int>(
-                                                      value: 0,
-                                                      child: Text(
-                                                          "Select a Type"),
-                                                    ),
-                                                    ..._features.map((feature) {
-                                                      return DropdownMenuItem<
-                                                          int>(
-                                                        value:
-                                                            feature.featureId,
-                                                        child: Text(feature.featureName,softWrap: true,),
-                                                      );
-                                                    }).toList(),
-                                                  ]
-                                                : _features.map((feature) {
-                                                    return DropdownMenuItem<
-                                                        int>(
-                                                      value: feature.featureId,
-                                                      child: Text(feature.featureName,softWrap: true,),
-                                                    );
-                                                  }).toList(),
-                                          ),
-                                        ),
-                                        SizedBox(width: 2.0),
-                                        Expanded(flex: 5,
-                                          child: DropdownButton<int>(
-                                            value: _selectedSubFeatureId,
-                                            onChanged: (int newValue) {
-                                              if (newValue != 0) {
-                                                // Set the selectedSubFeatureId
-                                                ticketAddBloc.changeSubfeature(newValue);
-                                                // Set the selectedSubFeatureId
-                                                setState(() {
-                                                  _selectedSubFeatureId = newValue;
-                                                });
-                                              }
-                                            },
-                                            items: _selectedSubFeatureId == 0
-                                                ? [
-                                                    DropdownMenuItem<int>(
-                                                      value: 0,
-                                                      child: Text(
-                                                          "Select a Sub-Feature"),
-                                                    ),
-                                                    ..._subFeatures
-                                                        .map((subFeature) {
-                                                      return DropdownMenuItem<
-                                                          int>(
-                                                        value: subFeature.subFeatureId,
-                                                        child: Text(subFeature.subFeatureName,softWrap: true,),
-                                                      );
-                                                    }).toList(),
-                                                  ]
-                                                : _subFeatures
-                                                    .map((subFeature) {
-                                                    return DropdownMenuItem<
-                                                        int>(
-                                                      value: subFeature
-                                                        .subFeatureId,
-                                                      child: Text(subFeature.subFeatureName,softWrap: true,),
-                                                    );
-                                                  }).toList(),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          } else {
-                            return CircularProgressIndicator();
-                          }
-                        }),
-                    SizedBox(height: 20.0),
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        'Description',
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                    Card(
-                      elevation: 0.0,
-                      child: Container(
-                          decoration: Decorations.containerBoxDecoration(),
-                          child: StreamBuilder(
+                              }
+                          ),
+                          SizedBox(height: 10.0,),
+                          StreamBuilder(
                               stream: ticketAddBloc.description,
                               builder: (context, snapshot) {
-                                return TextField(
-                                  maxLines: 6,
+                                return TextFormField(
                                   onChanged: ticketAddBloc.changeDescription,
                                   keyboardType: TextInputType.multiline,
                                   textInputAction: TextInputAction.newline,
-                                  style: Styles.customTextStyle(
-                                      Colors.black, 'bold', 15.0),
-                                  decoration: Decorations.textInputDecoration(
-                                      StringConst.hintDescription,
+                                  maxLines: 6,
+                                  decoration: Decorations.textInputDecoration2(
+                                      'Description',
+                                      'Enter ticket description',
                                       snapshot.error,
                                       Colors.white),
                                 );
-                              })),
-                    ),
-                    SizedBox(height: 20.0),
-                    Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          children: [
-                            image != null
-                                ? Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: InkWell(
-                                      onTap: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return AlertDialog(
-                                              content: InteractiveViewer(
-                                                minScale: 0.5,
-                                                maxScale: 2.5,
-                                                child: Image.file(File(image.path)),
-                                              ),
-                                            );
-                                          },
-                                        );
-                                      },
-                                      child: Image.file(
-                                        File(image.path),
-                                        fit: BoxFit.cover,
-                                        width: MediaQuery.of(context).size.width,
-                                        height: 300,
+                              }
+                          ),
+                          Divider(
+                            color: AppColors.loginSubmit,
+                            height: 10,
+                            thickness: 1.0,
+                          ),
+                          SizedBox(height: 8.0,),
+                          Text('Photo',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,),),
+                          SizedBox(height: 8.0,),
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
+                              child: Column(
+                                children: [
+                                  image != null
+                                      ? Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 16.0, right: 16.0, top: 16.0),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(8),
+                                          child: InkWell(
+                                            onTap: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return AlertDialog(
+                                                    content: InteractiveViewer(
+                                                      minScale: 0.5,
+                                                      maxScale: 2.5,
+                                                      child: Image.file(
+                                                          File(image.path)),
+                                                    ),
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            child: Image.file(
+                                              File(image.path),
+                                              fit: BoxFit.cover,
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              height: 300,
+                                            ),
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                ),
-                                // Add an ElevatedButton for removing the image
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
-                                  child: ElevatedButton(
+                                      // Add an ElevatedButton for removing the image
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20.0, vertical: 8.0),
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            primary: AppColors.loginSubmit,
+                                          ),
+                                          onPressed: () {
+                                            // Remove the selected image
+                                            ticketAddBloc.changePhoto(null);
+                                            setState(() {
+                                              image = null;
+                                            });
+                                          },
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.delete),
+                                              Text('Remove Image'),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ) : image == null
+                                      ? ElevatedButton(
                                     style: ElevatedButton.styleFrom(
                                       primary: AppColors.loginSubmit,
                                     ),
                                     onPressed: () {
-                                      // Remove the selected image
-                                      ticketAddBloc.changePhoto(null);
-                                      setState(() {
-                                        image = null;
-                                      });
-                                    },
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.delete),
-                                        Text('Remove Image'),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            )
-                                : Text(
-                              "No Image",
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            image == null
-                                ? ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                primary: AppColors.loginSubmit,
-                              ),
-                                    onPressed: () {
-                                      SelectImg();
+                                      selectImg();
                                     },
                                     child: Text('Upload Photo'),
                                   )
-                                : Container(),
-                            //if image not null show the image
-                            //if image null show text
-                          ],
-                        ),
+                                      : Container(),
+                                  //if image not null show the image
+                                  //if image null show text
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    SizedBox(height: 20.0),
-                    SizedBox(height: 20.0),
-                    responseWidget(),
-                    SizedBox(height: 15.0),
-                    SizedBox(height: 20.0),
-                    eResponse(),
-                  ],
-                )),
+                  ),
+                  responseWidget(),
+                  eResponse(),
+                ],
+              ),
+            ),
           ),
-        ),
-        bottomNavigationBar: StreamBuilder(
-            stream: loadingBloc.isLoading,
-            builder: (context, snapshot) {
-              if (snapshot.data == true) {
-                return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CircularProgressIndicator(
-                          valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
-                        ),
-                        SizedBox(height: 10),
-                        Text(StringConst.loading, style: Theme.of(context).textTheme.caption),
-                      ],
-                    ));
-              } else {
-                return submitButton();
+          floatingActionButton: StreamBuilder(
+              stream: loadingBloc.isLoading,
+              builder: (context, snapshot) {
+                if (snapshot.data == true) {
+                  return FloatingActionButton.extended(
+                    backgroundColor: AppColors.white,
+                    onPressed: () {},
+                    tooltip: 'Loading',
+                    icon: CircularProgressIndicator(),
+                    label: Text('Loading', style: TextStyle(color: AppColors.loginSubmit),),
+                  );
+                } else {
+                  return submitButton();
+                }
               }
-            }
-        )
+          ),
+
+          // bottomNavigationBar: StreamBuilder(
+          //     stream: loadingBloc.isLoading,
+          //     builder: (context, snapshot) {
+          //       if (snapshot.data == true) {
+          //         return Center(
+          //             child: Column(
+          //           mainAxisAlignment: MainAxisAlignment.center,
+          //           children: [
+          //             CircularProgressIndicator(
+          //               valueColor:
+          //                   new AlwaysStoppedAnimation<Color>(Colors.blue),
+          //             ),
+          //             SizedBox(height: 10),
+          //             Text(StringConst.loading,
+          //                 style: Theme.of(context).textTheme.caption),
+          //           ],
+          //         ));
+          //       } else {
+          //         return submitButton();
+          //       }
+          //     })
       ),
     );
   }

@@ -1,14 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mt/bloc/error/error_bloc.dart';
 import 'package:mt/bloc/summary/summary_bloc.dart';
 import 'package:mt/data/local/app_data.dart';
 import 'package:mt/model/summary/summary_response.dart';
 import 'package:mt/resource/values/values.dart';
+import 'package:mt/widget/reuseable/button/button_relogin.dart';
 
 import 'package:mt/widget/reuseable/card/card_status.dart';
-import 'package:mt/widget/reuseable/card/card_status2.dart';
-import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_error.dart';
 import 'package:pie_chart/pie_chart.dart';
 
@@ -111,7 +109,7 @@ class _HomeNavState extends State<HomeNav> {
                 builder: (context, summary) {
                   if (summary.hasData || dataMap != null) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      padding: const EdgeInsets.symmetric(vertical: 4.0,horizontal: 16.0),
                       child: PieChart(
                         emptyColor: AppColors.loginSubmit.withOpacity(0.2),
                         chartValuesOptions: ChartValuesOptions(
@@ -120,9 +118,10 @@ class _HomeNavState extends State<HomeNav> {
                         dataMap: dataMap,
                         colorList: colorList,),
                     );
-                  } else {
-                    return Center(child: CircularProgressIndicator());
+                  } else if (summary.hasError) {
+                    return Center(child: Padding(padding: const EdgeInsets.only(top: 72.0), child: reloginButton()));
                   }
+                  return Center(child: Padding(padding: const EdgeInsets.only(top: 72.0), child: CircularProgressIndicator()));
                 },
               ),
               SizedBox(height: 10.0),

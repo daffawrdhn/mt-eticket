@@ -56,6 +56,28 @@ class Decorations {
     );
   }
 
+  static textInputDecoration2(String label,String hint, String error, Color color) {
+    return InputDecoration(
+      // counterText: '',
+      border: UnderlineInputBorder(),
+      errorText: error,
+      fillColor: color,
+      filled: true,
+      hintText: hint,
+      labelText: label,
+      floatingLabelBehavior: FloatingLabelBehavior.always,
+      enabledBorder: InputBorder.none,
+      disabledBorder: InputBorder.none,
+      contentPadding: EdgeInsets.all(0.0),
+      labelStyle: TextStyle(color: Colors.black),
+      hintStyle: TextStyle(
+        fontSize: 15.0,
+        color: Colors.grey,
+        fontFamily: 'Mitr',
+      ),
+    );
+  }
+
   static textInputDDecoration(String hint, String error, Color color) {
     return InputDecoration(
       counterText: '',

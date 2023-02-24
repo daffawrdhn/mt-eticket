@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mt/model/modelJson/login/login_model.dart' as usernow;
 import 'package:mt/model/modelJson/ticket/tickets_model.dart';
-import 'package:mt/resource/values/values.dart';
 import 'package:mt/screen/ticket/ticket_screen.dart';
 class TicketsCardList extends StatelessWidget {
   final List<Data> tickets;
@@ -81,13 +80,23 @@ class TicketsCardList extends StatelessWidget {
                             Text("${tickets[index].ticketTitle}"),
                             Text('Feature: '+ "${tickets[index].feature.featureName}"),
                             Text('Subfeature: ' + "${tickets[index].subFeature.subFeatureName}"),
-                            Text('Status: ' + "${tickets[index].ticketStatus.ticketStatusName}"),
-                            Visibility(visible: type == 'approval' || type == 'todo',
+                            Visibility(visible: type == 'ticket', child: Text('Status: ' + "${tickets[index].ticketStatus.ticketStatusName}"),),
+                            Visibility(visible: type == 'approval' || type == 'todo' || type == 'history' || type == 'todoHistory',
+                              child: Row( children: [
+                                Text('Status: '),
+                                Text(
+                                  "${tickets[index].ticketStatus.ticketStatusNext}",
+                                  style: TextStyle(fontWeight: FontWeight.w500,color: Colors.black),
+                                ),
+                              ],
+                              ),
+                            ),
+                            Visibility(visible: type == 'approval' || type == 'todo' || type == 'history' || type == 'todoHistory',
                               child: Row( children: [
                                 Text('Employee Applicant: '),
                                 Text(
                                   "${tickets[index].employeeId}",
-                                  style: TextStyle(fontWeight: FontWeight.bold,color: Colors.black),
+                                  style: TextStyle(fontWeight: FontWeight.w500,color: Colors.black),
                                 ),
                               ],
                               ),

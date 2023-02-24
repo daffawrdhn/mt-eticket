@@ -1,16 +1,14 @@
-import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:mt/bloc/error/error_bloc.dart';
 import 'package:mt/bloc/ticket/ticket_bloc.dart';
 import 'package:mt/data/local/app_data.dart';
 import 'package:mt/model/response/ticket/tickets_response.dart';
-import 'package:mt/provider/ticket/tickets_provider.dart';
+import 'package:mt/widget/reuseable/button/button_relogin.dart';
 import 'package:mt/widget/reuseable/card/card_tickets.dart';
 import 'package:mt/model/modelJson/ticket/tickets_model.dart';
-import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_error.dart';
 import 'package:mt/model/modelJson/login/login_model.dart' as user;
+import 'package:mt/widget/reuseable/skeleton/skeleton_ticket.dart';
 
 class TodoNav extends StatefulWidget {
   @override
@@ -77,9 +75,9 @@ class _TodoNavState extends State<TodoNav> {
                         );
                       });
                 } else if (snapshot.hasError) {
-                  return Center(child: Text(snapshot.error));
+                  return Center( child: reloginButton());
                 }
-                return Center(child: CircularProgressIndicator());
+                return Center(child: skeletonTicket());
               },
             ),
           ),
