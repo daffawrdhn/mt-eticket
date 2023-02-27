@@ -800,7 +800,7 @@ class _TicketState extends State<Ticket> {
                               child: textDetail(label: 'Created at', initialValue: DateFormat.yMd().format(DateTime.parse(widget.ticket.createdAt))+ ' ' +DateFormat.jm().format(DateTime.parse(widget.ticket.createdAt))),) ,
                             Expanded(
                               flex: 1,
-                              child: textDetail(label: 'Last Update', initialValue: DateFormat.yMd().format(DateTime.parse(widget.ticket.history.last.createdAt))+ ' ' +DateFormat.jm().format(DateTime.parse(widget.ticket.history.last.createdAt))),
+                              child: textDetail( label: 'Last Update', initialValue: DateFormat.yMd().format(DateTime.parse(widget.ticket.history.last.createdAt))+ ' ' +DateFormat.jm().format(DateTime.parse(widget.ticket.history.last.createdAt))),
                             ),
                           ],
                         ),
@@ -810,10 +810,10 @@ class _TicketState extends State<Ticket> {
                             textDetail(label: 'Current Approval', initialValue: widget.ticket.history[3].supervisorId == appData.user.data.employeeId ? 'You' : widget.ticket.history[3].supervisorId+' - '+widget.ticket.history[3].supervisor.employeeName) :
                             textDetail(label: 'Current Approval', initialValue: widget.ticket.supervisorId == appData.user.data.employeeId ? 'You' : widget.ticket.supervisorId + ' - ' + widget.ticket.currentapproval.employeeName),
                         ),
-                        Visibility(
-                          visible: widget.ticket.ticketStatusId == 8 && widget.type == 'ticket' || widget.type == 'todoHistory' ,
-                          child: textDetail(label: 'SLA', initialValue: daysDifference.toString()+' days'),
-                        ),
+                        // Visibility(
+                        //   visible: widget.ticket.ticketStatusId == 8 && widget.type == 'ticket' || widget.type == 'todoHistory' ,
+                        //   child: textDetail(label: 'SLA', initialValue: daysDifference.toString()+' days'),
+                        // ),
                         Divider(
                           color: AppColors.loginSubmit,
                           height: 10,
