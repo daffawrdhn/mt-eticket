@@ -1,11 +1,7 @@
 import 'package:mt/bloc/error/error_bloc.dart';
 import 'package:mt/bloc/loading/loading_bloc.dart';
-import 'package:mt/model/response/ticket/helpdesk_response.dart';
-import 'package:mt/model/response/ticket/pic_response.dart';
-import 'package:mt/model/response/ticket/tickets_response.dart';
 import 'package:mt/model/summary/summary_response.dart';
 import 'package:mt/provider/summary/summary_provider.dart';
-import 'package:mt/provider/ticket/tickets_provider.dart';
 
 import '../../data/local/app_data.dart';
 import 'package:rxdart/rxdart.dart';

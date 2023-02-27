@@ -1,14 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:mt/bloc/error/error_bloc.dart';
-import 'package:mt/screen/login/login_screen.dart';
 import '../../bloc/loading/loading_bloc.dart';
 import '../../data/local/app_data.dart';
 import '../../data/sharedpref/preferences.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:device_info/device_info.dart';
 
-import '../../model/response/login/login_response.dart';
-import 'package:mt/provider/login/login_provider.dart';
 
 import '../../model/response/checkForgot/checkForgot_response.dart';
 import '../../bloc/checkForgot/validators.dart';

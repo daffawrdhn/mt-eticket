@@ -2,14 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:mt/bloc/error/error_bloc.dart';
 import 'package:mt/bloc/loading/loading_bloc.dart';
 import 'package:mt/data/local/app_data.dart';
 import 'package:mt/data/sharedpref/preferences.dart';
-import 'package:mt/helper/widget/widget_helper.dart';
-import 'package:mt/model/modelJson/checkForgot/checkForgot_model.dart';
 import 'package:mt/resource/values/values.dart';
-import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
 
 import 'package:mt/bloc/checkForgot/checkForgot_bloc.dart';
 import 'package:mt/model/response/checkForgot/checkForgot_response.dart';
@@ -30,13 +26,6 @@ class _CheckForgotScreenState extends State<CheckForgotScreen> {
   bool isLogin = false;
   bool isRegister = false;
   bool isRecoverPassword = true;
-  bool _obscureText = true;
-
-  void _toggle() {
-    setState(() {
-      _obscureText = !_obscureText;
-    });
-  }
 
   void doCheck() async {
     FocusScope.of(context).requestFocus(FocusNode());
@@ -108,23 +97,6 @@ class _CheckForgotScreenState extends State<CheckForgotScreen> {
               return submitButton();
             }
           }
-      );
-    }
-
-    Widget _backToLogin() {
-      return GestureDetector(
-        onTap: () {
-          AppData().token = "";
-          Prefs.clear();
-          Future.microtask(() => Navigator.pushReplacementNamed(context, '/login'));
-        },
-        child: Text('Back to Login',
-          style: TextStyle(
-              decoration: TextDecoration.underline,
-              fontWeight: FontWeight.bold,
-              color: AppColors.loginSubmit
-          ),
-        ),
       );
     }
 

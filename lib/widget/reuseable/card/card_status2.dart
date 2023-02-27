@@ -1,8 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:mt/data/local/app_data.dart';
 import 'package:mt/resource/values/values.dart';
-import 'package:mt/screen/navigation/home_navigation.dart';
 
 class CustomCard2 extends StatelessWidget {
   final Widget leading;

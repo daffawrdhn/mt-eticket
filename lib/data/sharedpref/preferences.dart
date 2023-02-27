@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
-import 'package:mt/data/local/app_data.dart';
 import '../../data/sharedpref/preferences_base.dart';
 
 class Prefs {

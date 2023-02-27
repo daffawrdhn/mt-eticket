@@ -685,12 +685,6 @@ class _TicketState extends State<Ticket> {
 
   Widget build(BuildContext context) {
 
-    DateTime firstDate = DateTime.parse(widget.ticket.history[0].createdAt);
-    DateTime lastDate = DateTime.parse(widget.ticket.history[widget.ticket.history.length - 1].createdAt);
-    int daysDifference = lastDate.difference(firstDate).inDays+1;
-    // print(daysDifference); // Output: number of days between first and last dates
-
-
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -810,10 +804,6 @@ class _TicketState extends State<Ticket> {
                             textDetail(label: 'Current Approval', initialValue: widget.ticket.history[3].supervisorId == appData.user.data.employeeId ? 'You' : widget.ticket.history[3].supervisorId+' - '+widget.ticket.history[3].supervisor.employeeName) :
                             textDetail(label: 'Current Approval', initialValue: widget.ticket.supervisorId == appData.user.data.employeeId ? 'You' : widget.ticket.supervisorId + ' - ' + widget.ticket.currentapproval.employeeName),
                         ),
-                        // Visibility(
-                        //   visible: widget.ticket.ticketStatusId == 8 && widget.type == 'ticket' || widget.type == 'todoHistory' ,
-                        //   child: textDetail(label: 'SLA', initialValue: daysDifference.toString()+' days'),
-                        // ),
                         Divider(
                           color: AppColors.loginSubmit,
                           height: 10,

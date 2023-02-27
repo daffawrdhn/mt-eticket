@@ -1,23 +1,9 @@
-import 'dart:io';
-import 'package:dio/dio.dart';
 import 'package:mt/bloc/error/error_bloc.dart';
-import 'package:mt/model/response/ticket/helpdesk_response.dart';
-import 'package:mt/model/response/ticket/pic_response.dart';
-import 'package:mt/model/response/ticket/ticketAdd_response.dart';
 import 'package:mt/model/response/ticket/ticketUpdate_response.dart';
-import 'package:mt/model/response/ticket/tickets_response.dart';
-import 'package:mt/provider/ticket/ticketAdd_provider.dart';
 import 'package:mt/provider/ticket/tickets_provider.dart';
 import '../../bloc/loading/loading_bloc.dart';
 import '../../data/local/app_data.dart';
-import '../../data/sharedpref/preferences.dart';
 import 'package:rxdart/rxdart.dart';
-
-import 'package:mt/provider/changePassword/changePassword_provider.dart';
-import 'package:mt/bloc/ticket/add_validators.dart';
-
-
-
 
 class TicketUpdateBloc extends Object {
 

@@ -1,6 +1,5 @@
 
 import 'dart:async';
-import 'package:rxdart/rxdart.dart';
 class Validators {
   String _password;
 

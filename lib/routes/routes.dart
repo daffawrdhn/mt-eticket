@@ -6,7 +6,6 @@ import 'package:mt/screen/history/todo_history_screen.dart';
 import 'package:mt/screen/home_screen.dart';
 import 'package:mt/screen/login/login_screen.dart';
 import 'package:mt/screen/checkForgot/checkForgot_screen.dart';
-import 'package:mt/screen/navigation/todo_navigation.dart';
 
 
 final routes = {

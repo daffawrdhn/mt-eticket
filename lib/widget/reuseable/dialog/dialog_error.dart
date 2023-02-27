@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mt/bloc/error/error_bloc.dart';
 import 'package:mt/bloc/ticket/ticket_bloc.dart';
 import 'package:mt/data/local/app_data.dart';
-import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
 
 class eResponse extends StatelessWidget {
 

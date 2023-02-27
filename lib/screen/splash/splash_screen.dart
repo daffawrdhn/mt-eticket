@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mt/data/local/app_data.dart';
-import 'package:mt/data/sharedpref/preferences.dart';
 import 'package:mt/resource/values/values.dart';
-import 'package:package_info/package_info.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -12,37 +10,17 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>{
   bool isLogin = false;
 
-  PackageInfo _packageInfo = PackageInfo(
-    appName: 'Unknown',
-    packageName: 'Unknown',
-    version: AppData().version,
-    buildNumber: '1',
-  );
-
   startTimeout() {
     Future.delayed(Duration(seconds: 2), () {
       Navigator.pushReplacementNamed(context, '/login');
     });
   }
 
-  void _isLogin(){
-    Prefs.isLogin.then((value) {
-      isLogin = value;
-    });
-  }
 
   @override
   void initState() {
     super.initState();
-    _initPackageInfo();
     startTimeout();
-  }
-
-  Future<void> _initPackageInfo() async {
-    final PackageInfo info = await PackageInfo.fromPlatform();
-    setState(() {
-      _packageInfo = info;
-    });
   }
 
   @override

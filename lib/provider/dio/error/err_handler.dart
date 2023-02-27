@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:mt/bloc/error/error_bloc.dart';
 import 'package:mt/resource/values/values.dart';
 import '../../../model/response/error/error_response.dart';
 

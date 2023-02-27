@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:dio/dio.dart';
 import 'package:mt/bloc/error/error_bloc.dart';
 import 'package:mt/bloc/loading/loading_bloc.dart';
 import 'package:mt/model/response/ticket/depthead_response.dart';

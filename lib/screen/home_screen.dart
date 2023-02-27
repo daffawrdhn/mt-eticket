@@ -8,7 +8,6 @@ import 'package:mt/screen/navigation/home_navigation.dart';
 import 'package:mt/screen/navigation/profile_navigation.dart';
 import 'package:mt/screen/navigation/tickets_navigation.dart';
 import 'package:mt/screen/navigation/todo_navigation.dart';
-import 'package:mt/widget/reuseable/drawer/drawer.dart';
 
 class HomeScreen extends StatefulWidget {
 
@@ -126,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           actions: [
-            FlatButton(
+            TextButton(
               child: Text("Close"),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -166,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           actions: [
-            FlatButton(
+            TextButton(
               child: Text("Close"),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -281,23 +280,23 @@ class _HomeScreenState extends State<HomeScreen> {
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
                 icon: Icon(Icons.home),
-                title: Text('Home'),
+                label: 'Home',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.note),
-                title: Text('Tickets'),
+                label: 'Tickets',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.check),
-                title: Text('Approval'),
+                label: 'Approval',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.wysiwyg),
-                title: Text('Todo'),
+                label: 'Todo',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.person),
-                title: Text('Profile'),
+                label: 'Profile',
               ),
             ],
             currentIndex: _selectedIndex,
@@ -346,14 +345,14 @@ class _HomeScreenState extends State<HomeScreen> {
           title: Text('Warning'),
           content: Text('Do you really want to exit'),
           actions: [
-            FlatButton(
+            TextButton(
               child: Text('Yes'),
               onPressed: () async {
-                await doLogout();
+                doLogout();
                 Navigator.pop(c, true);
               },
             ),
-            FlatButton(
+            TextButton(
               child: Text('No'),
               onPressed: () => Navigator.pop(c, false),
             ),

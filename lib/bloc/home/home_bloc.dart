@@ -1,5 +1,3 @@
-import 'package:mt/data/local/app_data.dart';
-import 'package:mt/data/sharedpref/preferences.dart';
 import 'package:rxdart/rxdart.dart';
 
 class HomeBloc {

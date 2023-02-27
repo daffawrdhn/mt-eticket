@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mt/bloc/error/error_bloc.dart';
 import 'package:mt/bloc/loading/loading_bloc.dart';
 import 'package:mt/bloc/login/login_bloc.dart';
 import 'package:mt/data/local/app_data.dart';
@@ -8,9 +7,7 @@ import 'package:mt/data/sharedpref/preferences.dart';
 import 'package:mt/helper/widget/widget_helper.dart';
 import 'package:mt/model/response/login/login_response.dart';
 import 'package:mt/resource/values/values.dart';
-import 'package:mt/widget/reuseable/dialog/dialog_alert.dart';
 import 'package:mt/widget/reuseable/dialog/dialog_error.dart';
-import 'package:package_info/package_info.dart';
 
 class LoginScreen extends StatefulWidget {
 

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mt/resource/values/values.dart';
 
 Future<void> loadingDialog({
   @required BuildContext context,

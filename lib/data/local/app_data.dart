@@ -1,9 +1,6 @@
 
-import 'package:mt/resource/values/values.dart';
 import '../../data/sharedpref/preferences.dart';
 import 'package:mt/model/modelJson/login/login_model.dart';
-import 'package:mt/model/response/ticket/tickets_response.dart';
-import 'package:mt/model/modelJson/ticket/tickets_model.dart' as ticket;
 
 
 class AppData {

@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'dart:ui';
 
 import 'package:dio/dio.dart';
 import 'package:mt/data/local/app_data.dart';
@@ -7,8 +6,6 @@ import 'package:mt/data/sharedpref/preferences.dart';
 import 'package:mt/model/response/ticket/depthead_response.dart';
 import 'package:mt/model/response/ticket/helpdesk_response.dart';
 import 'package:mt/model/response/ticket/pic_response.dart';
-import 'package:mt/model/response/ticket/ticketAdd_response.dart';
-import 'package:mt/model/response/ticket/ticketPhoto_response.dart';
 import 'package:mt/model/response/ticket/ticketUpdate_response.dart';
 import 'package:mt/model/response/ticket/tickets_response.dart';
 import 'package:mt/provider/dio/dio_config.dart';

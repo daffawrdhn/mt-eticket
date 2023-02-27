@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mt/data/local/app_data.dart';
 import 'package:mt/resource/values/values.dart';
 
 class ExpandableCard extends StatefulWidget {
