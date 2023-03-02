@@ -302,7 +302,7 @@ class _AddTicketScreenState extends State<AddTicketScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           SizedBox(height: 8.0,),
-                          Text('Type & Feature',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,),),
+                          Text('Type & Sub feature',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,),),
                           FutureBuilder(
                               future: _features == null
                                   ? _fetchFeatureSubData()

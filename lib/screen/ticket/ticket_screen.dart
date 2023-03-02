@@ -684,7 +684,7 @@ class _TicketState extends State<Ticket> {
   }
 
   Widget build(BuildContext context) {
-
+  try {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -719,10 +719,10 @@ class _TicketState extends State<Ticket> {
                   label: Text('Menu'),
                   icon: Icon(Icons.menu),
                 );
-            }
+              }
             }
         ),
-          backgroundColor: Colors.white,
+        backgroundColor: Colors.white,
         body: GestureDetector(
           onTap: () {
             FocusScope.of(context).requestFocus(new FocusNode());
@@ -800,9 +800,9 @@ class _TicketState extends State<Ticket> {
                         ),
                         Visibility(
                           visible: widget.ticket.ticketStatusId != 8 && widget.ticket.ticketStatusId != 6,
-                          child: widget.ticket.ticketStatusId >= 5 ?
-                            textDetail(label: 'Current Approval', initialValue: widget.ticket.history[3].supervisorId == appData.user.data.employeeId ? 'You' : widget.ticket.history[3].supervisorId+' - '+widget.ticket.history[3].supervisor.employeeName) :
-                            textDetail(label: 'Current Approval', initialValue: widget.ticket.supervisorId == appData.user.data.employeeId ? 'You' : widget.ticket.supervisorId + ' - ' + widget.ticket.currentapproval.employeeName),
+                          child: widget.ticket.history.length < 4 ? textDetail(label: 'Current Approval', initialValue: widget.ticket.supervisorId == appData.user.data.employeeId ? 'You' : widget.ticket.supervisorId + ' - ' + widget.ticket.currentapproval.employeeName) :  widget.ticket.ticketStatusId >= 5 ?
+                          textDetail(label: 'Current Approval', initialValue: widget.ticket.history[3].supervisorId == appData.user.data.employeeId ? 'You' : widget.ticket.history[3].supervisorId+' - '+widget.ticket.history[3].supervisor.employeeName) :
+                          textDetail(label: 'Current Approval', initialValue: widget.ticket.supervisorId == appData.user.data.employeeId ? 'You' : widget.ticket.supervisorId + ' - ' + widget.ticket.currentapproval.employeeName),
                         ),
                         Divider(
                           color: AppColors.loginSubmit,
@@ -835,47 +835,47 @@ class _TicketState extends State<Ticket> {
                           height: 8.0,
                         ),
                         Center(
-                            child: FutureBuilder<Uint8List>(
-                              future: _imageFuture,
-                              builder: (context, AsyncSnapshot<Uint8List> image) {
-                                if (image.connectionState == ConnectionState.done) {
-                                  if (image.hasData && image.data != null) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (BuildContext context) {
-                                              return Scaffold(
-                                                appBar: AppBar(
-                                                  backgroundColor: AppColors.loginSubmit,
-                                                  title: Text("Picture - ID "+widget.ticket.ticketId.toString()),
+                          child: FutureBuilder<Uint8List>(
+                            future: _imageFuture,
+                            builder: (context, AsyncSnapshot<Uint8List> image) {
+                              if (image.connectionState == ConnectionState.done) {
+                                if (image.hasData && image.data != null) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (BuildContext context) {
+                                            return Scaffold(
+                                              appBar: AppBar(
+                                                backgroundColor: AppColors.loginSubmit,
+                                                title: Text("Picture - ID "+widget.ticket.ticketId.toString()),
+                                              ),
+                                              body: Container(
+                                                child: PhotoView(
+                                                  enableRotation: true,
+                                                  imageProvider: MemoryImage(image.data),
                                                 ),
-                                                body: Container(
-                                                  child: PhotoView(
-                                                    enableRotation: true,
-                                                    imageProvider: MemoryImage(image.data),
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        );
-                                      },
-                                      child: Image.memory(
-                                        image.data,
-                                        height: 300,
-                                      ),
-                                    );
-                                  } else {
-                                    return Text('No Picture Uploaded');
-                                  }
-                                } else {
-                                  return Center(
-                                    child: CircularProgressIndicator(),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    },
+                                    child: Image.memory(
+                                      image.data,
+                                      height: 300,
+                                    ),
                                   );
+                                } else {
+                                  return Text('No Picture Uploaded');
                                 }
-                              },
-                            ),
+                              } else {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -892,5 +892,24 @@ class _TicketState extends State<Ticket> {
         ),
       ),
     );
+
+  } catch (e) {
+    return SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: AppColors.loginSubmit,
+            title: Text('E-Ticket '+AppData().version),
+          ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Center(
+            child: Text('invalid ticket format.'),
+          )
+        ],
+      ),
+    )
+    );
+  }
   }
 }
